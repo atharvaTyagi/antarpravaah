@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Antar Pravaah — Healing & Transformation
 
-## Getting Started
+Antar Pravaah is a modern, motion-forward website for a healing and transformation practice. The experience is designed to feel like a guided journey: a scroll-driven introduction (splash), a narrative “Journey” section, a scroll-locked “We Work Together” card sequence, and “Voices of Transformation” testimonials.
 
-First, run the development server:
+### Website sections
+
+- **Splash / Introduction**: scroll-to-advance overlay that reveals the site.
+- **The Journey**: narrative steps with scroll-reveal + connector animations.
+- **We Work Together**: a pinned card experience (GSAP Observer) where each scroll advances one card, ending with a CTA.
+- **Voices of Transformation**: testimonials carousel with a scroll takeover interaction.
+- **Additional pages**: About, Approach, Therapies, Trainings, Immersions, Contact, FAQ.
+
+### Tech stack
+
+- **Next.js (App Router)** + **React**
+- **TypeScript**
+- **Tailwind CSS v4**
+- **Lenis** for smooth scrolling
+- **GSAP** (`ScrollTrigger`, `Observer`) for scroll locking / step-based sequences
+- **Framer Motion** for reveal and motion primitives
+- **Zustand** for lightweight UI/theme state
+
+### Project structure (high-level)
+
+- **`app/`**: routes (`/`, `/about`, `/approach`, etc.)
+- **`components/`**: reusable UI + animated sections (e.g. `SplashScreen`, `TheJourney`, `WeWorkTogether`)
+- **`lib/`**: stores + theme config
+- **`data/`**: static content used across sections
+- **`public/`**: static assets
+
+### Run locally
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Start the dev server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Build and run production:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm run start
+```
 
-## Learn More
+### Notes for developers
 
-To learn more about Next.js, take a look at the following resources:
+- **Smooth scroll**: Lenis is initialized after splash completes on the home page (`app/page.tsx`).
+- **Scroll lock sections**: Some interactions (like the “We Work Together” cards) use **GSAP Observer** to temporarily take over wheel/touch input. Lenis is paused/resumed via a global handle (`window.__lenis`).
+- **Theme/background transitions**: Sections can drive theme state via `components/Section.tsx` + `lib/themeConfig.ts`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### License
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Private project. All rights reserved.
