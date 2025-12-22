@@ -1,0 +1,17 @@
+<svg width="462" height="206" viewBox="0 0 462 206" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Centerline stroke path for drawing animation -->
+  <path 
+    d="M40 20 
+       C 20 50, 20 80, 60 100 
+       C 120 130, 200 130, 280 115 
+       C 340 105, 380 100, 400 120 
+       C 430 145, 450 175, 458 200"
+    stroke="#9AC1BF" 
+    stroke-width="8" 
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    fill="none"
+    class="journey-path"
+  />
+</svg>
+
