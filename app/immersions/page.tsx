@@ -3,6 +3,8 @@
 import { useEffect } from 'react';
 import Lenis from 'lenis';
 import Section from '@/components/Section';
+import Button from '@/components/Button';
+import PageEndBlob from '@/components/PageEndBlob';
 
 export default function ImmersionsPage() {
   useEffect(() => {
@@ -30,14 +32,857 @@ export default function ImmersionsPage() {
   }, []);
 
   return (
-    <main className="min-h-screen pt-[188px]">
-      <Section id="immersions" className="min-h-screen flex flex-col items-center justify-center px-8 py-24">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-5xl font-bold mb-6">Immersions</h1>
-          <p className="text-xl leading-relaxed">Immersions page content coming soon...</p>
+    <main className="relative min-h-screen bg-[#f6edd0] pt-[148px]">
+      {/* Hero/Introduction Section */}
+      <Section id="immersions" className="relative z-10 w-full px-8 py-24">
+        <div className="mx-auto flex max-w-[723px] flex-col items-center gap-5 text-center">
+          <h1
+            className="text-[48px] leading-normal text-[#6a3f33]"
+            style={{ fontFamily: 'var(--font-saphira), serif' }}
+          >
+            Immersions & Trainings
+          </h1>
+          <h2
+            className="text-[24px] leading-normal text-[#6a3f33]"
+            style={{ fontFamily: 'var(--font-saphira), serif' }}
+          >
+            Gather, Learn, Transform Together
+          </h2>
+          <div className="text-justify text-[12px] leading-normal text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif' }}>
+            <p className="mb-0">
+              Healing deepens when experienced in community. Whether you&apos;re exploring a theme that
+              resonates with your journey, or stepping into the role of healer yourself, our immersions
+              & trainings create sacred containers for collective transformation.
+            </p>
+            <p className="mb-0">&nbsp;</p>
+            <p>
+              Here, you&apos;ll find workshops that illuminate life&apos;s patterns, training programs that
+              empower you to become your own healer, and gatherings that remind you—you&apos;re not alone on
+              this path.
+            </p>
+          </div>
         </div>
       </Section>
+
+      {/* Decorative blob background for Immersions section */}
+      <div className="absolute left-1/2 top-[283px] z-0 flex h-[1374px] w-[1326px] -translate-x-1/2 items-center justify-center">
+        <div className="rotate-[130.5deg] scale-y-[-1]">
+          <img src="/immersion_main_blob.svg" alt="" className="h-[744px] w-[1171px]" />
+        </div>
+      </div>
+
+      {/* Immersion Introduction */}
+      <Section id="immersions-intro" className="relative z-10 w-full px-8 py-16">
+        <div className="relative mx-auto max-w-[1200px] pb-[260px] pt-2">
+          {/* Left decorative image */}
+          <div className="pointer-events-none absolute left-[40px] top-[110px] z-0 h-[220px] w-[220px]">
+            <img src="/immersion_1.svg" alt="" className="h-full w-full" />
+          </div>
+
+          {/* Center content */}
+          <div className="relative z-10 mx-auto flex max-w-[449px] flex-col items-center gap-4 text-center text-[#6a3f33]">
+            <h2
+              className="text-[48px] leading-normal"
+              style={{ fontFamily: 'var(--font-saphira), serif' }}
+            >
+              Immersions
+            </h2>
+            <h3
+              className="text-[24px] uppercase leading-normal tracking-[3.84px]"
+              style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
+            >
+              Transformative Gatherings
+            </h3>
+            <div className="w-[400px] text-justify text-[12px] leading-normal" style={{ fontFamily: 'var(--font-graphik), sans-serif' }}>
+              <p className="mb-0">
+                Immersions at Antar Pravaah focus on meaningful themes without delving deeply into personal
+                histories. These gatherings create space for broader awareness—exploring how different areas
+                of your life interconnect and influence one another.
+              </p>
+              <p className="mb-0">&nbsp;</p>
+              <p>
+                Through group exploration, you&apos;ll gain insights into life patterns and connections,
+                supported by community energy and collective transformation.
+              </p>
+            </div>
+          </div>
+
+          {/* Right top decorative image */}
+          <div className="pointer-events-none absolute right-[70px] top-[150px] z-0 h-[200px] w-[200px]">
+            <img src="/immersion_2.svg" alt="" className="h-full w-full" />
+          </div>
+
+          {/* Bottom center decorative image */}
+          <div className="pointer-events-none absolute bottom-0 left-1/2 z-0 h-[420px] w-[420px] -translate-x-1/2">
+            <img src="/immersion_3.svg" alt="" className="h-full w-full" />
+          </div>
+        </div>
+      </Section>
+
+      {/* Dark section for Immersions listings */}
+      <div className="relative w-full bg-[#6a3f33]">
+        <Section id="immersions-listings" className="relative z-10 w-full px-16 py-20">
+          <div className="mx-auto flex max-w-[2463px] flex-col gap-8">
+            <h3
+              className="text-[24px] leading-normal text-[#d58761]"
+              style={{ fontFamily: 'var(--font-saphira), serif' }}
+            >
+              Upcoming Immersions & Workshops
+            </h3>
+
+            {/* Horizontal scrollable container */}
+            <div className="no-scrollbar flex gap-5 overflow-x-auto pb-4">
+              {/* Card 1: Antar Smaran */}
+              <div className="flex min-w-[760px] flex-col justify-between gap-5 rounded-[24px] bg-[#d58761] p-5">
+                <div className="flex gap-4">
+                  {/* Left column: Info */}
+                  <div className="flex flex-1 flex-col gap-3 rounded-lg border border-[#6a3f33] p-4">
+                    <div className="flex flex-col gap-2">
+                      <h4
+                        className="text-[48px] leading-normal text-[#6a3f33]"
+                        style={{ fontFamily: 'var(--font-saphira), serif' }}
+                      >
+                        Antar Smaran Immersive Residential Retreat
+                      </h4>
+                      <span className="inline-flex w-fit items-center justify-center rounded-full bg-[#6a3f33] px-2 py-0.5 text-[12px] text-[#d58761]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                        Immersion
+                      </span>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <p className="text-[12px] uppercase tracking-[1.92px] text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}>
+                        Duration
+                      </p>
+                      <p className="text-[24px] leading-normal text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                        2 Days
+                      </p>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <p className="text-[12px] uppercase tracking-[1.92px] text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}>
+                        Prerequisite
+                      </p>
+                      <div className="text-[24px] leading-normal text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                        <p className="mb-0">21 years and above</p>
+                        <p>No prior experience required.</p>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <p className="text-[12px] uppercase tracking-[1.92px] text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}>
+                        Language
+                      </p>
+                      <p className="text-[24px] leading-normal text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                        English and Hindi
+                      </p>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <p className="text-[12px] uppercase tracking-[1.92px] text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}>
+                        Format
+                      </p>
+                      <p className="text-[24px] leading-normal text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                        In-person
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Right column: Image + Details */}
+                  <div className="flex flex-1 flex-col gap-4">
+                    <img
+                      src="/immersion_workshop_1.svg"
+                      alt="Antar Smaran Immersive"
+                      className="h-[206px] w-full rounded-2xl object-cover"
+                    />
+
+                    <div className="flex flex-col gap-3">
+                      <div className="flex flex-col gap-2">
+                        <p className="text-[12px] uppercase tracking-[1.92px] text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}>
+                          About
+                        </p>
+                        <div className="text-justify text-[12px] leading-normal text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                          <p className="mb-0">
+                            Antar Smaran is a once-a-year residential retreat designed to guide participants into deep connection with their inner self and the natural flow of life within.
+                          </p>
+                          <p className="mb-0 text-[12px]">&nbsp;</p>
+                          <p className="mb-0">
+                            This immersion weaves together the principles of energy healing, inner child integration, and shamanic practices with the timeless wisdom of ancient yogic traditions. Through meditation, guided processes, and embodied practices, participants are supported in uncovering inner patterns, releasing emotional blockages, and reconnecting to the higher self.
+                          </p>
+                          <p className="mb-0 text-[12px]">&nbsp;</p>
+                          <p>
+                            Grounded yet expansive, the Antar Smaran Immersive helps you create a daily roadmap rooted in awareness, balance, and compassion—living in harmony with yourself and the greater flow of life.
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col gap-2">
+                        <p className="text-[12px] uppercase tracking-[1.92px] text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}>
+                          What To Expect
+                        </p>
+                        <ul className="ml-4 list-disc text-[12px] leading-normal text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                          <li>Meditations and energy healing to awaken flow</li>
+                          <li>Inner child work to release old patterns</li>
+                          <li>Shamanic practices to expand awareness and connection</li>
+                          <li>Yogic techniques for inner awareness</li>
+                          <li>Tools to integrate insights into daily life</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end">
+                  <Button
+                    text="Reserve your spot"
+                    size="small"
+                    colors={{
+                      fg: '#f6edd0',
+                      fgHover: '#6a3f33',
+                      bgHover: '#f6edd0',
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Card 2: Thread of Life */}
+              <div className="flex min-w-[760px] flex-col justify-between gap-5 rounded-[24px] bg-[#d58761] p-5">
+                <div className="flex gap-4">
+                  <div className="flex flex-1 flex-col gap-3 rounded-lg border border-[#6a3f33] p-4">
+                    <div className="flex flex-col gap-2">
+                      <h4
+                        className="text-[48px] leading-normal text-[#6a3f33]"
+                        style={{ fontFamily: 'var(--font-saphira), serif' }}
+                      >
+                        Thread of Life - A Systemic Constellations experience
+                      </h4>
+                      <span className="inline-flex w-fit items-center justify-center rounded-full bg-[#6a3f33] px-2 py-0.5 text-[12px] text-[#d58761]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                        Immersion
+                      </span>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <p className="text-[12px] uppercase tracking-[1.92px] text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}>
+                        Duration
+                      </p>
+                      <p className="text-[24px] leading-normal text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                        6 Hours (10AM - 4PM)
+                      </p>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <p className="text-[12px] uppercase tracking-[1.92px] text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}>
+                        Prerequisite
+                      </p>
+                      <p className="text-[24px] leading-normal text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                        16 years and above. No prior experience required.
+                      </p>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <p className="text-[12px] uppercase tracking-[1.92px] text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}>
+                        Language
+                      </p>
+                      <p className="text-[24px] leading-normal text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                        English
+                      </p>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <p className="text-[12px] uppercase tracking-[1.92px] text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}>
+                        Format
+                      </p>
+                      <p className="text-[24px] leading-normal text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                        In-person
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-1 flex-col gap-4">
+                    <img
+                      src="/immersion_workshop_2.svg"
+                      alt="Thread of Life"
+                      className="h-[206px] w-full rounded-2xl object-cover"
+                    />
+
+                    <div className="flex flex-col gap-3">
+                      <div className="flex flex-col gap-2">
+                        <p className="text-[12px] uppercase tracking-[1.92px] text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}>
+                          About
+                        </p>
+                        <p className="text-[12px] leading-normal text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                          These thematic constellation workshops explore collective and individual patterns in a supportive space. Whether you represent, have your own issue addressed, or observe, the process offers insights for everyone. Through participation and reflection, collective wisdom emerges, providing clarity, healing, and guidance to take into daily life.
+                        </p>
+                      </div>
+
+                      <div className="flex flex-col gap-2">
+                        <p className="text-[12px] uppercase tracking-[1.92px] text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}>
+                          What To Expect
+                        </p>
+                        <ul className="ml-4 list-disc text-[12px] leading-normal text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                          <li>Gain insights, healing, and clarity</li>
+                          <li>Witness transformative dynamics in action</li>
+                          <li>Get an overview of systemic work</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end">
+                  <Button
+                    text="Reserve your spot"
+                    size="small"
+                    colors={{
+                      fg: '#f6edd0',
+                      fgHover: '#6a3f33',
+                      bgHover: '#f6edd0',
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Card 3: Meet your Primary Animal Guide */}
+              <div className="flex min-w-[760px] flex-col justify-between gap-5 rounded-[24px] bg-[#d58761] p-5">
+                <div className="flex gap-4">
+                  <div className="flex flex-1 flex-col gap-3 rounded-lg border border-[#6a3f33] p-4">
+                    <div className="flex flex-col gap-2">
+                      <h4
+                        className="text-[48px] leading-normal text-[#6a3f33]"
+                        style={{ fontFamily: 'var(--font-saphira), serif' }}
+                      >
+                        Meet your Primary Animal Guide
+                      </h4>
+                      <span className="inline-flex w-fit items-center justify-center rounded-full bg-[#6a3f33] px-2 py-0.5 text-[12px] text-[#d58761]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                        Workshop
+                      </span>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <p className="text-[12px] uppercase tracking-[1.92px] text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}>
+                        Duration
+                      </p>
+                      <p className="text-[24px] leading-normal text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                        3 Hours
+                      </p>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <p className="text-[12px] uppercase tracking-[1.92px] text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}>
+                        Prerequisite
+                      </p>
+                      <p className="text-[24px] leading-normal text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                        Open to everyone above the age of 11 years
+                      </p>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <p className="text-[12px] uppercase tracking-[1.92px] text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}>
+                        Language
+                      </p>
+                      <p className="text-[24px] leading-normal text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                        English
+                      </p>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <p className="text-[12px] uppercase tracking-[1.92px] text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}>
+                        Format
+                      </p>
+                      <p className="text-[24px] leading-normal text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                        Online
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-1 flex-col gap-4">
+                    <img
+                      src="/immersion_workshop_3.svg"
+                      alt="Primary Animal Guide"
+                      className="h-[206px] w-full rounded-2xl object-cover"
+                    />
+
+                    <div className="flex flex-col gap-3">
+                      <div className="flex flex-col gap-2">
+                        <p className="text-[12px] uppercase tracking-[1.92px] text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}>
+                          About
+                        </p>
+                        <p className="text-[12px] leading-normal text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                          In Shamanism, connecting with your personal animal guide is a foundational step. Animals serve as gatekeepers of the natural spirit world, guiding us on journeys into the unseen. Meeting your own guide reveals insights into your unique nature, strengths, and attributes, while awakening a deeper connection to the natural world.
+                        </p>
+                      </div>
+
+                      <div className="flex flex-col gap-2">
+                        <p className="text-[12px] uppercase tracking-[1.92px] text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}>
+                          What To Expect
+                        </p>
+                        <ul className="ml-4 list-disc text-[12px] leading-normal text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                          <li>Identify your own Primary spirit animal guide</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end">
+                  <Button
+                    text="Reserve your spot"
+                    size="small"
+                    colors={{
+                      fg: '#f6edd0',
+                      fgHover: '#6a3f33',
+                      bgHover: '#f6edd0',
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </Section>
+      </div>
+
+      {/* Decorative blob background for Trainings section */}
+      <div className="absolute left-1/2 top-[2082px] z-0 flex h-[1374px] w-[1326px] -translate-x-1/2 items-center justify-center">
+        <div className="rotate-[130.5deg] scale-y-[-1]">
+          <img src="/immersion_main_blob.svg" alt="" className="h-[744px] w-[1171px]" />
+        </div>
+      </div>
+
+      {/* Trainings Introduction */}
+      <Section id="trainings-intro" className="relative z-10 w-full px-8 py-16">
+        <div className="relative mx-auto max-w-[1200px] pb-[260px] pt-2">
+          {/* Left decorative image */}
+          <div className="pointer-events-none absolute left-[70px] top-[70px] z-0 h-[220px] w-[220px]">
+            <img src="/training_1.svg" alt="" className="h-full w-full" />
+          </div>
+
+          {/* Center content */}
+          <div className="relative z-10 mx-auto flex max-w-[449px] flex-col items-center gap-4 text-center text-black">
+            <h2
+              className="text-[48px] leading-normal"
+              style={{ fontFamily: 'var(--font-saphira), serif' }}
+            >
+              Trainings
+            </h2>
+            <h3
+              className="text-[24px] uppercase leading-normal tracking-[3.84px]"
+              style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
+            >
+              Become Your Own Healer
+            </h3>
+            <div className="w-[400px] text-justify text-[12px] leading-normal" style={{ fontFamily: 'var(--font-graphik), sans-serif' }}>
+              <p className="mb-0">
+                Our training programs offer more than certification—they offer transformation. As you learn to facilitate healing for others, you become your own most skilled healer. These programs are intensive, experiential, and designed to change not just what you know, but who you are.
+              </p>
+              <p className="mb-0">&nbsp;</p>
+              <p>
+                Each training includes hands-on practice, personal healing work, mentorship, and certification that opens doors to professional practice.
+              </p>
+            </div>
+          </div>
+
+          {/* Right top decorative image */}
+          <div className="pointer-events-none absolute right-[70px] top-[70px] z-0 h-[180px] w-[180px]">
+            <img src="/training_2.svg" alt="" className="h-full w-full" />
+          </div>
+
+          {/* Bottom center decorative image */}
+          <div className="pointer-events-none absolute bottom-0 left-1/2 z-0 h-[420px] w-[420px] -translate-x-1/2">
+            <img src="/training_3.svg" alt="" className="h-full w-full" />
+          </div>
+        </div>
+      </Section>
+
+      {/* Dark section for Trainings listings */}
+      <div className="relative w-full bg-[#6a3f33]">
+        <Section id="trainings-listings" className="relative z-10 w-full px-16 py-20">
+          <div className="mx-auto flex max-w-[2463px] flex-col gap-8">
+            <h3
+              className="text-[24px] leading-normal text-[#d58761]"
+              style={{ fontFamily: 'var(--font-saphira), serif' }}
+            >
+              Upcoming Trainings
+            </h3>
+
+            {/* Grid of training cards */}
+            <div className="no-scrollbar flex gap-5 overflow-x-auto pb-4">
+              {/* Training Card 1: Foundations of Shamanic Practice */}
+              <div className="flex min-w-[600px] flex-col justify-between gap-3 rounded-[24px] bg-[#d58761] p-5">
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-col gap-3 rounded-lg border border-[#6a3f33] p-4">
+                    <div className="flex flex-col gap-2">
+                      <h4
+                        className="text-[48px] leading-normal text-[#6a3f33]"
+                        style={{ fontFamily: 'var(--font-saphira), serif' }}
+                      >
+                        Foundations of Shamanic Practice
+                      </h4>
+                    </div>
+
+                    <div className="flex gap-10">
+                      <div className="flex flex-1 flex-col gap-3">
+                        <div className="flex flex-col gap-2">
+                          <p className="text-[12px] uppercase tracking-[1.92px] text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}>
+                            Duration
+                          </p>
+                          <div className="text-[24px] leading-normal text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                            <p className="mb-0">Total 30 hours</p>
+                            <p className="mb-0">3-hour Classes</p>
+                            <p>Twice a month</p>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col gap-2">
+                          <p className="text-[12px] uppercase tracking-[1.92px] text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}>
+                            Format
+                          </p>
+                          <p className="text-[24px] leading-normal text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                            Online
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-1 flex-col gap-3">
+                        <div className="flex flex-col gap-2">
+                          <p className="text-[12px] uppercase tracking-[1.92px] text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}>
+                            Prerequisites
+                          </p>
+                          <div className="text-[24px] leading-normal text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                            <p className="mb-0">17 and above</p>
+                            <p>Open to everyone</p>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col gap-2">
+                          <p className="text-[12px] uppercase tracking-[1.92px] text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}>
+                            Language
+                          </p>
+                          <p className="text-[24px] leading-normal text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                            English
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <p className="text-[12px] uppercase tracking-[1.92px] text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}>
+                        Next Class Dates
+                      </p>
+                      <div className="flex gap-2">
+                        <span className="flex-1 rounded-full bg-[#6a3f33] px-2 py-0.5 text-center text-[12px] text-[#d58761]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                          December 14, 2025
+                        </span>
+                        <span className="flex-1 rounded-full bg-[#6a3f33] px-2 py-0.5 text-center text-[12px] text-[#d58761]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                          January 18, 2026
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-3">
+                    <div className="flex flex-col gap-3">
+                      <p className="text-[12px] uppercase tracking-[1.92px] text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}>
+                        Overview
+                      </p>
+                      <p className="text-[12px] leading-normal text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                        This is the Foundation course in Shamanic Arts that offers participants an insight into what Shamanism is, its origins and its practice.
+                      </p>
+                    </div>
+
+                    <div className="flex flex-col gap-3">
+                      <p className="text-[12px] uppercase tracking-[1.92px] text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}>
+                        What You&apos;ll Learn
+                      </p>
+                      <ul className="ml-4 list-disc text-[12px] leading-normal text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                        <li>Identify your Primary Animal Spirit guide</li>
+                        <li>Understand Shamanic Journeys</li>
+                        <li>Become familiar with archetypal energies used for healing in Shamanism</li>
+                        <li>Introduction to fundamental tools in Shamanic work</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end">
+                  <Button
+                    text="Enroll in this Training"
+                    size="small"
+                    colors={{
+                      fg: '#f6edd0',
+                      fgHover: '#6a3f33',
+                      bgHover: '#f6edd0',
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Training Card 2: AP Energy Healing Level 1 */}
+              <div className="flex min-w-[600px] flex-col justify-between gap-3 rounded-[24px] bg-[#d58761] p-5">
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-col gap-3 rounded-lg border border-[#6a3f33] p-4">
+                    <div className="flex flex-col gap-2">
+                      <h4
+                        className="text-[48px] leading-normal text-[#6a3f33]"
+                        style={{ fontFamily: 'var(--font-saphira), serif' }}
+                      >
+                        Antar Pravaah Energy Healing Level 1 Training
+                      </h4>
+                    </div>
+
+                    <div className="flex gap-10">
+                      <div className="flex flex-1 flex-col gap-3">
+                        <div className="flex flex-col gap-2">
+                          <p className="text-[12px] uppercase tracking-[1.92px] text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}>
+                            Duration
+                          </p>
+                          <div className="text-[24px] leading-normal text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                            <p className="mb-0">Total 12 hours</p>
+                            <p>Weekend Classes</p>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col gap-2">
+                          <p className="text-[12px] uppercase tracking-[1.92px] text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}>
+                            Format
+                          </p>
+                          <p className="text-[24px] leading-normal text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                            In-person
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-1 flex-col gap-3">
+                        <div className="flex flex-col gap-2">
+                          <p className="text-[12px] uppercase tracking-[1.92px] text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}>
+                            Prerequisites
+                          </p>
+                          <div className="text-[24px] leading-normal text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                            <p className="mb-0">18 and above</p>
+                            <p>No prior experience required.</p>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col gap-2">
+                          <p className="text-[12px] uppercase tracking-[1.92px] text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}>
+                            Language
+                          </p>
+                          <p className="text-[24px] leading-normal text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                            English and Hindi
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <p className="text-[12px] uppercase tracking-[1.92px] text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}>
+                        Next Class Dates
+                      </p>
+                      <div className="flex gap-2">
+                        <span className="flex-1 rounded-full bg-[#6a3f33] px-2 py-0.5 text-center text-[12px] text-[#d58761]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                          December 14, 2025
+                        </span>
+                        <span className="flex-1 rounded-full bg-[#6a3f33] px-2 py-0.5 text-center text-[12px] text-[#d58761]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                          January 18, 2026
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-3">
+                    <div className="flex flex-col gap-3">
+                      <p className="text-[12px] uppercase tracking-[1.92px] text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}>
+                        Overview
+                      </p>
+                      <p className="text-[12px] leading-normal text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                        The Level 1 AP Energy Healing course is designed to familiarise participants with the concept of Energy in respect to Healing and learn tools for self healing.
+                      </p>
+                    </div>
+
+                    <div className="flex flex-col gap-3">
+                      <p className="text-[12px] uppercase tracking-[1.92px] text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}>
+                        What You&apos;ll Learn
+                      </p>
+                      <ul className="ml-4 list-disc text-[12px] leading-normal text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                        <li>Nature of energy</li>
+                        <li>Basic understanding of human physiology</li>
+                        <li>Principles of self healing</li>
+                        <li>Tools for Self Healing</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end">
+                  <Button
+                    text="Enroll in this Training"
+                    size="small"
+                    colors={{
+                      fg: '#f6edd0',
+                      fgHover: '#6a3f33',
+                      bgHover: '#f6edd0',
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Training Card 3: Chakra Energy System */}
+              <div className="flex min-w-[600px] flex-col justify-between gap-3 rounded-[24px] bg-[#d58761] p-5">
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-col gap-3 rounded-lg border border-[#6a3f33] p-4">
+                    <div className="flex flex-col gap-2">
+                      <h4
+                        className="text-[48px] leading-normal text-[#6a3f33]"
+                        style={{ fontFamily: 'var(--font-saphira), serif' }}
+                      >
+                        Chakra Energy System Fundamentals
+                      </h4>
+                    </div>
+
+                    <div className="flex gap-10">
+                      <div className="flex flex-1 flex-col gap-3">
+                        <div className="flex flex-col gap-2">
+                          <p className="text-[12px] uppercase tracking-[1.92px] text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}>
+                            Duration
+                          </p>
+                          <div className="text-[24px] leading-normal text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                            <p className="mb-0">Total 15 hours</p>
+                            <p className="mb-0">3-hour Class</p>
+                            <p>Weekly</p>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col gap-2">
+                          <p className="text-[12px] uppercase tracking-[1.92px] text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}>
+                            Format
+                          </p>
+                          <p className="text-[24px] leading-normal text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                            Hybrid - Online & In-person
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-1 flex-col gap-3">
+                        <div className="flex flex-col gap-2">
+                          <p className="text-[12px] uppercase tracking-[1.92px] text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}>
+                            Prerequisites
+                          </p>
+                          <p className="text-[24px] leading-normal text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                            18 years and above. No prior experience required.
+                          </p>
+                        </div>
+
+                        <div className="flex flex-col gap-2">
+                          <p className="text-[12px] uppercase tracking-[1.92px] text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}>
+                            Language
+                          </p>
+                          <p className="text-[24px] leading-normal text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                            English & Hindi
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <p className="text-[12px] uppercase tracking-[1.92px] text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}>
+                        Next Class Dates
+                      </p>
+                      <div className="flex gap-2">
+                        <span className="flex-1 rounded-full bg-[#6a3f33] px-2 py-0.5 text-center text-[12px] text-[#d58761]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                          December 14, 2025
+                        </span>
+                        <span className="flex-1 rounded-full bg-[#6a3f33] px-2 py-0.5 text-center text-[12px] text-[#d58761]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                          January 18, 2026
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-3">
+                    <div className="flex flex-col gap-3">
+                      <p className="text-[12px] uppercase tracking-[1.92px] text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}>
+                        Overview
+                      </p>
+                      <p className="text-[12px] leading-normal text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                        Chakras are the blueprints upon which the Human body is created and experienced. This training enables the understanding of this complex system, clarifies locations and access to these centres as well as provides means to harmonise flow through conscious and meditative practices.
+                      </p>
+                    </div>
+
+                    <div className="flex flex-col gap-3">
+                      <p className="text-[12px] uppercase tracking-[1.92px] text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}>
+                        What You&apos;ll Learn
+                      </p>
+                      <ul className="ml-4 list-disc text-[12px] leading-normal text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                        <li>Clear understanding of what Chakras and are NOT</li>
+                        <li>Interactions of this system in the experience of our life</li>
+                        <li>Tools to harmonise flow in these energy centres</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end">
+                  <Button
+                    text="Enroll in this Training"
+                    size="small"
+                    colors={{
+                      fg: '#f6edd0',
+                      fgHover: '#6a3f33',
+                      bgHover: '#f6edd0',
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </Section>
+      </div>
+
+      {/* CTA Section */}
+      <Section id="cta" className="relative z-10 w-full px-8 py-24">
+        <div className="mx-auto flex max-w-[687px] flex-col items-center gap-10 text-center">
+          <h2
+            className="text-[48px] leading-normal text-[#d58761]"
+            style={{ fontFamily: 'var(--font-saphira), serif' }}
+          >
+            Ready to step into your power?
+          </h2>
+
+          <div className="flex h-[40px] w-[163px] items-center justify-center py-5">
+            <img src="/splash_vector.svg" alt="" className="h-full w-full object-contain" />
+          </div>
+
+          <p
+            className="text-[24px] leading-normal text-[#d58761]"
+            style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
+          >
+            Whether you&apos;re joining us for a single workshop or embarking on a comprehensive training
+            journey, every gathering is an opportunity for transformation. Your healing journey ripples
+            outward—to your family, your community, and the world.
+          </p>
+
+          <div className="flex flex-col items-center gap-3">
+            <Button
+              text="Explore Upcoming Immersions"
+              size="large"
+              colors={{
+                fg: '#6a3f33',
+                fgHover: '#f6edd0',
+                bgHover: '#6a3f33',
+              }}
+            />
+            <Button
+              text="View Training Programs"
+              size="large"
+              colors={{
+                fg: '#6a3f33',
+                fgHover: '#f6edd0',
+                bgHover: '#6a3f33',
+              }}
+            />
+          </div>
+        </div>
+      </Section>
+
+      <PageEndBlob />
     </main>
   );
 }
-

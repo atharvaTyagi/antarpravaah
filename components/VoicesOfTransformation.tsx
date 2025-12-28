@@ -133,7 +133,7 @@ export default function VoicesOfTransformation() {
   return (
     <Section
       id="voices"
-      className="relative min-h-screen w-full bg-[#f6edd0] pb-24 pt-[128px]"
+      className="relative min-h-screen w-full bg-[#f6edd0] pb-24 pt-[96px]"
       ref={sectionRef}
     >
       {/* Carousel */}

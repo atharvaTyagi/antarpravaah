@@ -3,13 +3,9 @@
 import { useLayoutEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Observer } from 'gsap/Observer';
+import { Observer } from 'gsap/dist/Observer';
 import Section from './Section';
 import Button from './Button';
-import vectorOne from '@/app/assets/we_work_together_vector_one.svg';
-import vectorTwo from '@/app/assets/we_work_together_vector_two.svg';
-import vectorThree from '@/app/assets/we_work_together_vector_three.svg';
-import vectorFour from '@/app/assets/we_work_together_vector_four.svg';
 
 const workCards = [
   {
@@ -29,15 +25,7 @@ const workCards = [
 export default function WeWorkTogether() {
   const cardsSectionRef = useRef<HTMLDivElement | null>(null);
 
-  const resolveAssetSrc = (asset: unknown) =>
-    (asset as { src?: string } | undefined)?.src ?? (asset as string);
 
-  const cardOneSrc = resolveAssetSrc(vectorOne);
-  const smallCardSrcs = [
-    resolveAssetSrc(vectorTwo),
-    resolveAssetSrc(vectorThree),
-    resolveAssetSrc(vectorFour),
-  ];
 
   useLayoutEffect(() => {
     if (typeof window === 'undefined') return;
@@ -102,7 +90,11 @@ export default function WeWorkTogether() {
       if (!direction) return;
       if (animating) return;
       animating = true;
-      tl.tweenTo(direction, { onComplete: () => (animating = false) });
+      tl.tweenTo(direction, {
+        onComplete: () => {
+          animating = false;
+        },
+      });
     };
 
     const cardsObserver = Observer.create({
@@ -162,9 +154,43 @@ export default function WeWorkTogether() {
   return (
     <Section
       id="work-together"
-      className="relative min-h-screen w-full bg-[#f6edd0] pb-24 pt-[128px]"
+      className="relative min-h-screen w-full bg-[#f6edd0] pb-24 pt-[96px] overflow-hidden"
     >
-      <div className="mx-auto max-w-[1177px] px-8 pt-10">
+      {/* Subtle repeating spiral background - larger and well-spaced */}
+      <div className="absolute inset-0 pointer-events-none opacity-[0.06] z-0">
+        <img
+          src="/splash_vector.svg"
+          alt=""
+          className="absolute"
+          style={{ width: '380px', height: 'auto', top: '5%', left: '5%', transform: 'rotate(15deg)' }}
+        />
+        <img
+          src="/splash_vector.svg"
+          alt=""
+          className="absolute"
+          style={{ width: '360px', height: 'auto', top: '8%', right: '8%', transform: 'rotate(-60deg)' }}
+        />
+        <img
+          src="/splash_vector.svg"
+          alt=""
+          className="absolute"
+          style={{ width: '400px', height: 'auto', bottom: '30%', left: '10%', transform: 'rotate(85deg)' }}
+        />
+        <img
+          src="/splash_vector.svg"
+          alt=""
+          className="absolute"
+          style={{ width: '370px', height: 'auto', bottom: '25%', right: '12%', transform: 'rotate(-120deg)' }}
+        />
+        <img
+          src="/splash_vector.svg"
+          alt=""
+          className="absolute"
+          style={{ width: '390px', height: 'auto', bottom: '5%', left: '50%', transform: 'translate(-50%, 0) rotate(40deg)' }}
+        />
+      </div>
+
+      <div className="relative z-10 mx-auto max-w-[1177px] px-8 pt-10">
         {/* GSAP card lock + stack */}
         <div ref={cardsSectionRef} className="cards-section relative w-full">
           {/* Keep width consistent with other sections (same max-w wrapper as page content). */}
@@ -175,7 +201,7 @@ export default function WeWorkTogether() {
               <div className="card absolute left-0 right-0 top-0 mx-auto w-full rounded-[24px] bg-[#d6c68e] p-10 text-center shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
                 <div className="mb-10 flex justify-center">
                   <img
-                    src={cardOneSrc}
+                    src="/we_work_together_vector_one.svg"
                     alt=""
                     className="block h-[452px] w-[431px] max-w-full object-contain"
                   />
@@ -191,7 +217,7 @@ export default function WeWorkTogether() {
               {/* Cards 02-04 */}
               {workCards.map((card, index) => {
                 const isLeft = card.imagePosition === 'left';
-                const imageSrc = smallCardSrcs[index] ?? smallCardSrcs[0];
+                const smallCardSrcs = ["/we_work_together_vector_two.svg", "/we_work_together_vector_three.svg", "/we_work_together_vector_four.svg"]; const imageSrc = smallCardSrcs[index] ?? smallCardSrcs[0];
                 return (
                   <div
                     key={index}

@@ -33,10 +33,12 @@ export default function Header() {
     }
   }, [pathname, setTheme]);
 
-  const theme = SECTION_THEMES[currentTheme];
-  const headerBg = theme.headerBg || '#354443';
+  const theme = SECTION_THEMES[currentTheme] || SECTION_THEMES['hero'];
+  const headerBg = theme?.headerBg || '#354443';
   const isHome = pathname === '/';
   const isVisible = !isHome || splashComplete;
+
+  // Handle logo src (works with both Next.js image imports and direct paths)
 
   return (
     <header 
@@ -51,17 +53,16 @@ export default function Header() {
     >
       <div className="w-full px-4 md:px-6">
         <div
-          className="flex h-[140px] w-full items-center justify-between rounded-[24px] px-5 py-6 transition-colors duration-1000 ease-in-out"
+          className="flex h-[100px] w-full items-center justify-between rounded-[24px] px-5 py-4 transition-colors duration-1000 ease-in-out"
           style={{ backgroundColor: headerBg }}
         >
           {/* Logo */}
           <Link href="/" className="flex h-[42px] w-[309px] items-center">
-            <div 
-              className="text-2xl font-bold text-[#f6edd0]"
-              style={{ fontFamily: 'var(--font-saphira), serif' }}
-            >
-              Antar Pravaah
-            </div>
+            <img
+              src="/logo_full.svg"
+              alt="Antar Pravaah"
+              className="h-auto w-full"
+            />
           </Link>
 
           {/* Navigation */}

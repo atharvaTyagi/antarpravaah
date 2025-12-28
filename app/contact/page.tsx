@@ -30,7 +30,7 @@ export default function ContactPage() {
   }, []);
 
   return (
-    <main className="min-h-screen pt-[188px]">
+    <main className="min-h-screen pt-[148px]">
       <Section id="contact" className="min-h-screen flex flex-col items-center justify-center px-8 py-24">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-5xl font-bold mb-6">Contact</h1>

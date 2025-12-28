@@ -153,7 +153,7 @@ export default function TheJourney() {
   return (
     <Section
       id="journey"
-      className="relative w-full bg-[#f6edd0] pb-24 pt-[128px]"
+      className="relative w-full bg-[#f6edd0] pb-24 pt-[96px]"
       ref={sectionRef}
     >
       <div ref={stepsContainerRef} className="mx-auto max-w-[1177px] px-8 pt-10">

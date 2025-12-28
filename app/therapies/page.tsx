@@ -30,7 +30,7 @@ export default function TherapiesPage() {
   }, []);
 
   return (
-    <main className="min-h-screen pt-[188px]">
+    <main className="min-h-screen pt-[148px]">
       <Section id="therapies" className="min-h-screen flex flex-col items-center justify-center px-8 py-24">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-5xl font-bold mb-6">Therapies</h1>

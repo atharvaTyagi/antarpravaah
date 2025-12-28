@@ -88,7 +88,7 @@ export default function Home() {
       {/* Main Content - Only visible after splash completes */}
       <div
         ref={contentRef}
-        className="relative z-10 w-full pt-[188px]"
+        className="relative z-10 w-full pt-[148px]"
         style={{ 
           opacity: splashComplete ? 1 : 0,
           pointerEvents: splashComplete ? 'auto' : 'none',

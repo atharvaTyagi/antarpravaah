@@ -28,20 +28,22 @@ export default function SectionSubheader() {
       (entries) => {
         // Find the section that is most visible (has the largest intersection ratio)
         // and is intersecting
-        let bestMatch: { id: string; ratio: number } | null = null;
+        let bestMatchId: string | null = null;
+        let bestMatchRatio = 0;
 
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             const id = entry.target.id;
-            if (!bestMatch || entry.intersectionRatio > bestMatch.ratio) {
-              bestMatch = { id, ratio: entry.intersectionRatio };
+            if (entry.intersectionRatio > bestMatchRatio) {
+              bestMatchId = id;
+              bestMatchRatio = entry.intersectionRatio;
             }
           }
         });
 
         // If we found an intersecting section, set it as active
-        if (bestMatch) {
-          setActiveSection(bestMatch.id);
+        if (bestMatchId) {
+          setActiveSection(bestMatchId);
         } else {
           // Check if any section is still in view by checking their positions
           const viewportTop = 188; // Below main header
@@ -57,8 +59,8 @@ export default function SectionSubheader() {
       },
       {
         root: null,
-        // Adjust rootMargin to account for the main header (188px)
-        rootMargin: '-188px 0px 0px 0px',
+        // Adjust rootMargin to account for the main header (148px)
+        rootMargin: '-148px 0px 0px 0px',
         threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5],
       }
     );
@@ -77,7 +79,7 @@ export default function SectionSubheader() {
   return (
     <div
       className="fixed left-0 right-0 z-[55] bg-[#f6edd0] py-6"
-      style={{ top: '188px' }}
+      style={{ top: '148px' }}
     >
       <div className="mx-auto max-w-[1177px] px-8">
         <div className="relative text-center">
