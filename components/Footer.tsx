@@ -8,9 +8,8 @@ function QuickLink({ href, label, accentColor, bgColor }: { href: string; label:
   return (
     <Button
       href={href}
-      text={`\u00ab ${label.toUpperCase()} \u00bb`}
+      text={` ${label.toUpperCase()} `}
       size="small"
-      // Footer-specific palette
       colors={{
         fg: accentColor,
         fgHover: bgColor,
@@ -22,17 +21,24 @@ function QuickLink({ href, label, accentColor, bgColor }: { href: string; label:
 }
 
 export default function Footer() {
-  
   const currentTheme = useThemeStore((state) => state.currentTheme);
   const theme = SECTION_THEMES[currentTheme] || SECTION_THEMES['hero'];
-  
-  // For approach page, use dark teal colors from theme
-  // For other pages, keep the original green palette
+
+  // Use theme colors for footer
+  // Background: darker color (headerBg)
+  // Text: lighter color that contrasts with headerBg
   const footerBg = theme.headerBg || '#474e3a';
-  const footerAccent = theme.accent;
+
+  // Choose a contrasting color for text - use accent if it contrasts, otherwise use text color or fallback to light
+  const footerAccent =
+    theme.accent !== theme.headerBg
+      ? theme.accent
+      : theme.text !== theme.headerBg
+        ? theme.text
+        : '#f6edd0';
 
   return (
-    <footer className="w-full px-6 py-14 md:p-20" style={{ backgroundColor: footerBg }}>
+    <footer className="relative z-20 w-full px-6 py-14 md:p-20" style={{ backgroundColor: footerBg }}>
       <div className="mx-auto flex max-w-[1282px] flex-col items-center gap-10">
         {/* Top row */}
         <div className="flex w-full flex-col items-center justify-center gap-10 md:flex-row md:items-start md:gap-10 md:px-5">
@@ -44,20 +50,18 @@ export default function Footer() {
             >
               Quick Links
             </p>
-            <div className="grid w-full max-w-[520px] grid-cols-3 gap-x-6 gap-y-3">
-              <QuickLink href="/" label="Home" accentColor={footerAccent} bgColor={footerBg} />
+            <div className="grid w-full max-w-[439px] grid-cols-3 gap-x-4 gap-y-2">
               <QuickLink href="/about" label="About Namita" accentColor={footerAccent} bgColor={footerBg} />
               <QuickLink href="/approach" label="Approach" accentColor={footerAccent} bgColor={footerBg} />
               <QuickLink href="/therapies" label="Therapies" accentColor={footerAccent} bgColor={footerBg} />
               <QuickLink href="/immersions" label="Immersions" accentColor={footerAccent} bgColor={footerBg} />
               <QuickLink href="/trainings" label="Trainings" accentColor={footerAccent} bgColor={footerBg} />
               <QuickLink href="/faq" label="FAQ" accentColor={footerAccent} bgColor={footerBg} />
-              <QuickLink href="/contact" label="Contact" accentColor={footerAccent} bgColor={footerBg} />
             </div>
           </div>
 
           {/* Divider */}
-          <div className="hidden h-[163px] w-px md:block" style={{ backgroundColor: `${footerAccent}99` }} />
+          <div className="hidden h-[163px] w-px md:block" style={{ backgroundColor: footerAccent }} />
 
           {/* Contact */}
           <div className="flex flex-col items-center justify-center gap-4 text-center" style={{ color: footerAccent }}>
@@ -68,22 +72,17 @@ export default function Footer() {
               Get In Touch
             </p>
             <div
-              className="flex flex-col gap-2 text-[12px] leading-[normal]"
+              className="flex flex-col gap-4 text-[12px] leading-[normal]"
               style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
             >
-              <a href="mailto:hello@antarpravaah.com" className="hover:opacity-80">
-                Email: hello@antarpravaah.com
-              </a>
-              <a href="tel:+919876543210" className="hover:opacity-80">
-                Phone: +91 98765 43210
-              </a>
-              <p className="w-[209px]">Mumbai, India</p>
-              <p className="w-[209px]">Mon-Sat: 9am - 6pm</p>
+              <p className="w-[209px]">Email: [email address]</p>
+              <p className="w-[209px]">Phone: [phone number]</p>
+              <p className="w-[209px]">Location & Timings: [location details]</p>
             </div>
           </div>
 
           {/* Divider */}
-          <div className="hidden h-[163px] w-px md:block" style={{ backgroundColor: `${footerAccent}99` }} />
+          <div className="hidden h-[163px] w-px md:block" style={{ backgroundColor: footerAccent }} />
 
           {/* Socials */}
           <div className="flex flex-col items-center justify-center gap-4 text-center" style={{ color: footerAccent }}>
@@ -94,7 +93,7 @@ export default function Footer() {
               Socials
             </p>
             <div
-              className="flex flex-col gap-2 text-[12px] leading-[normal]"
+              className="flex flex-col gap-4 text-[12px] leading-[normal]"
               style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
             >
               <a
@@ -113,22 +112,6 @@ export default function Footer() {
               >
                 X : @antarpravaah
               </a>
-              <a
-                className="hover:opacity-80"
-                href="https://facebook.com/antarpravaah"
-                target="_blank"
-                rel="noreferrer"
-              >
-                FB : /antarpravaah
-              </a>
-              <a
-                className="hover:opacity-80"
-                href="https://youtube.com/@antarpravaah"
-                target="_blank"
-                rel="noreferrer"
-              >
-                YT : @antarpravaah
-              </a>
             </div>
           </div>
         </div>
@@ -140,25 +123,6 @@ export default function Footer() {
             alt="Antar Pravaah"
             className="mx-auto block h-auto w-full max-w-[1282px]"
           />
-        </div>
-
-        {/* Copyright and legal */}
-        <div 
-          className="flex w-full flex-col items-center gap-3 border-t pt-6 text-center text-[10px] leading-normal"
-          style={{ 
-            borderColor: `${footerAccent}40`,
-            color: `${footerAccent}cc`,
-            fontFamily: 'var(--font-graphik), sans-serif'
-          }}
-        >
-          <p>© {new Date().getFullYear()} Antar Pravaah. All rights reserved.</p>
-          <div className="flex gap-4">
-            <a href="/privacy" className="hover:opacity-80">Privacy Policy</a>
-            <span>•</span>
-            <a href="/terms" className="hover:opacity-80">Terms of Service</a>
-            <span>•</span>
-            <a href="/disclaimer" className="hover:opacity-80">Disclaimer</a>
-          </div>
         </div>
       </div>
     </footer>

@@ -135,8 +135,8 @@ export default function Button({
   const hoverBgColor = colors?.bgHover ?? (mode === 'light' ? '#f6edd0' : '#2d291f');
 
   const labelClasses = isLarge
-    ? 'text-[24px] tracking-[3.84px] rounded-[8px]'
-    : 'text-[12px] tracking-[1.92px] rounded-[4px]';
+    ? 'text-[24px] tracking-[3.84px] rounded-[12px]'
+    : 'text-[12px] tracking-[1.92px] rounded-[8px]';
 
   const iconSizeClasses = isLarge ? 'w-[28px] h-[21px]' : 'w-[13px] h-[10px]';
   const pillSizeClasses = isLarge ? 'w-[8px] h-[9px]' : 'w-[6px] h-[7px]';

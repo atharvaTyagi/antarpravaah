@@ -2,17 +2,15 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
+import Lottie from 'lottie-react';
+import animationData from '@/public/animation-spiral.json';
 
 interface SplashScreenProps {
   onComplete: () => void;
 }
 
-// Original spiral path data from splash_vector.svg
-const SPIRAL_PATH = "M172.749 161.956C159.425 163.518 143.716 159.548 132.624 159.933C122.037 160.296 108.306 172.602 111.626 186.645C112.583 190.692 115.166 194.211 118.288 196.95C125.027 202.866 134.119 205.362 143.023 206.396C198.628 212.797 240.248 164.981 241.579 111.127C243.755 23.1709 116.892 10.623 55.8242 36.6535C37.1904 44.5935 20.0408 57.0424 0 60.0557C3.60581 47.2659 15.0279 38.3801 26.384 31.4958C88.4634 -6.11484 196.66 -16.9471 252.869 37.8522C297.579 81.4343 282.067 158.47 242.271 200.062C223.132 220.066 197.253 233.713 169.803 237.189C129.908 242.236 74.3699 223.893 69.1371 177.704C63.9152 131.582 115.452 99.3819 156.853 104.397C168.066 105.749 179.488 109.345 187.546 117.263C195.604 125.181 199.397 138.158 194.252 148.221C189.602 157.326 181.72 160.89 172.749 161.945V161.956Z";
-
 export default function SplashScreen({ onComplete }: SplashScreenProps) {
   const onCompleteSafe = typeof onComplete === 'function' ? onComplete : () => {};
-  const [spiralReveal, setSpiralReveal] = useState(0); // 0 = hidden, 100 = fully revealed
   const [spiralOpacity, setSpiralOpacity] = useState(1); // for fade out after reveal
   const [blobOpacity, setBlobOpacity] = useState(0); // hidden on load
   const [splashOpacity, setSplashOpacity] = useState(1); // fades out at the end
@@ -48,8 +46,6 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
 
       // Phase 1: Draw spiral (0 -> spiralDrawEnd)
       if (s <= spiralDrawEnd) {
-        const t = s / spiralDrawEnd;
-        setSpiralReveal(t * 100); // 0% to 100%
         setSpiralOpacity(1);
         setBlobOpacity(0);
         setSplashOpacity(1);
@@ -58,7 +54,6 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
 
       // Phase 2: Hold spiral fully visible (spiralDrawEnd -> spiralHoldEnd)
       if (s <= spiralHoldEnd) {
-        setSpiralReveal(100);
         setSpiralOpacity(1);
         setBlobOpacity(0);
         setSplashOpacity(1);
@@ -68,7 +63,6 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
       // Phase 3: Fade out spiral (spiralHoldEnd -> spiralFadeEnd)
       if (s <= spiralFadeEnd) {
         const t = (s - spiralHoldEnd) / (spiralFadeEnd - spiralHoldEnd);
-        setSpiralReveal(100);
         setSpiralOpacity(Math.max(0, 1 - t));
         setBlobOpacity(0);
         setSplashOpacity(1);
@@ -139,7 +133,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
         transition: 'opacity 0.5s ease-in-out',
       }}
     >
-      {/* Spiral with draw animation */}
+      {/* Spiral Lottie Animation */}
       <div
         className="absolute inset-0 flex items-center justify-center p-4 md:p-12 lg:p-16"
         style={{
@@ -147,10 +141,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
           transition: 'opacity 0.4s ease-out',
         }}
       >
-        <svg
-          viewBox="0 0 280 238"
-          xmlns="http://www.w3.org/2000/svg"
-          preserveAspectRatio="xMidYMid meet"
+        <div
           className="block"
           style={{
             width: '100%',
@@ -159,25 +150,16 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
             maxHeight: 'min(100%, 100vh)',
           }}
         >
-          <defs>
-            {/* Clip path for reveal animation */}
-            <clipPath id="spiral-clip">
-              <rect 
-                x="0" 
-                y="0" 
-                width={`${(spiralReveal / 100) * 280}`} 
-                height="238" 
-              />
-            </clipPath>
-          </defs>
-          
-          {/* Animated path - revealed via clip-path */}
-          <path
-            d={SPIRAL_PATH}
-            fill="#cd9777"
-            clipPath="url(#spiral-clip)"
+          <Lottie
+            animationData={animationData}
+            loop={true}
+            autoplay={true}
+            style={{
+              width: '100%',
+              height: '100%',
+            }}
           />
-        </svg>
+        </div>
       </div>
 
       {/* Blob message (full-screen moment; blob itself centered) */}

@@ -66,55 +66,58 @@ export default function ImmersionsPage() {
 
       {/* Decorative blob background for Immersions section */}
       <div className="absolute left-1/2 top-[283px] z-0 flex h-[1374px] w-[1326px] -translate-x-1/2 items-center justify-center">
-        <div className="rotate-[130.5deg] scale-y-[-1]">
+        
           <img src="/immersion_main_blob.svg" alt="" className="h-[744px] w-[1171px]" />
-        </div>
+        
       </div>
 
       {/* Immersion Introduction */}
       <Section id="immersions-intro" className="relative z-10 w-full px-8 py-16">
-        <div className="relative mx-auto max-w-[1200px] pb-[260px] pt-2">
-          {/* Left decorative image */}
-          <div className="pointer-events-none absolute left-[40px] top-[110px] z-0 h-[220px] w-[220px]">
-            <img src="/immersion_1.svg" alt="" className="h-full w-full" />
-          </div>
+        <div className="relative mx-auto max-w-[1000px]">
+          {/* Three column layout: left image | center content | right image */}
+          <div className="flex items-start justify-center gap-8">
+            {/* Left decorative image */}
+            <div className="pointer-events-none mt-8 h-[200px] w-[200px] shrink-0">
+              <img src="/immersion_1.svg"/>
+            </div>
 
-          {/* Center content */}
-          <div className="relative z-10 mx-auto flex max-w-[449px] flex-col items-center gap-4 text-center text-[#6a3f33]">
-            <h2
-              className="text-[48px] leading-normal"
-              style={{ fontFamily: 'var(--font-saphira), serif' }}
-            >
-              Immersions
-            </h2>
-            <h3
-              className="text-[24px] uppercase leading-normal tracking-[3.84px]"
-              style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
-            >
-              Transformative Gatherings
-            </h3>
-            <div className="w-[400px] text-justify text-[12px] leading-normal" style={{ fontFamily: 'var(--font-graphik), sans-serif' }}>
-              <p className="mb-0">
-                Immersions at Antar Pravaah focus on meaningful themes without delving deeply into personal
-                histories. These gatherings create space for broader awareness—exploring how different areas
-                of your life interconnect and influence one another.
-              </p>
-              <p className="mb-0">&nbsp;</p>
-              <p>
-                Through group exploration, you&apos;ll gain insights into life patterns and connections,
-                supported by community energy and collective transformation.
-              </p>
+            {/* Center content */}
+            <div className="flex max-w-[400px] flex-col items-center gap-4 text-center text-[#6a3f33]">
+              <h2
+                className="text-[48px] leading-normal"
+                style={{ fontFamily: 'var(--font-saphira), serif' }}
+              >
+                Immersions
+              </h2>
+              <h3
+                className="text-[24px] uppercase leading-normal tracking-[3.84px]"
+                style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
+              >
+                Transformative Gatherings
+              </h3>
+              <div className="text-justify text-[12px] leading-normal" style={{ fontFamily: 'var(--font-graphik), sans-serif' }}>
+                <p className="mb-0">
+                  Immersions at Antar Pravaah focus on meaningful themes without delving deeply into personal
+                  histories. These gatherings create space for broader awareness—exploring how different areas
+                  of your life interconnect and influence one another.
+                </p>
+                <p className="mb-0">&nbsp;</p>
+                <p>
+                  Through group exploration, you&apos;ll gain insights into life patterns and connections,
+                  supported by community energy and collective transformation.
+                </p>
+              </div>
+            </div>
+
+            {/* Right decorative image */}
+            <div className="pointer-events-none mt-16 h-[180px] w-[180px] shrink-0">
+              <img src="/immersion_3.svg"/>
             </div>
           </div>
 
-          {/* Right top decorative image */}
-          <div className="pointer-events-none absolute right-[70px] top-[150px] z-0 h-[200px] w-[200px]">
-            <img src="/immersion_2.svg" alt="" className="h-full w-full" />
-          </div>
-
           {/* Bottom center decorative image */}
-          <div className="pointer-events-none absolute bottom-0 left-1/2 z-0 h-[420px] w-[420px] -translate-x-1/2">
-            <img src="/immersion_3.svg" alt="" className="h-full w-full" />
+          <div className="pointer-events-none mx-auto mt-8 h-[280px] w-[280px]">
+            <img src="/immersion_2.svg" />
           </div>
         </div>
       </Section>
@@ -236,9 +239,9 @@ export default function ImmersionsPage() {
                     text="Reserve your spot"
                     size="small"
                     colors={{
-                      fg: '#f6edd0',
-                      fgHover: '#6a3f33',
-                      bgHover: '#f6edd0',
+                      fg: '#6a3f33',
+                      fgHover: '#d58761',
+                      bgHover: '#6a3f33',
                     }}
                   />
                 </div>
@@ -333,9 +336,9 @@ export default function ImmersionsPage() {
                     text="Reserve your spot"
                     size="small"
                     colors={{
-                      fg: '#f6edd0',
-                      fgHover: '#6a3f33',
-                      bgHover: '#f6edd0',
+                      fg: '#6a3f33',
+                      fgHover: '#d58761',
+                      bgHover: '#6a3f33',
                     }}
                   />
                 </div>
@@ -428,9 +431,9 @@ export default function ImmersionsPage() {
                     text="Reserve your spot"
                     size="small"
                     colors={{
-                      fg: '#f6edd0',
-                      fgHover: '#6a3f33',
-                      bgHover: '#f6edd0',
+                      fg: '#6a3f33',
+                      fgHover: '#d58761',
+                      bgHover: '#6a3f33',
                     }}
                   />
                 </div>
@@ -449,45 +452,48 @@ export default function ImmersionsPage() {
 
       {/* Trainings Introduction */}
       <Section id="trainings-intro" className="relative z-10 w-full px-8 py-16">
-        <div className="relative mx-auto max-w-[1200px] pb-[260px] pt-2">
-          {/* Left decorative image */}
-          <div className="pointer-events-none absolute left-[70px] top-[70px] z-0 h-[220px] w-[220px]">
-            <img src="/training_1.svg" alt="" className="h-full w-full" />
-          </div>
+        <div className="relative mx-auto max-w-[1000px]">
+          {/* Three column layout: left image | center content | right image */}
+          <div className="flex items-start justify-center gap-8">
+            {/* Left decorative image */}
+            <div className="pointer-events-none mt-8 h-[200px] w-[200px] shrink-0">
+              <img src="/training_1.svg" alt="" className="h-full w-full rounded-full object-cover" />
+            </div>
 
-          {/* Center content */}
-          <div className="relative z-10 mx-auto flex max-w-[449px] flex-col items-center gap-4 text-center text-black">
-            <h2
-              className="text-[48px] leading-normal"
-              style={{ fontFamily: 'var(--font-saphira), serif' }}
-            >
-              Trainings
-            </h2>
-            <h3
-              className="text-[24px] uppercase leading-normal tracking-[3.84px]"
-              style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
-            >
-              Become Your Own Healer
-            </h3>
-            <div className="w-[400px] text-justify text-[12px] leading-normal" style={{ fontFamily: 'var(--font-graphik), sans-serif' }}>
-              <p className="mb-0">
-                Our training programs offer more than certification—they offer transformation. As you learn to facilitate healing for others, you become your own most skilled healer. These programs are intensive, experiential, and designed to change not just what you know, but who you are.
-              </p>
-              <p className="mb-0">&nbsp;</p>
-              <p>
-                Each training includes hands-on practice, personal healing work, mentorship, and certification that opens doors to professional practice.
-              </p>
+            {/* Center content */}
+            <div className="flex max-w-[400px] flex-col items-center gap-4 text-center text-[#6a3f33]">
+              <h2
+                className="text-[48px] leading-normal"
+                style={{ fontFamily: 'var(--font-saphira), serif' }}
+              >
+                Trainings
+              </h2>
+              <h3
+                className="text-[24px] uppercase leading-normal tracking-[3.84px]"
+                style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
+              >
+                Become Your Own Healer
+              </h3>
+              <div className="text-justify text-[12px] leading-normal" style={{ fontFamily: 'var(--font-graphik), sans-serif' }}>
+                <p className="mb-0">
+                  Our training programs offer more than certification—they offer transformation. As you learn to facilitate healing for others, you become your own most skilled healer. These programs are intensive, experiential, and designed to change not just what you know, but who you are.
+                </p>
+                <p className="mb-0">&nbsp;</p>
+                <p>
+                  Each training includes hands-on practice, personal healing work, mentorship, and certification that opens doors to professional practice.
+                </p>
+              </div>
+            </div>
+
+            {/* Right decorative image */}
+            <div className="pointer-events-none mt-16 h-[180px] w-[180px] shrink-0">
+              <img src="/training_2.svg" alt="" className="h-full w-full rounded-full object-cover" />
             </div>
           </div>
 
-          {/* Right top decorative image */}
-          <div className="pointer-events-none absolute right-[70px] top-[70px] z-0 h-[180px] w-[180px]">
-            <img src="/training_2.svg" alt="" className="h-full w-full" />
-          </div>
-
           {/* Bottom center decorative image */}
-          <div className="pointer-events-none absolute bottom-0 left-1/2 z-0 h-[420px] w-[420px] -translate-x-1/2">
-            <img src="/training_3.svg" alt="" className="h-full w-full" />
+          <div className="pointer-events-none mx-auto mt-8 h-[280px] w-[280px]">
+            <img src="/training_3.svg" alt="" className="h-full w-full rounded-full object-cover" />
           </div>
         </div>
       </Section>
@@ -607,9 +613,9 @@ export default function ImmersionsPage() {
                     text="Enroll in this Training"
                     size="small"
                     colors={{
-                      fg: '#f6edd0',
-                      fgHover: '#6a3f33',
-                      bgHover: '#f6edd0',
+                      fg: '#6a3f33',
+                      fgHover: '#d58761',
+                      bgHover: '#6a3f33',
                     }}
                   />
                 </div>
@@ -716,9 +722,9 @@ export default function ImmersionsPage() {
                     text="Enroll in this Training"
                     size="small"
                     colors={{
-                      fg: '#f6edd0',
-                      fgHover: '#6a3f33',
-                      bgHover: '#f6edd0',
+                      fg: '#6a3f33',
+                      fgHover: '#d58761',
+                      bgHover: '#6a3f33',
                     }}
                   />
                 </div>
@@ -824,9 +830,9 @@ export default function ImmersionsPage() {
                     text="Enroll in this Training"
                     size="small"
                     colors={{
-                      fg: '#f6edd0',
-                      fgHover: '#6a3f33',
-                      bgHover: '#f6edd0',
+                      fg: '#6a3f33',
+                      fgHover: '#d58761',
+                      bgHover: '#6a3f33',
                     }}
                   />
                 </div>
@@ -836,8 +842,8 @@ export default function ImmersionsPage() {
         </Section>
       </div>
 
-      {/* CTA Section */}
-      <Section id="cta" className="relative z-10 w-full px-8 py-24">
+      {/* CTA Section - Light beige background */}
+      <Section id="cta" className="relative z-10 w-full bg-[#f6edd0] px-8 py-24">
         <div className="mx-auto flex max-w-[687px] flex-col items-center gap-10 text-center">
           <h2
             className="text-[48px] leading-normal text-[#d58761]"
@@ -847,7 +853,7 @@ export default function ImmersionsPage() {
           </h2>
 
           <div className="flex h-[40px] w-[163px] items-center justify-center py-5">
-            <img src="/splash_vector.svg" alt="" className="h-full w-full object-contain" />
+            <PageEndBlob color="#d58761" />
           </div>
 
           <p
@@ -865,7 +871,7 @@ export default function ImmersionsPage() {
               size="large"
               colors={{
                 fg: '#6a3f33',
-                fgHover: '#f6edd0',
+                fgHover: '#d58761',
                 bgHover: '#6a3f33',
               }}
             />
@@ -874,15 +880,13 @@ export default function ImmersionsPage() {
               size="large"
               colors={{
                 fg: '#6a3f33',
-                fgHover: '#f6edd0',
+                fgHover: '#d58761',
                 bgHover: '#6a3f33',
               }}
             />
           </div>
         </div>
       </Section>
-
-      <PageEndBlob />
     </main>
   );
 }
