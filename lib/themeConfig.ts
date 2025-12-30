@@ -15,13 +15,15 @@ export type SectionId =
   | 'trainings-listings'
   | 'cta'
   | 'about'
-  | 'contact';
+  | 'contact'
+  | 'faq';
 
 export interface Theme {
   bg: string;
   text: string;
   accent: string;
-  headerBg?: string; // Header background color for each section
+  headerBg?: string; // Header inner container background color
+  headerOuterBg?: string; // Header outer area background color (for blur area)
 }
 
 export const SECTION_THEMES: Record<SectionId, Theme> = {
@@ -33,21 +35,24 @@ export const SECTION_THEMES: Record<SectionId, Theme> = {
   },
   journey: {
     bg: '#f6edd0', // Light beige (from Figma)
-    text: '#354443', // Dark teal text
-    accent: '#9ac1bf', // Teal accent
-    headerBg: '#354443', // Dark teal/green
+    text: '#354443', // Dark teal text (from Figma)
+    accent: '#9ac1bf', // Teal accent (from Figma)
+    headerBg: '#354443', // Dark teal header (from Figma)
+    headerOuterBg: '#f6edd0', // Light beige outer
   },
   'work-together': {
-    bg: '#f6edd0', // Light beige
-    text: '#645c42', // Dark brown/yellow
-    accent: '#d6c68e', // Light yellow/beige
-    headerBg: '#354443', // Dark teal/green
+    bg: '#f6edd0', // Light beige (from Figma)
+    text: '#645c42', // Dark brown/yellow (from Figma)
+    accent: '#d6c68e', // Light yellow/beige (from Figma)
+    headerBg: '#645c42', // Dark brown header (from Figma)
+    headerOuterBg: '#f6edd0', // Light beige outer
   },
   voices: {
-    bg: '#f6edd0', // Base white
-    text: '#474e3a', // Deep green
-    accent: '#93a378', // Soft green
-    headerBg: '#354443', // Keep header consistent
+    bg: '#474e3a', // Dark green background (from Figma)
+    text: '#f6edd0', // Light text for dark background (from Figma)
+    accent: '#93a378', // Soft green accent
+    headerBg: '#474e3a', // Dark green header (from Figma)
+    headerOuterBg: '#474e3a', // Dark green outer
   },
   therapies: {
     bg: '#E8DCC6', // Warm Beige
@@ -59,25 +64,29 @@ export const SECTION_THEMES: Record<SectionId, Theme> = {
     bg: '#f6edd0', // Base White (from Figma)
     text: '#474e3a', // G800 (from Figma)
     accent: '#9ac1bf', // B500 Teal (from Figma)
-    headerBg: '#354443', // B800 Dark Teal (from Figma)
+    headerBg: '#354443', // Dark teal header (from Figma)
+    headerOuterBg: '#f6edd0', // Light beige outer
   },
   'approach-cta': {
     bg: '#f6edd0', // Base White
     text: '#354443', // Dark teal text
     accent: '#9ac1bf', // Teal accent
-    headerBg: '#354443', // Dark teal header
+    headerBg: '#354443', // Dark teal header (from Figma)
+    headerOuterBg: '#f6edd0', // Light beige outer
   },
   pathways: {
     bg: '#354443', // Dark teal background
     text: '#f6edd0', // Light text
     accent: '#9ac1bf', // Teal accent
-    headerBg: '#354443', // Dark teal header
+    headerBg: '#354443', // Dark teal header (matches section bg)
+    headerOuterBg: '#354443', // Dark teal outer
   },
   thoughts: {
     bg: '#f6edd0', // Base White
     text: '#354443', // Dark teal text
     accent: '#9ac1bf', // Teal accent
-    headerBg: '#354443', // Dark teal header
+    headerBg: '#354443', // Dark teal header (from Figma)
+    headerOuterBg: '#f6edd0', // Light beige outer
   },
   immersions: {
     bg: '#f6edd0', // Base White (from Figma)
@@ -95,7 +104,8 @@ export const SECTION_THEMES: Record<SectionId, Theme> = {
     bg: '#6a3f33', // Dark Brown
     text: '#d58761', // Accent
     accent: '#f6edd0', // Light
-    headerBg: '#6a3f33', // Dark Brown Header
+    headerBg: '#f6edd0', // Light beige inner container (inverted)
+    headerOuterBg: '#6a3f33', // Dark brown outer area (inverted)
   },
   'trainings-intro': {
     bg: '#f6edd0', // Base White
@@ -107,26 +117,34 @@ export const SECTION_THEMES: Record<SectionId, Theme> = {
     bg: '#6a3f33', // Dark Brown
     text: '#d58761', // Accent
     accent: '#f6edd0', // Light
-    headerBg: '#6a3f33', // Dark Brown Header
+    headerBg: '#f6edd0', // Light beige inner container (inverted)
+    headerOuterBg: '#6a3f33', // Dark brown outer area (inverted)
   },
   cta: {
-    bg: '#f6edd0', // Base White
-    text: '#d58761', // Accent
-    accent: '#6a3f33', // Dark Brown
-    headerBg: '#6a3f33', // Dark Brown Header
+    bg: '#f6edd0', // Light beige background
+    text: '#d58761', // Orange text
+    accent: '#6a3f33', // Dark brown accent
+    headerBg: '#6a3f33', // Dark Brown header (matches immersions theme)
   },
   about: {
     // Figma About page
     bg: '#f6edd0', // Base white
-    text: '#474e3a', // Deep green
-    accent: '#93a378', // Soft green
-    headerBg: '#474e3a', // Deep green header for About
+    text: '#93a378', // Soft green text (from Figma)
+    accent: '#93a378', // Soft green accent
+    headerBg: '#474e3a', // Deep green header (from Figma)
+    headerOuterBg: '#f6edd0', // Light beige outer
   },
   contact: {
     bg: '#6a3f33', // Dark Brown
     text: '#f6edd0',
     accent: '#9ac1bf',
     headerBg: '#354443', // Dark teal/green
+  },
+  faq: {
+    bg: '#E8DCC6', // Warm Beige (same as therapies)
+    text: '#3A3A3A',
+    accent: '#A68B5B',
+    headerBg: '#D4C4A8', // Lighter beige for header
   },
 };
 

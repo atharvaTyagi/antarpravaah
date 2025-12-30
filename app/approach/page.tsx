@@ -6,7 +6,6 @@ import Section from '@/components/Section';
 import Button from '@/components/Button';
 import PageEndBlob from '@/components/PageEndBlob';
 
-
 export default function ApproachPage() {
   useEffect(() => {
     const lenis = new Lenis({
@@ -31,7 +30,6 @@ export default function ApproachPage() {
       lenis.destroy();
     };
   }, []);
-
 
   return (
     <main className="relative min-h-screen bg-[#f6edd0] pt-[148px]">
@@ -76,9 +74,17 @@ export default function ApproachPage() {
 
       {/* Dark section starts here */}
       <div className="relative w-full bg-[#354443]">
-        {/* Subtle spiral pattern background */}
-        <div className="pointer-events-none absolute inset-0 z-0 opacity-[0.04]">
-          {/* Add decorative spirals similar to We Work Together section */}
+        {/* Subtle spiral pattern background - Grid system */}
+        <div className="pointer-events-none absolute inset-0 z-[1] grid grid-cols-10 grid-rows-10 opacity-20">
+          {Array.from({ length: 100 }).map((_, index) => (
+            <div key={index} className="flex items-center justify-center">
+              <img
+                src="/approach_blob.svg"
+                alt=""
+                className="h-full w-full object-contain"
+              />
+            </div>
+          ))}
         </div>
 
         {/* Three Pathways Section */}
@@ -95,7 +101,7 @@ export default function ApproachPage() {
             {/* Pathway Cards */}
             <div className="flex flex-col gap-6">
               {/* Card 1: Private Sessions */}
-              <div className="relative flex h-[763px] items-end overflow-hidden rounded-[24px] border-[16px] border-[#9ac1bf] p-10">
+              <div className="relative flex h-[763px] items-end overflow-hidden rounded-[36px] border-[16px] border-[#9ac1bf] p-10">
                 {/* Background Image with blur */}
                 <div className="absolute inset-0 -z-10">
                   <img
@@ -144,16 +150,16 @@ export default function ApproachPage() {
                     href="#"
                     mode="dark"
                     colors={{
-                      fg: '#f6edd0',
+                      fg: '#9ac1bf',
                       fgHover: '#354443',
-                      bgHover: '#f6edd0',
+                      bgHover: '#9ac1bf',
                     }}
                   />
                 </div>
               </div>
 
               {/* Card 2: Antar Pravaah Immersions */}
-              <div className="relative flex h-[763px] items-end overflow-hidden rounded-[24px] border-[16px] border-[#9ac1bf] p-10">
+              <div className="relative flex h-[763px] items-end overflow-hidden rounded-[36px] border-[16px] border-[#9ac1bf] p-10">
                 <div className="absolute inset-0 -z-10">
                   <img
                     src="/AP Immersions.webp"
@@ -205,16 +211,16 @@ export default function ApproachPage() {
                     href="#"
                     mode="dark"
                     colors={{
-                      fg: '#f6edd0',
+                      fg: '#9ac1bf',
                       fgHover: '#354443',
-                      bgHover: '#f6edd0',
+                      bgHover: '#9ac1bf',
                     }}
                   />
                 </div>
               </div>
 
               {/* Card 3: Trainings */}
-              <div className="relative flex h-[763px] items-end overflow-hidden rounded-[24px] border-[16px] border-[#9ac1bf] p-10">
+              <div className="relative flex h-[763px] items-end overflow-hidden rounded-[36px] border-[16px] border-[#9ac1bf] p-10">
                 <div className="absolute inset-0 -z-10">
                   <img
                     src="/Trainings.webp"
@@ -265,9 +271,9 @@ export default function ApproachPage() {
                     href="#"
                     mode="dark"
                     colors={{
-                      fg: '#f6edd0',
+                      fg: '#9ac1bf',
                       fgHover: '#354443',
-                      bgHover: '#f6edd0',
+                      bgHover: '#9ac1bf',
                     }}
                   />
                 </div>

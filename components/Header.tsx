@@ -21,7 +21,7 @@ export default function Header() {
   const currentTheme = useThemeStore((state) => state.currentTheme);
   const splashComplete = useUiStore((state) => state.splashComplete);
 
-  // Set theme based on current route
+  // Set initial theme based on current route (only on route change, not continuously)
   useEffect(() => {
     if (pathname === '/') {
       setTheme('hero');
@@ -31,29 +31,48 @@ export default function Header() {
         setTheme(navItem.themeId);
       }
     }
-  }, [pathname, setTheme]);
+    // Only run when pathname changes, allowing Section components to update theme dynamically
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
 
   const theme = SECTION_THEMES[currentTheme] || SECTION_THEMES['hero'];
   const headerBg = theme?.headerBg || '#354443';
+  const headerOuterBg = theme?.headerOuterBg || '#f6edd0';
   const isHome = pathname === '/';
   const isVisible = !isHome || splashComplete;
+
+  // Utility function to check if a color is light or dark
+  const isLightColor = (hexColor: string): boolean => {
+    const hex = hexColor.replace('#', '');
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    // Calculate relative luminance (perceived brightness)
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    return luminance > 0.5; // Threshold for light vs dark
+  };
+
+  // Determine nav text color based on header background
+  // If header bg is light, use dark text; if dark, use light text
+  const isLightHeader = isLightColor(headerBg);
+  const navTextColor = isLightHeader ? '#354443' : '#f6edd0';
+  const navHoverColor = isLightHeader ? theme.text : theme.accent;
 
   // Handle logo src (works with both Next.js image imports and direct paths)
 
   return (
-    <header 
-      // Opaque full-width background so content can never be seen behind the header,
-      // including the margins around the rounded inner container.
-      className="fixed top-0 left-0 right-0 z-[60] w-full bg-[#f6edd0] py-6 transition-opacity duration-500"
+    <header
+      className="fixed top-0 left-0 right-0 z-[60] w-full py-6 transition-all duration-500"
       style={{
         opacity: isVisible ? 1 : 0,
         pointerEvents: isVisible ? 'auto' : 'none',
         visibility: isVisible ? 'visible' : 'hidden',
+        backgroundColor: headerOuterBg,
       }}
     >
       <div className="w-full px-4 md:px-6">
         <div
-          className="flex h-[100px] w-full items-center justify-between rounded-[24px] px-5 py-4 transition-colors duration-1000 ease-in-out"
+          className="flex h-[100px] w-full items-center justify-between rounded-[24px] px-5 py-4 transition-colors duration-500 ease-in-out"
           style={{ backgroundColor: headerBg }}
         >
           {/* Logo */}
@@ -61,7 +80,10 @@ export default function Header() {
             <img
               src="/logo_full.svg"
               alt="Antar Pravaah"
-              className="h-auto w-full"
+              className="h-auto w-full transition-[filter] duration-500"
+              style={{
+                filter: isLightHeader ? 'brightness(0) sepia(1) saturate(5) hue-rotate(-15deg)' : 'none',
+              }}
             />
           </Link>
 
@@ -73,13 +95,16 @@ export default function Header() {
                 <Link
                   key={item.label}
                   href={item.href}
-                  className={`uppercase tracking-[1.92px] text-[#f6edd0] text-[12px] transition-colors hover:text-[#9ac1bf] ${
+                  className={`uppercase tracking-[1.92px] text-[12px] transition-colors ${
                     isActive ? 'font-bold' : 'font-light'
                   }`}
-                  style={{ 
+                  style={{
                     fontFamily: 'var(--font-graphik), sans-serif',
                     fontWeight: isActive ? 700 : 300,
+                    color: navTextColor,
                   }}
+                  onMouseEnter={(e) => (e.currentTarget.style.color = navHoverColor)}
+                  onMouseLeave={(e) => (e.currentTarget.style.color = navTextColor)}
                 >
                   {item.label}
                 </Link>
