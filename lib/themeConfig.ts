@@ -48,11 +48,11 @@ export const SECTION_THEMES: Record<SectionId, Theme> = {
     headerOuterBg: '#f6edd0', // Light beige outer
   },
   voices: {
-    bg: '#474e3a', // Dark green background (from Figma)
-    text: '#f6edd0', // Light text for dark background (from Figma)
+    bg: '#f6edd0', // Light beige background (matches section background)
+    text: '#f6edd0', // Light text for dark cards
     accent: '#93a378', // Soft green accent
-    headerBg: '#474e3a', // Dark green header (from Figma)
-    headerOuterBg: '#474e3a', // Dark green outer
+    headerBg: '#474e3a', // Dark green header inner (from Figma)
+    headerOuterBg: '#f6edd0', // Light beige outer (matches section background)
   },
   therapies: {
     bg: '#E8DCC6', // Warm Beige

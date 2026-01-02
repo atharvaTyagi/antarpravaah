@@ -245,7 +245,7 @@ export default function WeWorkTogether() {
               })}
 
               {/* CTA Card (part of the stack; final card) */}
-              <div className="card absolute left-0 right-0 top-0 mx-auto flex w-full items-center justify-center rounded-[24px] bg-[#645c42] p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] min-h-[420px] sm:min-h-[480px]">
+              <div className="card absolute left-0 right-0 top-0 mx-auto flex w-full items-center justify-center rounded-[24px] bg-[#645c42] p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] min-h-[280px] sm:min-h-[320px]">
                 <Button text="Explore Our Approach" size="large" mode="light" href="/approach" />
               </div>
             </div>
