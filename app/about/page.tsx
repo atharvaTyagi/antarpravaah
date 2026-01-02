@@ -1,13 +1,21 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import Lenis from 'lenis';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Section from '@/components/Section';
 import Button from '@/components/Button';
 import PageEndBlob from '@/components/PageEndBlob';
 import FadeInImage from '@/components/FadeInImage';
 
+gsap.registerPlugin(ScrollTrigger);
+
 export default function AboutPage() {
+  const hiRef = useRef<HTMLParagraphElement>(null);
+  const paragraphRefs = useRef<(HTMLParagraphElement | null)[]>([]);
+  const blobTextContainerRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const lenis = new Lenis({
       duration: 1.2,
@@ -29,6 +37,54 @@ export default function AboutPage() {
 
     return () => {
       lenis.destroy();
+    };
+  }, []);
+
+  // Text fade-in animation
+  useEffect(() => {
+    if (!hiRef.current || !blobTextContainerRef.current) return;
+
+    const validParagraphs = paragraphRefs.current.filter((p) => p !== null);
+    if (validParagraphs.length === 0) return;
+
+    // Set initial state - everything invisible
+    gsap.set([hiRef.current, ...validParagraphs], {
+      opacity: 0,
+      y: 20,
+    });
+
+    // Create timeline
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: blobTextContainerRef.current,
+        start: 'top 70%',
+        toggleActions: 'play none none none',
+      },
+    });
+
+    // Animate "Hi!" first
+    tl.to(hiRef.current, {
+      opacity: 1,
+      y: 0,
+      duration: 1,
+      ease: 'power2.out',
+    });
+
+    // Then animate each paragraph with stagger
+    tl.to(
+      validParagraphs,
+      {
+        opacity: 1,
+        y: 0,
+        duration: 1.2,
+        stagger: 0.4,
+        ease: 'power2.out',
+      },
+      '-=0.3'
+    );
+
+    return () => {
+      tl.kill();
     };
   }, []);
 
@@ -93,27 +149,28 @@ export default function AboutPage() {
               <div className="flex flex-col items-center gap-14">
                 <div className="relative flex w-full justify-center">
                   {/* Text blob shape container */}
-                  <div className="relative h-[640px] w-[640px] max-w-full">
-                    {/* Background SVG shape */}
+                  <div className="relative flex items-center justify-center" ref={blobTextContainerRef}>
+                    {/* Background SVG shape - responsive sizing */}
                     <img
                       src="/about_text_blob.svg"
                       alt=""
-                      className="absolute inset-0 h-full w-full object-contain"
+                      className="w-[500px] sm:w-[600px] md:w-[700px] lg:w-[800px] h-auto"
                     />
-                    {/* Text content overlay */}
-                    <div className="absolute inset-0 flex items-center justify-center p-16">
-                      <div className="w-full max-w-[315px] text-justify text-[#474e3a]">
+                    {/* Text content overlay - absolutely positioned inside the blob */}
+                    <div className="absolute inset-0 flex items-center justify-center px-12 sm:px-16 md:px-20 lg:px-24 py-12 md:py-16 lg:py-20">
+                      <div className="w-full max-w-[280px] sm:max-w-[320px] md:max-w-[380px] lg:max-w-[440px] text-justify text-[#474e3a]">
                         <p
-                          className="mb-2 text-[24px] leading-[normal]"
+                          ref={hiRef}
+                          className="mb-2 text-[18px] sm:text-[20px] md:text-[22px] lg:text-[24px] leading-normal"
                           style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400 }}
                         >
                           Hi !
                         </p>
                         <div
-                          className="space-y-3 text-[12px] leading-[normal]"
+                          className="space-y-2 sm:space-y-2.5 md:space-y-3 text-[10px] sm:text-[11px] md:text-[12px] leading-relaxed"
                           style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
                         >
-                          <p>
+                          <p ref={(el) => (paragraphRefs.current[0] = el)}>
                             I'm Namita, a healer and facilitator with decades of experience guiding people through
                             life's physical, emotional, and energetic challenges. My journey began over twenty years ago
                             in Public Relations, but a quiet inner calling led me to explore paths far beyond the
@@ -121,7 +178,7 @@ export default function AboutPage() {
                             Each experience deepened my understanding of people, life, and the subtle energies that
                             connect us all.
                           </p>
-                          <p>
+                          <p ref={(el) => (paragraphRefs.current[1] = el)}>
                             The turning point came when I discovered Foot Reflexology. Following my intuition led me
                             into a world of healing I hadn't anticipated, and over time, new modalities found
                             me—each one expanding my understanding of energy, the body, and transformation. Today, I
@@ -129,19 +186,19 @@ export default function AboutPage() {
                             Processes, Access Energetic Facelift, Systemic Family Constellation Therapy, Shamanism,
                             Transpersonal Regression Therapy, Transcendental Healing, and more.
                           </p>
-                          <p>
+                          <p ref={(el) => (paragraphRefs.current[2] = el)}>
                             I have had the privilege of guiding hundreds of people across all ages and backgrounds
                             through pain, trauma, grief, relationship struggles, fear, and more. The transformations are
                             countless, yet the heart of the work is always the same: facilitating a remembrance back to
                             themselves.
                           </p>
-                          <p>
+                          <p ref={(el) => (paragraphRefs.current[3] = el)}>
                             My work transcends any single technique. It is rooted in presence, intuition, and decades of
                             inner practice. When we work together, you are not just learning a modality—you are
                             reconnecting with yourself. You'll leave with clarity, presence, and the possibility that
                             comes from remembering the wholeness you've always carried.
                           </p>
-                          <p>
+                          <p ref={(el) => (paragraphRefs.current[4] = el)}>
                             Healing, to me, is not fixing—it's remembering. Not escaping—it's embracing. Whatever you
                             carry, you are not alone, and I welcome you to this space of transformation.
                           </p>

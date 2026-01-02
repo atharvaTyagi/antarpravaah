@@ -44,7 +44,7 @@ export default function TherapiesCardStack({ cards, title }: TherapiesCardStackP
     const cardElements = Array.from(cardsSection.querySelectorAll<HTMLElement>('.therapy-card'));
     if (cardElements.length < 2) return;
 
-    const time = 0.45; // Snappier animation timing for cohesive feel
+    const time = 0.95; // Slower animation timing for smoother feel
     let animating = false;
 
     // Single-card focus layout: only one card is visible at a time.
@@ -94,14 +94,14 @@ export default function TherapiesCardStack({ cards, title }: TherapiesCardStackP
       tl.to(currentText.content, {
         autoAlpha: 0,
         y: -8,
-        duration: time * 0.45,
+        duration: time * 0.5,
         stagger: 0.015,
         ease: 'power2.inOut',
       }, '<0.02');
 
       // Card container fades out while text is fading
       tl.to(current, {
-        scale: 0.98,
+        scale: 0.96,
         autoAlpha: 0,
         duration: time * 0.5,
         ease: 'power2.inOut',
@@ -115,7 +115,7 @@ export default function TherapiesCardStack({ cards, title }: TherapiesCardStackP
 
       tl.fromTo(
         next,
-        { y: () => window.innerHeight * 0.3 },
+        { y: () => window.innerHeight * 0.15 },
         { y: 0, duration: time * 0.55, ease: 'power2.out', immediateRender: false },
         '<'
       );
@@ -130,20 +130,20 @@ export default function TherapiesCardStack({ cards, title }: TherapiesCardStackP
       tl.to([nextText.subtitle], {
         autoAlpha: 1,
         y: 0,
-        duration: time * 0.45,
+        duration: time * 0.5,
         ease: 'power2.out',
       }, '<0.03');
       tl.to(nextText.content, {
         autoAlpha: 1,
         y: 0,
-        duration: time * 0.45,
+        duration: time * 0.5,
         stagger: 0.02,
         ease: 'power2.out',
       }, '<0.03');
       tl.to([nextText.button], {
         autoAlpha: 1,
         y: 0,
-        duration: time * 0.4,
+        duration: time * 0.5,
         ease: 'power2.out',
       }, '<0.05');
     }
@@ -162,6 +162,8 @@ export default function TherapiesCardStack({ cards, title }: TherapiesCardStackP
       if (animating) return;
       animating = true;
       tl.tweenTo(direction, {
+        duration: time, // Explicit duration for consistent speed in both directions
+        ease: 'power2.inOut',
         onComplete: () => {
           animating = false;
         },

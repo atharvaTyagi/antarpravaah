@@ -1,12 +1,16 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import Lenis from 'lenis';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Section from '@/components/Section';
 import TherapiesCardStack from '@/components/TherapiesCardStack';
 import TherapyCard from '@/components/TherapyCard';
 import Button from '@/components/Button';
 import { therapies } from '@/data/therapiesContent';
+
+gsap.registerPlugin(ScrollTrigger);
 
 // Therapies page button colors matching the page theme
 const therapiesButtonColors = {
@@ -16,6 +20,11 @@ const therapiesButtonColors = {
 };
 
 export default function TherapiesPage() {
+  const heading1Ref = useRef<HTMLHeadingElement>(null);
+  const heading2Ref = useRef<HTMLHeadingElement>(null);
+  const textLineRefs = useRef<(HTMLParagraphElement | null)[]>([]);
+  const blobTextContainerRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const lenis = new Lenis({
       duration: 1.2,
@@ -40,6 +49,66 @@ export default function TherapiesPage() {
 
     return () => {
       lenis.destroy();
+    };
+  }, []);
+
+  // Text fade-in animation for "Come and find me" blob
+  useEffect(() => {
+    if (!heading1Ref.current || !heading2Ref.current || !blobTextContainerRef.current) return;
+
+    const validLines = textLineRefs.current.filter((p) => p !== null);
+    if (validLines.length === 0) return;
+
+    // Set initial state - everything invisible
+    gsap.set([heading1Ref.current, ...validLines, heading2Ref.current], {
+      opacity: 0,
+      y: 20,
+    });
+
+    // Create timeline
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: blobTextContainerRef.current,
+        start: 'top 70%',
+        toggleActions: 'play none none none',
+      },
+    });
+
+    // Animate first heading "Come and find me...."
+    tl.to(heading1Ref.current, {
+      opacity: 1,
+      y: 0,
+      duration: 1,
+      ease: 'power2.out',
+    });
+
+    // Then animate each line of text with stagger
+    tl.to(
+      validLines,
+      {
+        opacity: 1,
+        y: 0,
+        duration: 1,
+        stagger: 0.25,
+        ease: 'power2.out',
+      },
+      '-=0.3'
+    );
+
+    // Finally animate the closing heading
+    tl.to(
+      heading2Ref.current,
+      {
+        opacity: 1,
+        y: 0,
+        duration: 1.2,
+        ease: 'power2.out',
+      },
+      '-=0.4'
+    );
+
+    return () => {
+      tl.kill();
     };
   }, []);
 
@@ -169,7 +238,7 @@ export default function TherapiesPage() {
       >
         <div className="max-w-[1347px] mx-auto flex flex-col items-center gap-16">
           {/* Blob with text inside */}
-          <div className="relative flex items-center justify-center">
+          <div className="relative flex items-center justify-center" ref={blobTextContainerRef}>
             {/* Background blob - using about_text_blob.svg */}
             <img
               src="/about_text_blob.svg"
@@ -185,6 +254,7 @@ export default function TherapiesPage() {
             <div className="absolute inset-0 flex flex-col items-center justify-center px-12 md:px-20 lg:px-28 py-16">
               <div className="text-center flex flex-col gap-4 max-w-[500px] lg:max-w-[580px]">
                 <h2
+                  ref={heading1Ref}
                   className="text-[32px] md:text-[40px] lg:text-[48px] leading-tight text-[#645c42]"
                   style={{ fontFamily: 'var(--font-saphira), serif' }}
                 >
@@ -195,25 +265,26 @@ export default function TherapiesPage() {
                   className="text-[14px] md:text-[18px] lg:text-[20px] leading-relaxed text-[#645c42]"
                   style={{ fontFamily: 'var(--font-saphira), serif' }}
                 >
-                  <p className="mb-1">Find me when you have lost track of your path,</p>
-                  <p className="mb-1">When you have forgotten what you like and dislike,</p>
-                  <p className="mb-1">
+                  <p className="mb-1" ref={(el) => { textLineRefs.current[0] = el; }}>Find me when you have lost track of your path,</p>
+                  <p className="mb-1" ref={(el) => { textLineRefs.current[1] = el; }}>When you have forgotten what you like and dislike,</p>
+                  <p className="mb-1" ref={(el) => { textLineRefs.current[2] = el; }}>
                     When you are bored of always seeking people to fill the emptiness you feel within,
                   </p>
-                  <p className="mb-1">When your body hurts and you can't take it no more,</p>
-                  <p className="mb-1">When you feel purposeless and joyless,</p>
-                  <p className="mb-1">When this life seems alien,</p>
-                  <p className="mb-1">When dealing with others drains your energy,</p>
-                  <p className="mb-1">
+                  <p className="mb-1" ref={(el) => { textLineRefs.current[3] = el; }}>When your body hurts and you can't take it no more,</p>
+                  <p className="mb-1" ref={(el) => { textLineRefs.current[4] = el; }}>When you feel purposeless and joyless,</p>
+                  <p className="mb-1" ref={(el) => { textLineRefs.current[5] = el; }}>When this life seems alien,</p>
+                  <p className="mb-1" ref={(el) => { textLineRefs.current[6] = el; }}>When dealing with others drains your energy,</p>
+                  <p className="mb-1" ref={(el) => { textLineRefs.current[7] = el; }}>
                     When you cannot see the light in others and only the dark in yourself,
                   </p>
-                  <p className="mb-1">Find me when no answer is good enough,</p>
-                  <p>
+                  <p className="mb-1" ref={(el) => { textLineRefs.current[8] = el; }}>Find me when no answer is good enough,</p>
+                  <p ref={(el) => { textLineRefs.current[9] = el; }}>
                     When you have been to enough people seeking to get clarity about your life,
                   </p>
                 </div>
 
                 <h2
+                  ref={heading2Ref}
                   className="text-[28px] md:text-[36px] lg:text-[42px] leading-tight text-[#645c42] mt-4"
                   style={{ fontFamily: 'var(--font-saphira), serif' }}
                 >
