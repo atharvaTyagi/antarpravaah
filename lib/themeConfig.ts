@@ -31,6 +31,7 @@ export interface Theme {
   accent: string;
   headerBg?: string; // Header inner container background color
   headerOuterBg?: string; // Header outer area background color (for blur area)
+  headerText?: string; // Explicit header text color override
 }
 
 export const SECTION_THEMES: Record<SectionId, Theme> = {
@@ -121,8 +122,9 @@ export const SECTION_THEMES: Record<SectionId, Theme> = {
     bg: '#354443', // Dark teal background
     text: '#f6edd0', // Light text
     accent: '#9ac1bf', // Teal accent
-    headerBg: '#354443', // Dark teal header (matches section bg)
-    headerOuterBg: '#354443', // Dark teal outer
+    headerBg: '#9ac1bf', // Teal inner container (inverted for dark section)
+    headerOuterBg: '#354443', // Dark teal outer area (matches section bg)
+    headerText: '#354443', // Dark text on teal header
   },
   thoughts: {
     bg: '#f6edd0', // Base White

@@ -54,8 +54,9 @@ export default function Header() {
 
   // Determine nav text color based on header background
   // If header bg is light, use dark text; if dark, use light text
+  // Use explicit headerText override if provided
   const isLightHeader = isLightColor(headerBg);
-  const navTextColor = isLightHeader ? '#354443' : '#f6edd0';
+  const navTextColor = theme.headerText || (isLightHeader ? '#354443' : '#f6edd0');
   const navHoverColor = isLightHeader ? theme.text : theme.accent;
 
   // Handle logo src (works with both Next.js image imports and direct paths)

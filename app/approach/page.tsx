@@ -2,9 +2,16 @@
 
 import { useEffect } from 'react';
 import Lenis from 'lenis';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Section from '@/components/Section';
 import Button from '@/components/Button';
 import PageEndBlob from '@/components/PageEndBlob';
+import PathwaysCardStack from '@/components/PathwaysCardStack';
+import PathwayCard from '@/components/PathwayCard';
+import { pathways } from '@/data/pathwaysContent';
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function ApproachPage() {
   useEffect(() => {
@@ -19,6 +26,9 @@ export default function ApproachPage() {
       infinite: false,
     });
 
+    // Store Lenis instance globally so Observer can control it
+    (window as unknown as { __lenis?: typeof lenis }).__lenis = lenis;
+
     function raf(time: number) {
       lenis.raf(time);
       requestAnimationFrame(raf);
@@ -30,6 +40,12 @@ export default function ApproachPage() {
       lenis.destroy();
     };
   }, []);
+
+  // Prepare cards for the sticky stack
+  const pathwayCards = pathways.map((pathway) => ({
+    key: pathway.id,
+    render: <PathwayCard pathway={pathway} />,
+  }));
 
   return (
     <main className="relative min-h-screen bg-[#f6edd0] pt-[148px]">
@@ -87,198 +103,10 @@ export default function ApproachPage() {
           ))}
         </div>
 
-        {/* Three Pathways Section */}
+        {/* Three Pathways Section with GSAP Card Stack */}
         <Section id="pathways" className="relative z-10 w-full px-8 py-20">
-          <div className="mx-auto flex max-w-[1347px] flex-col gap-10">
-            {/* Section Header */}
-            <h2
-              className="text-center text-[48px] leading-normal text-[#9ac1bf]"
-              style={{ fontFamily: 'var(--font-saphira), serif' }}
-            >
-              Three Pathways for You
-            </h2>
-
-            {/* Pathway Cards */}
-            <div className="flex flex-col gap-6">
-              {/* Card 1: Private Sessions */}
-              <div className="relative flex h-[763px] items-end overflow-hidden rounded-[36px] border-[16px] border-[#9ac1bf] p-10">
-                {/* Background Image with blur */}
-                <div className="absolute inset-0 -z-10">
-                  <img
-                    src="/Private Sessions.webp"
-                    alt=""
-                    className="h-full w-full object-cover blur-[2px]"
-                    style={{ transform: 'scale(1.1)' }}
-                  />
-                </div>
-
-                {/* Content Card */}
-                <div className="w-full max-w-[640px] rounded-[24px] bg-[rgba(53,68,67,0.8)] p-5 backdrop-blur-[2px]">
-                  <h3
-                    className="mb-4 text-[48px] leading-normal text-[#9ac1bf]"
-                    style={{ fontFamily: 'var(--font-saphira), serif' }}
-                  >
-                    Private Sessions
-                  </h3>
-                  <p
-                    className="mb-4 text-[24px] uppercase leading-normal tracking-[3.84px] text-[#9ac1bf]"
-                    style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
-                  >
-                    For Deep, Personalized Transformation
-                  </p>
-                  <div className="mb-4 text-justify text-[12px] leading-normal text-[#9ac1bf]">
-                    <p className="mb-4">
-                      Private sessions work well for when you have very specific or intimate
-                      concerns. A pattern you find cyclically repeating; chronic physical
-                      conditions; issues with unexplainable causes etc. These sessions are
-                      unhurried, allowing time for deep healing. We create a mutually viable
-                      structure to take you step by step from your problem into possibilities.
-                      Here also, we explore individual and familial history—including medical
-                      background—to uncover root causes and determine what's needed to clear them.
-                    </p>
-                    <p>Typically, a session will last 60 minutes (varying with the modality).</p>
-                  </div>
-                  <div className="mb-4 text-[12px] leading-normal text-[#9ac1bf]">
-                    <p className="mb-2 font-medium">What to Expect:</p>
-                    <ul className="list-inside list-disc">
-                      <li>Exclusive time and space</li>
-                      <li>A unique roadmap structured to your specific concern</li>
-                    </ul>
-                  </div>
-                  <Button
-                    text="Book a Private Session"
-                    href="#"
-                    mode="dark"
-                    colors={{
-                      fg: '#9ac1bf',
-                      fgHover: '#354443',
-                      bgHover: '#9ac1bf',
-                    }}
-                  />
-                </div>
-              </div>
-
-              {/* Card 2: Antar Pravaah Immersions */}
-              <div className="relative flex h-[763px] items-end overflow-hidden rounded-[36px] border-[16px] border-[#9ac1bf] p-10">
-                <div className="absolute inset-0 -z-10">
-                  <img
-                    src="/AP Immersions.webp"
-                    alt=""
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-
-                <div className="w-full max-w-[640px] rounded-[24px] bg-[rgba(53,68,67,0.8)] p-5 backdrop-blur-sm">
-                  <h3
-                    className="mb-4 text-[48px] leading-normal text-[#9ac1bf]"
-                    style={{ fontFamily: 'var(--font-saphira), serif' }}
-                  >
-                    Antar Pravaah Immersions
-                  </h3>
-                  <p
-                    className="mb-4 text-[24px] uppercase leading-normal tracking-[3.84px] text-[#9ac1bf]"
-                    style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
-                  >
-                    For Thematic Exploration & Community
-                  </p>
-                  <div className="mb-4 text-justify text-[12px] leading-normal text-[#9ac1bf]">
-                    <p className="mb-4">
-                      Antar Pravaah Immersions focus on themes common to our lives, without
-                      delving deeply into personal histories. They are ideal for when you are
-                      curious about the interconnectedness of different areas of your life; or
-                      when you wish to explore a modality, how it works without necessarily
-                      sharing all your personal details. The beauty of such immersions is also
-                      that it gets us out of thinking of our problems in isolation or exclusion,
-                      and the energy of a group supports collective and individual healing.
-                    </p>
-                    <p>
-                      For example, did you know that your capacity for professional success is
-                      intimately linked to your relationship with your mother? When such a theme
-                      is explored, it unravels seemingly unrelated areas that have been shaping
-                      your life.
-                    </p>
-                  </div>
-                  <div className="mb-4 text-[12px] leading-normal text-[#9ac1bf]">
-                    <p className="mb-2 font-medium">What to Expect:</p>
-                    <ul className="list-inside list-disc">
-                      <li>Supportive, sacred space for reflection and learning</li>
-                      <li>Opportunity for participation</li>
-                      <li>Possibility of having our concern addressed</li>
-                    </ul>
-                  </div>
-                  <Button
-                    text="View Upcoming Immersions"
-                    href="#"
-                    mode="dark"
-                    colors={{
-                      fg: '#9ac1bf',
-                      fgHover: '#354443',
-                      bgHover: '#9ac1bf',
-                    }}
-                  />
-                </div>
-              </div>
-
-              {/* Card 3: Trainings */}
-              <div className="relative flex h-[763px] items-end overflow-hidden rounded-[36px] border-[16px] border-[#9ac1bf] p-10">
-                <div className="absolute inset-0 -z-10">
-                  <img
-                    src="/Trainings.webp"
-                    alt=""
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-
-                <div className="w-full max-w-[640px] rounded-[24px] bg-[rgba(53,68,67,0.8)] p-5 backdrop-blur-sm">
-                  <h3
-                    className="mb-4 text-[48px] leading-normal text-[#9ac1bf]"
-                    style={{ fontFamily: 'var(--font-saphira), serif' }}
-                  >
-                    Trainings
-                  </h3>
-                  <p
-                    className="mb-4 text-[24px] uppercase leading-normal tracking-[3.84px] text-[#9ac1bf]"
-                    style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
-                  >
-                    For Becoming Your Own Healer
-                  </p>
-                  <div className="mb-4 text-justify text-[12px] leading-normal text-[#9ac1bf]">
-                    <p className="mb-4">
-                      With all the self-work you have undertaken (hopefully), you may feel ready
-                      to take ownership for your own wellbeing – physical, mental and spiritual.
-                      Further, you may even feel called to be the light in someone else's journey
-                      - creating new opportunities to earn through this work. This is where
-                      training comes in. Trainings are an opportunity to deepen your connection
-                      with your body-mind-soul; acquire a skill that makes you independent with
-                      yourself; learn about holding space for another etc.
-                    </p>
-                    <p>
-                      Trainings with me have deep focus on self-growth and awareness because a
-                      healer is not only proficient in skill, but also is an individual who is
-                      deeply comfortable with their own light and dark sides.
-                    </p>
-                  </div>
-                  <div className="mb-4 text-[12px] leading-normal text-[#9ac1bf]">
-                    <p className="mb-2 font-medium">What to Expect:</p>
-                    <ul className="list-inside list-disc">
-                      <li>Self-growth and work</li>
-                      <li>Theory of the modality</li>
-                      <li>Application of the modality & Practice Sessions</li>
-                    </ul>
-                  </div>
-                  <Button
-                    text="Explore Training Programs"
-                    href="#"
-                    mode="dark"
-                    colors={{
-                      fg: '#9ac1bf',
-                      fgHover: '#354443',
-                      bgHover: '#9ac1bf',
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
+          <div className="mx-auto max-w-[1347px]">
+            <PathwaysCardStack cards={pathwayCards} title="Three Pathways for You" />
           </div>
         </Section>
 
