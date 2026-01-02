@@ -17,6 +17,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
   const [isVisible, setIsVisible] = useState(true); // unmount after fade-out
   const isCompleting = useRef(false);
   const scrollAmount = useRef(0);
+  const touchStartY = useRef<number | null>(null);
   
   // Scroll thresholds for animation sequence
   const spiralDrawEnd = 200; // spiral draws in (0..200)
@@ -34,16 +35,8 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
     document.body.style.overflow = 'hidden';
     document.documentElement.style.overflow = 'hidden';
 
-    // Handle wheel events to trigger animation sequence
-    const handleWheel = (e: WheelEvent) => {
-      if (!isVisible || isCompleting.current) return;
-      
-      e.preventDefault();
-      e.stopPropagation();
-      scrollAmount.current += Math.abs(e.deltaY);
-      
-      const s = scrollAmount.current;
-
+    // Update animation phases based on scroll amount
+    const updatePhases = (s: number) => {
       // Phase 1: Draw spiral (0 -> spiralDrawEnd)
       if (s <= spiralDrawEnd) {
         setSpiralOpacity(1);
@@ -110,13 +103,56 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
       }, 500);
     };
 
+    // Handle wheel events (desktop) to trigger animation sequence
+    const handleWheel = (e: WheelEvent) => {
+      if (!isVisible || isCompleting.current) return;
+      
+      e.preventDefault();
+      e.stopPropagation();
+      scrollAmount.current += Math.abs(e.deltaY);
+      
+      updatePhases(scrollAmount.current);
+    };
+
+    // Handle touch events (mobile/tablet)
+    const handleTouchStart = (e: TouchEvent) => {
+      if (!isVisible || isCompleting.current) return;
+      touchStartY.current = e.touches[0].clientY;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!isVisible || isCompleting.current || touchStartY.current === null) return;
+      
+      e.preventDefault();
+      e.stopPropagation();
+      
+      const touchCurrentY = e.touches[0].clientY;
+      const delta = Math.abs(touchStartY.current - touchCurrentY);
+      
+      // Multiply by 2 to make touch scrolling feel more responsive
+      scrollAmount.current += delta * 2;
+      touchStartY.current = touchCurrentY;
+      
+      updatePhases(scrollAmount.current);
+    };
+
+    const handleTouchEnd = () => {
+      touchStartY.current = null;
+    };
+
     window.addEventListener('wheel', handleWheel, { passive: false });
+    window.addEventListener('touchstart', handleTouchStart, { passive: false });
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
+    window.addEventListener('touchend', handleTouchEnd, { passive: false });
 
     return () => {
       // Cleanup: restore scroll
       document.body.style.overflow = originalOverflow;
       document.documentElement.style.overflow = originalOverflowHtml;
       window.removeEventListener('wheel', handleWheel);
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
     };
   }, [isVisible, onCompleteSafe]);
 
