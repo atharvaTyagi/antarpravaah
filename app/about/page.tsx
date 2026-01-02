@@ -170,7 +170,7 @@ export default function AboutPage() {
                           className="space-y-2 sm:space-y-2.5 md:space-y-3 text-[10px] sm:text-[11px] md:text-[12px] leading-relaxed"
                           style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
                         >
-                          <p ref={(el) => (paragraphRefs.current[0] = el)}>
+                          <p ref={(el) => { paragraphRefs.current[0] = el; }}>
                             I'm Namita, a healer and facilitator with decades of experience guiding people through
                             life's physical, emotional, and energetic challenges. My journey began over twenty years ago
                             in Public Relations, but a quiet inner calling led me to explore paths far beyond the
@@ -178,7 +178,7 @@ export default function AboutPage() {
                             Each experience deepened my understanding of people, life, and the subtle energies that
                             connect us all.
                           </p>
-                          <p ref={(el) => (paragraphRefs.current[1] = el)}>
+                          <p ref={(el) => { paragraphRefs.current[1] = el; }}>
                             The turning point came when I discovered Foot Reflexology. Following my intuition led me
                             into a world of healing I hadn't anticipated, and over time, new modalities found
                             me—each one expanding my understanding of energy, the body, and transformation. Today, I
@@ -186,19 +186,19 @@ export default function AboutPage() {
                             Processes, Access Energetic Facelift, Systemic Family Constellation Therapy, Shamanism,
                             Transpersonal Regression Therapy, Transcendental Healing, and more.
                           </p>
-                          <p ref={(el) => (paragraphRefs.current[2] = el)}>
+                          <p ref={(el) => { paragraphRefs.current[2] = el; }}>
                             I have had the privilege of guiding hundreds of people across all ages and backgrounds
                             through pain, trauma, grief, relationship struggles, fear, and more. The transformations are
                             countless, yet the heart of the work is always the same: facilitating a remembrance back to
                             themselves.
                           </p>
-                          <p ref={(el) => (paragraphRefs.current[3] = el)}>
+                          <p ref={(el) => { paragraphRefs.current[3] = el; }}>
                             My work transcends any single technique. It is rooted in presence, intuition, and decades of
                             inner practice. When we work together, you are not just learning a modality—you are
                             reconnecting with yourself. You'll leave with clarity, presence, and the possibility that
                             comes from remembering the wholeness you've always carried.
                           </p>
-                          <p ref={(el) => (paragraphRefs.current[4] = el)}>
+                          <p ref={(el) => { paragraphRefs.current[4] = el; }}>
                             Healing, to me, is not fixing—it's remembering. Not escaping—it's embracing. Whatever you
                             carry, you are not alone, and I welcome you to this space of transformation.
                           </p>
