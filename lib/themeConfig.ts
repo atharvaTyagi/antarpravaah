@@ -4,6 +4,11 @@ export type SectionId =
   | 'work-together'
   | 'voices'
   | 'therapies'
+  | 'therapies-intro'
+  | 'therapies-asp'
+  | 'therapies-modalities'
+  | 'therapies-not-sure'
+  | 'therapies-come-find-me'
   | 'approach'
   | 'approach-cta'
   | 'pathways'
@@ -55,10 +60,46 @@ export const SECTION_THEMES: Record<SectionId, Theme> = {
     headerOuterBg: '#f6edd0', // Light beige outer (matches section background)
   },
   therapies: {
-    bg: '#E8DCC6', // Warm Beige
-    text: '#3A3A3A',
-    accent: '#A68B5B',
-    headerBg: '#D4C4A8', // Lighter beige for header
+    bg: '#f6edd0', // Light beige
+    text: '#645c42', // Dark brown/yellow
+    accent: '#d6c68e', // Card background
+    headerBg: '#645c42', // Dark brown header
+    headerOuterBg: '#f6edd0', // Light beige outer
+  },
+  'therapies-intro': {
+    bg: '#f6edd0', // Light beige
+    text: '#645c42', // Dark brown/yellow
+    accent: '#d6c68e', // Card background
+    headerBg: '#645c42', // Dark brown header
+    headerOuterBg: '#f6edd0', // Light beige outer
+  },
+  'therapies-asp': {
+    bg: '#f6edd0', // Light beige
+    text: '#645c42', // Dark brown/yellow
+    accent: '#d6c68e', // Card background
+    headerBg: '#645c42', // Dark brown header
+    headerOuterBg: '#f6edd0', // Light beige outer
+  },
+  'therapies-modalities': {
+    bg: '#f6edd0', // Light beige
+    text: '#645c42', // Dark brown/yellow
+    accent: '#d6c68e', // Card background
+    headerBg: '#645c42', // Dark brown header
+    headerOuterBg: '#f6edd0', // Light beige outer
+  },
+  'therapies-not-sure': {
+    bg: '#f6edd0', // Light beige
+    text: '#645c42', // Dark brown/yellow
+    accent: '#d6c68e', // Card background
+    headerBg: '#645c42', // Dark brown header
+    headerOuterBg: '#f6edd0', // Light beige outer
+  },
+  'therapies-come-find-me': {
+    bg: '#f6edd0', // Light beige
+    text: '#645c42', // Dark brown/yellow
+    accent: '#d6c68e', // Card background
+    headerBg: '#645c42', // Dark brown header
+    headerOuterBg: '#f6edd0', // Light beige outer
   },
   approach: {
     bg: '#f6edd0', // Base White (from Figma)

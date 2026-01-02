@@ -6,7 +6,11 @@
       "mcp__figma-remote-mcp__get_screenshot",
       "Bash(npm run dev:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(more:*)",
+      "Bash(powershell:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run lint)"
     ]
   }
 }
