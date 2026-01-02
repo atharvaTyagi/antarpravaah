@@ -185,7 +185,12 @@ export default function VoicesOfTransformation() {
       <div className="mx-auto w-full max-w-[1177px] px-10 pb-10">
         <div className="flex flex-col items-center gap-6 py-10">
           <div className="flex items-center justify-center py-5">
-            <PageEndBlob className="h-10 w-auto" />
+            <PageEndBlob
+              className="h-10 w-auto"
+              style={{
+                filter: 'brightness(0) saturate(100%) invert(19%) sepia(11%) saturate(1214%) hue-rotate(359deg) brightness(96%) contrast(91%)',
+              }}
+            />
           </div>
           <p
             className="text-center text-[48px] leading-[normal] text-[#93a378]"

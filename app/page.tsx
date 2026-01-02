@@ -9,6 +9,7 @@ import WeWorkTogether from '@/components/WeWorkTogether';
 import VoicesOfTransformation from '@/components/VoicesOfTransformation';
 import SplashScreen from '@/components/SplashScreen';
 import SectionSubheader from '@/components/SectionSubheader';
+import GuidedJourneyModal from '@/components/GuidedJourneyModal';
 import { useUiStore } from '@/lib/stores/useUiStore';
 
 // Register GSAP plugins
@@ -18,6 +19,7 @@ if (typeof window !== 'undefined') {
 
 export default function Home() {
   const [splashComplete, setSplashComplete] = useState(false);
+  const [showGuidedJourney, setShowGuidedJourney] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const lenisRef = useRef<Lenis | null>(null);
   const setGlobalSplashComplete = useUiStore((state) => state.setSplashComplete);
@@ -75,6 +77,15 @@ export default function Home() {
   const handleSplashComplete = () => {
     setSplashComplete(true);
     setGlobalSplashComplete(true);
+    
+    // Show guided journey modal after a short delay
+    setTimeout(() => {
+      setShowGuidedJourney(true);
+    }, 2000); // 2 seconds after splash completes
+  };
+
+  const handleCloseGuidedJourney = () => {
+    setShowGuidedJourney(false);
   };
 
   return (
@@ -84,6 +95,9 @@ export default function Home() {
 
       {/* Fixed Section Subheader - shows current section title */}
       {splashComplete && <SectionSubheader />}
+
+      {/* Guided Journey Modal - Shows after splash completes */}
+      <GuidedJourneyModal isOpen={showGuidedJourney} onClose={handleCloseGuidedJourney} />
 
       {/* Main Content - Only visible after splash completes */}
       <div

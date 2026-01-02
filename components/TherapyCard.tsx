@@ -1,7 +1,12 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Therapy, DescriptionItem } from '@/data/therapiesContent';
 import Button from './Button';
+
+gsap.registerPlugin(ScrollTrigger);
 
 // Therapies page button colors matching the page theme
 const therapiesButtonColors = {
@@ -16,6 +21,59 @@ interface TherapyCardProps {
 
 export default function TherapyCard({ therapy }: TherapyCardProps) {
   const isCenter = therapy.iconPosition === 'center';
+  const cardRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const subtitleRef = useRef<HTMLParagraphElement>(null);
+  const descriptionRef = useRef<HTMLDivElement>(null);
+  const bestForRef = useRef<HTMLDivElement>(null);
+  const durationRef = useRef<HTMLDivElement>(null);
+  const ctaRef = useRef<HTMLDivElement>(null);
+  const iconRef = useRef<HTMLDivElement>(null);
+
+  // Fade-in animation effect (same as "Come and find me" section)
+  useEffect(() => {
+    if (!cardRef.current) return;
+
+    const elements = [
+      titleRef.current,
+      subtitleRef.current,
+      descriptionRef.current,
+      bestForRef.current,
+      durationRef.current,
+      ctaRef.current,
+      iconRef.current,
+    ].filter((el) => el !== null);
+
+    if (elements.length === 0) return;
+
+    // Set initial state - everything invisible
+    gsap.set(elements, {
+      opacity: 0,
+      y: 20,
+    });
+
+    // Create timeline
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: cardRef.current,
+        start: 'top 70%',
+        toggleActions: 'play none none none',
+      },
+    });
+
+    // Animate elements with stagger
+    tl.to(elements, {
+      opacity: 1,
+      y: 0,
+      duration: 1,
+      stagger: 0.15,
+      ease: 'power2.out',
+    });
+
+    return () => {
+      tl.kill();
+    };
+  }, []);
 
   // Helper to render description based on type
   const renderDescription = () => {
@@ -69,9 +127,9 @@ export default function TherapyCard({ therapy }: TherapyCardProps) {
   if (isCenter) {
     // Special layout for ASP (centered)
     return (
-      <div className="w-full bg-[#d6c68e] rounded-[24px] p-10 flex flex-col items-center gap-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
+      <div ref={cardRef} className="w-full bg-[#d6c68e] rounded-[24px] p-10 flex flex-col items-center gap-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
         {/* Icon centered at top */}
-        <div className="w-full flex justify-center">
+        <div ref={iconRef} className="w-full flex justify-center">
           <img
             src={therapy.icon}
             alt={therapy.title}
@@ -82,23 +140,25 @@ export default function TherapyCard({ therapy }: TherapyCardProps) {
         {/* Content centered */}
         <div className="flex flex-col gap-4 items-center text-center max-w-[450px]">
           <h3
+            ref={titleRef}
             className="text-[48px] leading-normal text-[#645c42]"
             style={{ fontFamily: 'var(--font-saphira), serif' }}
           >
             {therapy.title}
           </h3>
           <p
+            ref={subtitleRef}
             className="text-[24px] leading-normal text-[#645c42] uppercase tracking-[3.84px]"
             style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
           >
             {therapy.subtitle}
           </p>
-          <div className="text-[#645c42] text-[12px] text-justify leading-normal w-[400px]">
+          <div ref={descriptionRef} className="text-[#645c42] text-[12px] text-justify leading-normal w-[400px]">
             {renderDescription()}
           </div>
 
           {/* CTA */}
-          <div className="mt-4">
+          <div ref={ctaRef} className="mt-4">
             <Button text={therapy.ctaText} size="small" colors={therapiesButtonColors} />
           </div>
         </div>
@@ -108,17 +168,19 @@ export default function TherapyCard({ therapy }: TherapyCardProps) {
 
   // Standard layout - Figma design: Icon top-right, content on left
   return (
-    <div className="w-full bg-[#d6c68e] rounded-[24px] shadow-[0_10px_30px_rgba(0,0,0,0.12)] p-8">
+    <div ref={cardRef} className="w-full bg-[#d6c68e] rounded-[24px] shadow-[0_10px_30px_rgba(0,0,0,0.12)] p-8">
       <div className="flex flex-row gap-8">
         {/* Content - takes most of the space */}
         <div className="flex-1 flex flex-col gap-3">
           <h3
+            ref={titleRef}
             className="text-[48px] leading-tight text-[#645c42]"
             style={{ fontFamily: 'var(--font-saphira), serif' }}
           >
             {therapy.title}
           </h3>
           <p
+            ref={subtitleRef}
             className="text-[24px] leading-normal text-[#645c42] uppercase tracking-[3.84px]"
             style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
           >
@@ -126,11 +188,13 @@ export default function TherapyCard({ therapy }: TherapyCardProps) {
           </p>
 
           {/* Description */}
-          {renderDescription()}
+          <div ref={descriptionRef}>
+            {renderDescription()}
+          </div>
 
           {/* Best For section */}
           {therapy.bestFor.length > 0 && (
-            <div className="flex flex-col gap-2">
+            <div ref={bestForRef} className="flex flex-col gap-2">
               <p
                 className="text-[#645c42] text-[12px] uppercase tracking-[1.92px]"
                 style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
@@ -152,7 +216,7 @@ export default function TherapyCard({ therapy }: TherapyCardProps) {
           )}
 
           {/* Session Duration */}
-          <div className="flex flex-col gap-1">
+          <div ref={durationRef} className="flex flex-col gap-1">
             <p
               className="text-[#645c42] text-[12px] uppercase tracking-[1.92px]"
               style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
@@ -168,13 +232,13 @@ export default function TherapyCard({ therapy }: TherapyCardProps) {
           </div>
 
           {/* CTA */}
-          <div className="mt-2">
+          <div ref={ctaRef} className="mt-2">
             <Button text={therapy.ctaText} size="small" colors={therapiesButtonColors} />
           </div>
         </div>
 
         {/* Icon - positioned on the right, aligned to top */}
-        <div className="shrink-0 w-[200px] h-[200px] flex items-start justify-center pt-4">
+        <div ref={iconRef} className="shrink-0 w-[200px] h-[200px] flex items-start justify-center pt-4">
           <img
             src={therapy.icon}
             alt={therapy.title}

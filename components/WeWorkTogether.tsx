@@ -1,6 +1,6 @@
 'use client';
 
-import { useLayoutEffect, useRef } from 'react';
+import { useLayoutEffect, useRef, useState, useEffect } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Observer } from 'gsap/dist/Observer';
@@ -24,8 +24,20 @@ const workCards = [
 
 export default function WeWorkTogether() {
   const cardsSectionRef = useRef<HTMLDivElement | null>(null);
+  const stageRef = useRef<HTMLDivElement | null>(null);
+  const [stageHeight, setStageHeight] = useState(720);
 
-
+  // Calculate stage height based on tallest card
+  useEffect(() => {
+    if (!stageRef.current) return;
+    const cardElements = stageRef.current.querySelectorAll<HTMLElement>('.card');
+    let maxHeight = 720;
+    cardElements.forEach((card) => {
+      const height = card.offsetHeight;
+      if (height > maxHeight) maxHeight = height;
+    });
+    setStageHeight(maxHeight);
+  }, []);
 
   useLayoutEffect(() => {
     if (typeof window === 'undefined') return;
@@ -38,7 +50,7 @@ export default function WeWorkTogether() {
     const cards = Array.from(cardsSection.querySelectorAll<HTMLElement>('.card'));
     if (cards.length < 2) return;
 
-    const time = 0.55;
+    const time = 0.95; // Slower animation timing for smoother feel (matching therapies)
     let animating = false;
 
     // Single-card focus layout: only one card is visible at a time.
@@ -53,28 +65,93 @@ export default function WeWorkTogether() {
 
     const tl = gsap.timeline({ paused: true });
 
+    // Get text elements for each card to animate them separately
+    const getCardTextElements = (card: HTMLElement) => {
+      return {
+        image: card.querySelector('img'),
+        text: card.querySelector('p'),
+        button: card.querySelector('button, a'),
+      };
+    };
+
+    // Set initial state for first card's text elements
+    const firstCardText = getCardTextElements(cards[0]);
+    const firstCardElements = [firstCardText.image, firstCardText.text, firstCardText.button].filter(Boolean);
+    if (firstCardElements.length > 0) {
+      gsap.set(firstCardElements, { autoAlpha: 1 });
+    }
+
     // Build labels: card2, card3, ...
     for (let i = 0; i < cards.length - 1; i++) {
       tl.add(`card${i + 2}`);
       const current = cards[i];
       const next = cards[i + 1];
+      const currentText = getCardTextElements(current);
+      const nextText = getCardTextElements(next);
 
-      // Step 1: current card scales down and fades out (stacking feel) — still single-card.
+      // Filter out null elements
+      const currentElements = [currentText.image, currentText.text, currentText.button].filter(Boolean);
+      const nextImageText = [nextText.image, nextText.text].filter(Boolean);
+
+      // All text fades out together with slight stagger for organic feel
+      if (currentElements.length > 0) {
+        tl.to(currentElements, {
+          autoAlpha: 0,
+          y: -8,
+          duration: time * 0.5,
+          ease: 'power2.inOut',
+        });
+      }
+
+      // Card container fades out while text is fading
       tl.to(current, {
-        scale: Math.min(0.95, 0.85 + i * 0.05),
+        scale: 0.96,
         autoAlpha: 0,
-        duration: time * 0.75,
-        ease: 'power2.out',
-      });
+        duration: time * 0.5,
+        ease: 'power2.inOut',
+      }, '<0.1');
 
-      // Step 2: next card becomes visible and slides up into place.
-      tl.set(next, { zIndex: cards.length + i + 20, autoAlpha: 1 });
+      // Next card setup and slide in - starts before current fully fades
+      tl.set(next, { zIndex: cards.length + i + 20, autoAlpha: 1 }, '<0.2');
+      if (nextImageText.length > 0) {
+        tl.set(nextImageText, { autoAlpha: 0, y: 12 }, '<');
+      }
+      if (nextText.button) {
+        tl.set(nextText.button, { autoAlpha: 0, y: 10 }, '<');
+      }
+
       tl.fromTo(
         next,
-        { y: () => window.innerHeight },
-        { y: 0, duration: time, ease: 'power2.out', immediateRender: false },
-        '>-0.05'
+        { y: () => window.innerHeight * 0.15 },
+        { y: 0, duration: time * 0.55, ease: 'power2.out', immediateRender: false },
+        '<'
       );
+
+      // Text fades in as card settles - all together for cohesion
+      if (nextText.image) {
+        tl.to([nextText.image], {
+          autoAlpha: 1,
+          y: 0,
+          duration: time * 0.5,
+          ease: 'power2.out',
+        }, '<0.1');
+      }
+      if (nextText.text) {
+        tl.to([nextText.text], {
+          autoAlpha: 1,
+          y: 0,
+          duration: time * 0.5,
+          ease: 'power2.out',
+        }, '<0.03');
+      }
+      if (nextText.button) {
+        tl.to([nextText.button], {
+          autoAlpha: 1,
+          y: 0,
+          duration: time * 0.5,
+          ease: 'power2.out',
+        }, '<0.05');
+      }
     }
     tl.add(`card${cards.length + 1}`);
 
@@ -91,6 +168,8 @@ export default function WeWorkTogether() {
       if (animating) return;
       animating = true;
       tl.tweenTo(direction, {
+        duration: time, // Explicit duration for consistent speed in both directions
+        ease: 'power2.inOut',
         onComplete: () => {
           animating = false;
         },
@@ -129,8 +208,8 @@ export default function WeWorkTogether() {
       id: 'WORK-CARDS-LOCK',
       trigger: cardsSection,
       pin: true,
-      // Start when the card stack is comfortably below the fixed headers.
-      start: 'top top+=340',
+      // Start when the card stack is comfortably below fixed headers (main header 148px + subheader ~70px)
+      start: 'top top+=230',
       // Short end – once Observer releases, native scroll continues and unpins quickly.
       end: '+=120',
       onEnter: () => {
@@ -196,7 +275,7 @@ export default function WeWorkTogether() {
           {/* Keep width consistent with other sections (same max-w wrapper as page content). */}
           <div className="relative w-full">
             {/* Stage: cards overlap here */}
-            <div className="relative h-[720px] w-full">
+            <div ref={stageRef} className="relative w-full" style={{ height: `${stageHeight}px` }}>
               {/* Card 01 */}
               <div className="card absolute left-0 right-0 top-0 mx-auto w-full rounded-[24px] bg-[#d6c68e] p-10 text-center shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
                 <div className="mb-10 flex justify-center">
