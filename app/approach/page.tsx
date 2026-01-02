@@ -172,15 +172,7 @@ export default function ApproachPage() {
                 </p>
               </div>
 
-              {/* Row 3 */}
-              <div className="col-start-3 flex min-h-[200px] items-center justify-center rounded-[24px] bg-[#9ac1bf] p-10 lg:col-start-3">
-                <p
-                  className="text-center text-[24px] leading-normal text-[#354443]"
-                  style={{ fontFamily: 'var(--font-saphira), serif' }}
-                >
-                  This is a thought card with some text
-                </p>
-              </div>
+              
             </div>
           </div>
         </Section>

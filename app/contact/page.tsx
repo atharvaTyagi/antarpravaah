@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Lenis from 'lenis';
 import Section from '@/components/Section';
 import Button from '@/components/Button';
@@ -23,6 +23,9 @@ const cardButtonColors = {
 };
 
 export default function ContactPage() {
+  // Track which FAQ is expanded (format: "sectionIndex-faqIndex")
+  const [expandedFaq, setExpandedFaq] = useState<string | null>('0-0');
+
   useEffect(() => {
     const lenis = new Lenis({
       duration: 1.2,
@@ -214,14 +217,18 @@ export default function ContactPage() {
               </div>
 
               {/* FAQ Items */}
-              {section.faqs.map((faq, faqIndex) => (
-                <FaqItem
-                  key={faqIndex}
-                  question={faq.question}
-                  answer={faq.answer}
-                  defaultExpanded={sectionIndex === 0 && faqIndex === 0}
-                />
-              ))}
+              {section.faqs.map((faq, faqIndex) => {
+                const faqId = `${sectionIndex}-${faqIndex}`;
+                return (
+                  <FaqItem
+                    key={faqIndex}
+                    question={faq.question}
+                    answer={faq.answer}
+                    isExpanded={expandedFaq === faqId}
+                    onToggle={() => setExpandedFaq(expandedFaq === faqId ? null : faqId)}
+                  />
+                );
+              })}
 
               {/* Page End Blob */}
               <div className="w-full flex items-center justify-center py-5">

@@ -40,79 +40,21 @@ export default function Footer() {
   return (
     <footer className="relative z-20 w-full px-6 py-14 md:p-20" style={{ backgroundColor: footerBg }}>
       <div className="mx-auto flex max-w-[1282px] flex-col items-center gap-10">
-        {/* Top row */}
-        <div className="flex w-full flex-col items-center justify-center gap-10 md:flex-row md:items-start md:gap-10 md:px-5">
-          {/* Quick Links */}
-          <div className="flex flex-col items-center gap-4">
-            <p
-              className="text-center text-[24px] leading-[normal]"
-              style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400, color: footerAccent }}
-            >
-              Quick Links
-            </p>
-            <div className="grid w-full max-w-[439px] grid-cols-3 gap-x-4 gap-y-2">
-              <QuickLink href="/about" label="About Namita" accentColor={footerAccent} bgColor={footerBg} />
-              <QuickLink href="/approach" label="Approach" accentColor={footerAccent} bgColor={footerBg} />
-              <QuickLink href="/therapies" label="Therapies" accentColor={footerAccent} bgColor={footerBg} />
-              <QuickLink href="/immersions" label="Immersions" accentColor={footerAccent} bgColor={footerBg} />
-              <QuickLink href="/trainings" label="Trainings" accentColor={footerAccent} bgColor={footerBg} />
-              <QuickLink href="/contact#faq" label="FAQ" accentColor={footerAccent} bgColor={footerBg} />
-            </div>
-          </div>
-
-          {/* Divider */}
-          <div className="hidden h-[163px] w-px md:block" style={{ backgroundColor: footerAccent }} />
-
-          {/* Contact */}
-          <div className="flex flex-col items-center justify-center gap-4 text-center" style={{ color: footerAccent }}>
-            <p
-              className="text-[24px] leading-[normal]"
-              style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400 }}
-            >
-              Get In Touch
-            </p>
-            <div
-              className="flex flex-col gap-4 text-[12px] leading-[normal]"
-              style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
-            >
-              <p className="w-[209px]">Email: [email address]</p>
-              <p className="w-[209px]">Phone: [phone number]</p>
-              <p className="w-[209px]">Location & Timings: [location details]</p>
-            </div>
-          </div>
-
-          {/* Divider */}
-          <div className="hidden h-[163px] w-px md:block" style={{ backgroundColor: footerAccent }} />
-
-          {/* Socials */}
-          <div className="flex flex-col items-center justify-center gap-4 text-center" style={{ color: footerAccent }}>
-            <p
-              className="text-[24px] leading-[normal]"
-              style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400 }}
-            >
-              Socials
-            </p>
-            <div
-              className="flex flex-col gap-4 text-[12px] leading-[normal]"
-              style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
-            >
-              <a
-                className="hover:opacity-80"
-                href="https://instagram.com/antarpravaah"
-                target="_blank"
-                rel="noreferrer"
-              >
-                IG : @antarpravaah
-              </a>
-              <a
-                className="hover:opacity-80"
-                href="https://x.com/antarpravaah"
-                target="_blank"
-                rel="noreferrer"
-              >
-                X : @antarpravaah
-              </a>
-            </div>
+        {/* Quick Links */}
+        <div className="flex flex-col items-center gap-4 w-full">
+          <p
+            className="text-center text-[24px] leading-[normal]"
+            style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400, color: footerAccent }}
+          >
+            Quick Links
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <QuickLink href="/about" label="About Namita" accentColor={footerAccent} bgColor={footerBg} />
+            <QuickLink href="/approach" label="Approach" accentColor={footerAccent} bgColor={footerBg} />
+            <QuickLink href="/therapies" label="Therapies" accentColor={footerAccent} bgColor={footerBg} />
+            <QuickLink href="/immersions" label="Immersions" accentColor={footerAccent} bgColor={footerBg} />
+            <QuickLink href="/trainings" label="Trainings" accentColor={footerAccent} bgColor={footerBg} />
+            <QuickLink href="/contact#faq" label="FAQ" accentColor={footerAccent} bgColor={footerBg} />
           </div>
         </div>
 

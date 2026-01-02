@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Lottie from 'lottie-react';
-import animationData from '@/public/animation-spiral.json';
+import animationData from '@/public/spiral_animation.json';
 
 interface SplashScreenProps {
   onComplete: () => void;
@@ -152,7 +152,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
         >
           <Lottie
             animationData={animationData}
-            loop={true}
+            loop={false}
             autoplay={true}
             style={{
               width: '100%',

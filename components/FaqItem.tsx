@@ -1,20 +1,17 @@
 'use client';
 
-import { useState } from 'react';
-
 interface FaqItemProps {
   question: string;
   answer: string;
-  defaultExpanded?: boolean;
+  isExpanded: boolean;
+  onToggle: () => void;
 }
 
-export default function FaqItem({ question, answer, defaultExpanded = false }: FaqItemProps) {
-  const [isExpanded, setIsExpanded] = useState(defaultExpanded);
-
+export default function FaqItem({ question, answer, isExpanded, onToggle }: FaqItemProps) {
   return (
     <div className="w-full border-b border-[#93a378]/20">
       <button
-        onClick={() => setIsExpanded(!isExpanded)}
+        onClick={onToggle}
         className="w-full flex items-start justify-between gap-4 p-5 text-left hover:bg-[#93a378]/5 transition-colors"
         aria-expanded={isExpanded}
       >
