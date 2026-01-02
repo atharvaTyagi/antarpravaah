@@ -21,6 +21,8 @@ export type SectionId =
   | 'cta'
   | 'about'
   | 'contact'
+  | 'contact-info'
+  | 'contact-cta'
   | 'faq';
 
 export interface Theme {
@@ -176,16 +178,32 @@ export const SECTION_THEMES: Record<SectionId, Theme> = {
     headerOuterBg: '#f6edd0', // Light beige outer
   },
   contact: {
-    bg: '#6a3f33', // Dark Brown
-    text: '#f6edd0',
-    accent: '#9ac1bf',
-    headerBg: '#354443', // Dark teal/green
+    bg: '#f6edd0', // Base White/Cream (from Figma)
+    text: '#474e3a', // G800 Dark Green (from Figma)
+    accent: '#93a378', // G500 Soft Green (from Figma)
+    headerBg: '#474e3a', // Dark green header (from Figma)
+    headerOuterBg: '#f6edd0', // Light beige outer
+  },
+  'contact-info': {
+    bg: '#f6edd0', // Base White/Cream
+    text: '#474e3a', // G800 Dark Green
+    accent: '#93a378', // G500 Soft Green
+    headerBg: '#474e3a', // Dark green header
+    headerOuterBg: '#f6edd0', // Light beige outer
+  },
+  'contact-cta': {
+    bg: '#f6edd0', // Base White/Cream
+    text: '#474e3a', // G800 Dark Green
+    accent: '#93a378', // G500 Soft Green
+    headerBg: '#474e3a', // Dark green header
+    headerOuterBg: '#f6edd0', // Light beige outer
   },
   faq: {
-    bg: '#E8DCC6', // Warm Beige (same as therapies)
-    text: '#3A3A3A',
-    accent: '#A68B5B',
-    headerBg: '#D4C4A8', // Lighter beige for header
+    bg: '#f6edd0', // Base White/Cream
+    text: '#474e3a', // G800 Dark Green
+    accent: '#93a378', // G500 Soft Green
+    headerBg: '#474e3a', // Dark green header
+    headerOuterBg: '#f6edd0', // Light beige outer
   },
 };
 

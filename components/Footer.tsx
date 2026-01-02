@@ -56,7 +56,7 @@ export default function Footer() {
               <QuickLink href="/therapies" label="Therapies" accentColor={footerAccent} bgColor={footerBg} />
               <QuickLink href="/immersions" label="Immersions" accentColor={footerAccent} bgColor={footerBg} />
               <QuickLink href="/trainings" label="Trainings" accentColor={footerAccent} bgColor={footerBg} />
-              <QuickLink href="/faq" label="FAQ" accentColor={footerAccent} bgColor={footerBg} />
+              <QuickLink href="/contact#faq" label="FAQ" accentColor={footerAccent} bgColor={footerBg} />
             </div>
           </div>
 
