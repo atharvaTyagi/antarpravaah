@@ -29,9 +29,14 @@ export default function VoicesOfTransformation() {
   }, []);
 
   // Convert vertical wheel/trackpad scroll into horizontal carousel scroll while this section is active.
+  // Only enable on desktop (not mobile/tablet) since they can swipe horizontally naturally
   useEffect(() => {
     const el = sectionRef.current;
     if (!el) return;
+
+    // Check if device is mobile/tablet
+    const isMobileOrTablet = window.innerWidth < 1024;
+    if (isMobileOrTablet) return; // Skip scroll takeover on mobile/tablet
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -133,7 +138,7 @@ export default function VoicesOfTransformation() {
   return (
     <Section
       id="voices"
-      className="relative min-h-screen w-full bg-[#f6edd0] pb-16 sm:pb-20 lg:pb-24 pt-[60px] sm:pt-[76px] lg:pt-[96px]"
+      className="relative w-full bg-[#f6edd0] pb-16 sm:pb-20 lg:pb-24 pt-[60px] sm:pt-[76px] lg:pt-[96px]"
       ref={sectionRef}
     >
       {/* Carousel */}

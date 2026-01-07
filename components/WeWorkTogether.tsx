@@ -236,7 +236,7 @@ export default function WeWorkTogether() {
   return (
     <Section
       id="work-together"
-      className="relative min-h-screen w-full bg-[#f6edd0] pb-16 sm:pb-20 lg:pb-24 pt-[60px] sm:pt-[76px] lg:pt-[96px] overflow-hidden"
+      className="relative w-full bg-[#f6edd0] pb-16 sm:pb-20 lg:pb-24 pt-[60px] sm:pt-[76px] lg:pt-[96px] overflow-hidden"
     >
       {/* Subtle repeating spiral background - larger and well-spaced, smaller on mobile */}
       <div className="absolute inset-0 pointer-events-none opacity-[0.06] z-0">

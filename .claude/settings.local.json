@@ -20,7 +20,8 @@
       "Bash(node scripts/extract-and-convert.js:*)",
       "Bash(node scripts/update-image-refs.js:*)",
       "Bash(du:*)",
-      "Bash(npm uninstall:*)"
+      "Bash(npm uninstall:*)",
+      "Bash(git push:*)"
     ]
   }
 }
