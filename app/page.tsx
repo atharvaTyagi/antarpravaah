@@ -15,12 +15,6 @@ import { useUiStore } from '@/lib/stores/useUiStore';
 // Register GSAP plugins
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
-
-  // Configure ScrollTrigger for better mobile support
-  ScrollTrigger.config({
-    // Don't interfere with native scroll on touch devices
-    autoRefreshEvents: "visibilitychange,DOMContentLoaded,load",
-  });
 }
 
 export default function Home() {
@@ -34,23 +28,7 @@ export default function Home() {
     // Initialize Lenis smooth scroll only after splash is complete
     if (!splashComplete) return;
 
-    // Check if device is mobile/tablet - disable Lenis on touch devices
-    const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-    const isMobileSize = window.innerWidth < 1024;
-
-    // Use native scroll on mobile/tablet for better touch support
-    if (isTouchDevice || isMobileSize) {
-      // Just scroll to journey section with native scroll
-      setTimeout(() => {
-        const journeyElement = document.getElementById('journey');
-        if (journeyElement) {
-          journeyElement.scrollIntoView({ behavior: 'smooth' });
-        }
-      }, 300);
-      return;
-    }
-
-    // Small delay to ensure DOM is ready (desktop only)
+    // Small delay to ensure DOM is ready
     const initTimer = setTimeout(() => {
       const lenis = new Lenis({
         duration: 1.2,
@@ -124,7 +102,7 @@ export default function Home() {
   };
 
   return (
-    <main className="relative min-h-screen" style={{ overflow: 'visible' }}>
+    <main className="relative min-h-screen">
       {/* Splash Screen - Fixed overlay that fades out on scroll */}
       <SplashScreen onComplete={handleSplashComplete} />
 
@@ -141,7 +119,6 @@ export default function Home() {
         style={{
           opacity: splashComplete ? 1 : 0,
           pointerEvents: splashComplete ? 'auto' : 'none',
-          touchAction: 'auto', // Ensure touch scrolling works
         }}
       >
         <TheJourney />

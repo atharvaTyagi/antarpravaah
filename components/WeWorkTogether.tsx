@@ -58,22 +58,6 @@ export default function WeWorkTogether() {
     const cards = Array.from(cardsSection.querySelectorAll<HTMLElement>('.card'));
     if (cards.length < 2) return;
 
-    // Disable card animation/observer on mobile - just show all cards stacked normally
-    const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-    const isMobileSize = window.innerWidth < 768;
-
-    if (isTouchDevice || isMobileSize) {
-      // On mobile, just make all cards visible in a normal stacked layout
-      gsap.set(cards, {
-        autoAlpha: 1,
-        y: 0,
-        scale: 1,
-        position: 'relative',
-        zIndex: 1,
-      });
-      return;
-    }
-
     const time = 0.95; // Slower animation timing for smoother feel (matching therapies)
     let animating = false;
 
@@ -186,8 +170,6 @@ export default function WeWorkTogether() {
       // At the end and user scrolls down -> release scroll
       if ((!next && isScrollingDown) || (!prev && !isScrollingDown)) {
         cardsObserver.disable();
-        // Ensure Lenis restarts on mobile/tablet
-        (window as unknown as { __lenis?: { start?: () => void } }).__lenis?.start?.();
         return;
       }
       if (!direction) return;
@@ -213,26 +195,18 @@ export default function WeWorkTogether() {
         // Pause Lenis while we take over scroll.
         (window as unknown as { __lenis?: { stop?: () => void } }).__lenis?.stop?.();
 
-        // Freeze native scroll position (fixes momentum scrolling) - only on desktop
-        if (window.innerWidth >= 768) {
-          const savedScroll = self.scrollY();
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (self as any)._restoreScroll = () => self.scrollY(savedScroll);
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          document.addEventListener('scroll', (self as any)._restoreScroll, { passive: false });
-        }
+        // Freeze native scroll position (fixes momentum scrolling)
+        const savedScroll = self.scrollY();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (self as any)._restoreScroll = () => self.scrollY(savedScroll);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        document.addEventListener('scroll', (self as any)._restoreScroll, { passive: false });
       },
       onDisable(self) {
         // Resume Lenis when done.
         (window as unknown as { __lenis?: { start?: () => void } }).__lenis?.start?.();
-        // Remove scroll lock only if it was added
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        if ((self as any)._restoreScroll) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          document.removeEventListener('scroll', (self as any)._restoreScroll);
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (self as any)._restoreScroll = null;
-        }
+        document.removeEventListener('scroll', (self as any)._restoreScroll);
       },
     });
 
@@ -308,10 +282,10 @@ export default function WeWorkTogether() {
         <div ref={cardsSectionRef} className="cards-section relative w-full">
           {/* Keep width consistent with other sections (same max-w wrapper as page content). */}
           <div className="relative w-full">
-            {/* Stage: cards overlap on desktop, stack normally on mobile */}
-            <div ref={stageRef} className="relative w-full md:h-auto" style={{ height: isClient && window.innerWidth >= 768 ? `${stageHeight}px` : 'auto' }}>
+            {/* Stage: cards overlap here */}
+            <div ref={stageRef} className="relative w-full" style={{ height: `${stageHeight}px` }}>
               {/* Card 01 */}
-              <div className="card relative md:absolute left-0 right-0 top-0 mx-auto w-full rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d6c68e] p-6 sm:p-8 lg:p-10 text-center shadow-[0_10px_30px_rgba(0,0,0,0.12)] mb-6 md:mb-0">
+              <div className="card absolute left-0 right-0 top-0 mx-auto w-full rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d6c68e] p-6 sm:p-8 lg:p-10 text-center shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
                 <div className="mb-6 sm:mb-8 lg:mb-10 flex justify-center">
                   <Image
                     src={getCloudinaryUrl('antarpravaah/we-work/antarpravaah/we-work/we_work_together_vector_one')}
@@ -343,7 +317,7 @@ export default function WeWorkTogether() {
                 return (
                   <div
                     key={index}
-                    className="card relative md:absolute left-0 right-0 top-0 mx-auto w-full rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d6c68e] p-6 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] mb-6 md:mb-0"
+                    className="card absolute left-0 right-0 top-0 mx-auto w-full rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d6c68e] p-6 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)]"
                   >
                     <div
                       className={`flex flex-col items-center gap-6 sm:gap-8 lg:gap-10 md:flex-row ${
@@ -371,7 +345,7 @@ export default function WeWorkTogether() {
               })}
 
               {/* CTA Card (part of the stack; final card) */}
-              <div className="card relative md:absolute left-0 right-0 top-0 mx-auto flex w-full items-center justify-center rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#645c42] p-6 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] min-h-[240px] sm:min-h-[280px] lg:min-h-[320px]">
+              <div className="card absolute left-0 right-0 top-0 mx-auto flex w-full items-center justify-center rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#645c42] p-6 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] min-h-[240px] sm:min-h-[280px] lg:min-h-[320px]">
                 <Button text="Explore Our Approach" size="large" mode="light" href="/approach" />
               </div>
             </div>
