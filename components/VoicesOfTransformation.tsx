@@ -51,6 +51,8 @@ export default function VoicesOfTransformation() {
 
   useEffect(() => {
     const lockBodyScroll = () => {
+      // Only lock body scroll on desktop to prevent mobile scroll issues
+      if (window.innerWidth < 768) return;
       if (bodyScrollLock.current) return;
       const body = document.body;
       const docEl = document.documentElement;
@@ -74,6 +76,8 @@ export default function VoicesOfTransformation() {
     };
 
     const onWheel = (e: WheelEvent) => {
+      // Disable wheel takeover on mobile/tablet - let native scroll work
+      if (window.innerWidth < 768) return;
       if (!isScrollTakeoverActive) return;
       const scroller = scrollerRef.current;
       if (!scroller) return;

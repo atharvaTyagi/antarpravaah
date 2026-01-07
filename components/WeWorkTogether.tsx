@@ -164,6 +164,8 @@ export default function WeWorkTogether() {
       // At the end and user scrolls down -> release scroll
       if ((!next && isScrollingDown) || (!prev && !isScrollingDown)) {
         cardsObserver.disable();
+        // Ensure Lenis restarts on mobile/tablet
+        (window as unknown as { __lenis?: { start?: () => void } }).__lenis?.start?.();
         return;
       }
       if (!direction) return;
@@ -189,18 +191,26 @@ export default function WeWorkTogether() {
         // Pause Lenis while we take over scroll.
         (window as unknown as { __lenis?: { stop?: () => void } }).__lenis?.stop?.();
 
-        // Freeze native scroll position (fixes momentum scrolling)
-        const savedScroll = self.scrollY();
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (self as any)._restoreScroll = () => self.scrollY(savedScroll);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        document.addEventListener('scroll', (self as any)._restoreScroll, { passive: false });
+        // Freeze native scroll position (fixes momentum scrolling) - only on desktop
+        if (window.innerWidth >= 768) {
+          const savedScroll = self.scrollY();
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (self as any)._restoreScroll = () => self.scrollY(savedScroll);
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          document.addEventListener('scroll', (self as any)._restoreScroll, { passive: false });
+        }
       },
       onDisable(self) {
         // Resume Lenis when done.
         (window as unknown as { __lenis?: { start?: () => void } }).__lenis?.start?.();
+        // Remove scroll lock only if it was added
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        document.removeEventListener('scroll', (self as any)._restoreScroll);
+        if ((self as any)._restoreScroll) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          document.removeEventListener('scroll', (self as any)._restoreScroll);
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (self as any)._restoreScroll = null;
+        }
       },
     });
 
