@@ -76,23 +76,13 @@ export default function SectionSubheader() {
       detectActiveSection();
     };
 
-    // Use both native scroll and Lenis scroll events
     window.addEventListener('scroll', handleScroll, { passive: true });
-
-    // Also listen to Lenis scroll if available
-    const lenis = (window as unknown as { __lenis?: { on: (event: string, callback: () => void) => void; off: (event: string, callback: () => void) => void } }).__lenis;
-    if (lenis) {
-      lenis.on('scroll', handleScroll);
-    }
 
     // Poll periodically for pinned section changes (GSAP Observer doesn't fire scroll)
     const pollInterval = setInterval(detectActiveSection, 100);
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
-      if (lenis) {
-        lenis.off('scroll', handleScroll);
-      }
       clearInterval(pollInterval);
     };
   }, [detectActiveSection]);

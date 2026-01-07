@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Lenis from 'lenis';
 import Section from '@/components/Section';
 import Button from '@/components/Button';
 import FaqItem from '@/components/FaqItem';
@@ -27,27 +26,7 @@ export default function ContactPage() {
   const [expandedFaq, setExpandedFaq] = useState<string | null>('0-0');
 
   useEffect(() => {
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      orientation: 'vertical',
-      gestureOrientation: 'vertical',
-      smoothWheel: true,
-      wheelMultiplier: 1,
-      touchMultiplier: 2,
-      infinite: false,
-    });
-
-    function raf(time: number) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-
-    requestAnimationFrame(raf);
-
-    return () => {
-      lenis.destroy();
-    };
+    // Native scroll; no smooth scroll library needed
   }, []);
 
   return (

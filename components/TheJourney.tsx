@@ -73,8 +73,6 @@ export default function TheJourney() {
     const section = sectionRef.current;
     const stepsContainer = stepsContainerRef.current;
     if (!section || !stepsContainer) return;
-
-    // Delay to ensure Lenis is ready
     const initTimeout = setTimeout(() => {
       const steps = stepRefs.current.filter(Boolean) as HTMLDivElement[];
       const connectors = connectorRefs.current.filter(Boolean) as HTMLDivElement[];

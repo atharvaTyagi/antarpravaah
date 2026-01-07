@@ -1,7 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
-import Lenis from 'lenis';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Section from '@/components/Section';
@@ -14,32 +12,6 @@ import { pathways } from '@/data/pathwaysContent';
 gsap.registerPlugin(ScrollTrigger);
 
 export default function ApproachPage() {
-  useEffect(() => {
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      orientation: 'vertical',
-      gestureOrientation: 'vertical',
-      smoothWheel: true,
-      wheelMultiplier: 1,
-      touchMultiplier: 2,
-      infinite: false,
-    });
-
-    // Store Lenis instance globally so Observer can control it
-    (window as unknown as { __lenis?: typeof lenis }).__lenis = lenis;
-
-    function raf(time: number) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-
-    requestAnimationFrame(raf);
-
-    return () => {
-      lenis.destroy();
-    };
-  }, []);
 
   // Prepare cards for the sticky stack
   const pathwayCards = pathways.map((pathway) => ({

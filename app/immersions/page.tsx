@@ -2,7 +2,6 @@
 
 import { useEffect } from 'react';
 import Image from 'next/image';
-import Lenis from 'lenis';
 import Section from '@/components/Section';
 import Button from '@/components/Button';
 import PageEndBlob from '@/components/PageEndBlob';
@@ -10,27 +9,7 @@ import { getCloudinaryUrl } from '@/lib/cloudinary';
 
 export default function ImmersionsPage() {
   useEffect(() => {
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      orientation: 'vertical',
-      gestureOrientation: 'vertical',
-      smoothWheel: true,
-      wheelMultiplier: 1,
-      touchMultiplier: 2,
-      infinite: false,
-    });
-
-    function raf(time: number) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-
-    requestAnimationFrame(raf);
-
-    return () => {
-      lenis.destroy();
-    };
+    // Native scroll; no smooth scroll library needed
   }, []);
 
   return (
@@ -121,7 +100,7 @@ export default function ImmersionsPage() {
             {/* Right decorative image */}
             <div className="pointer-events-none mt-16 h-[180px] w-[180px] shrink-0">
               <Image 
-                src={getCloudinaryUrl('antarpravaah/immersions/antarpravaah/immersions/immersion_3')} 
+                src={getCloudinaryUrl('antarpravaah/immersions/antarpravaah/immersions/immersion_2')} 
                 alt="" 
                 width={180} 
                 height={180}
@@ -134,7 +113,7 @@ export default function ImmersionsPage() {
           {/* Bottom center decorative image */}
           <div className="pointer-events-none mx-auto mt-8 h-[280px] w-[280px]">
             <Image 
-              src={getCloudinaryUrl('antarpravaah/immersions/antarpravaah/immersions/immersion_2')} 
+              src={getCloudinaryUrl('antarpravaah/immersions/antarpravaah/immersions/immersion_3')} 
               alt="" 
               width={280} 
               height={280}

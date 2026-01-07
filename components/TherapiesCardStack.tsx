@@ -178,9 +178,6 @@ export default function TherapiesCardStack({ cards, title }: TherapiesCardStackP
       onDown: () => tweenToLabel(tl.previousLabel(), false),
       onUp: () => tweenToLabel(tl.nextLabel(), true),
       onEnable(self) {
-        // Pause Lenis while we take over scroll.
-        (window as unknown as { __lenis?: { stop?: () => void } }).__lenis?.stop?.();
-
         // Freeze native scroll position (fixes momentum scrolling)
         const savedScroll = self.scrollY();
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -189,8 +186,6 @@ export default function TherapiesCardStack({ cards, title }: TherapiesCardStackP
         document.addEventListener('scroll', (self as any)._restoreScroll, { passive: false });
       },
       onDisable(self) {
-        // Resume Lenis when done.
-        (window as unknown as { __lenis?: { start?: () => void } }).__lenis?.start?.();
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         document.removeEventListener('scroll', (self as any)._restoreScroll);
       },

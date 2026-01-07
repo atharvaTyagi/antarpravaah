@@ -47,27 +47,25 @@ export default function GuidedJourneyModal({ isOpen, onClose }: GuidedJourneyMod
     }
   }, [isOpen]);
 
-  // Prevent body scroll when modal is open
+  // Prevent body scroll when modal is open, always restore on close/unmount
   useEffect(() => {
+    const body = document.body;
+    const html = document.documentElement;
+    const originalBodyOverflow = body.style.overflow;
+    const originalHtmlOverflow = html.style.overflow;
+
     if (isOpen) {
-      // Store original values
-      const originalBodyOverflow = document.body.style.overflow;
-      const originalHtmlOverflow = document.documentElement.style.overflow;
-
-      // Disable scrolling on both body and html
-      document.body.style.overflow = 'hidden';
-      document.documentElement.style.overflow = 'hidden';
-
-      // Pause Lenis if available
-      (window as unknown as { __lenis?: { stop?: () => void } }).__lenis?.stop?.();
-
-      return () => {
-        document.body.style.overflow = originalBodyOverflow;
-        document.documentElement.style.overflow = originalHtmlOverflow;
-        // Resume Lenis
-        (window as unknown as { __lenis?: { start?: () => void } }).__lenis?.start?.();
-      };
+      body.style.overflow = 'hidden';
+      html.style.overflow = 'hidden';
+    } else {
+      body.style.overflow = '';
+      html.style.overflow = '';
     }
+
+    return () => {
+      body.style.overflow = originalBodyOverflow;
+      html.style.overflow = originalHtmlOverflow;
+    };
   }, [isOpen]);
 
   const handleStartGuidedFlow = () => {

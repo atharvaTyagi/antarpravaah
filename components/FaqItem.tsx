@@ -48,7 +48,7 @@ export default function FaqItem({ question, answer, isExpanded, onToggle }: FaqI
         }}
       >
         <div className="px-5 pb-5">
-          <p
+          <div
             className="text-[12px] leading-relaxed text-[#474e3a]"
             style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
             dangerouslySetInnerHTML={{ __html: answer }}

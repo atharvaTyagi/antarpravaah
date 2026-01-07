@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import Lenis from 'lenis';
+import { useState, useEffect } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import TheJourney from '@/components/TheJourney';
@@ -20,67 +19,36 @@ if (typeof window !== 'undefined') {
 export default function Home() {
   const [splashComplete, setSplashComplete] = useState(false);
   const [showGuidedJourney, setShowGuidedJourney] = useState(false);
-  const contentRef = useRef<HTMLDivElement>(null);
-  const lenisRef = useRef<Lenis | null>(null);
   const setGlobalSplashComplete = useUiStore((state) => state.setSplashComplete);
 
-  useEffect(() => {
-    // Initialize Lenis smooth scroll only after splash is complete
-    if (!splashComplete) return;
-
-    // Small delay to ensure DOM is ready
-    const initTimer = setTimeout(() => {
-      const lenis = new Lenis({
-        duration: 1.2,
-        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        orientation: 'vertical',
-        gestureOrientation: 'vertical',
-        smoothWheel: true,
-        wheelMultiplier: 1,
-        touchMultiplier: 2,
-        infinite: false,
-      });
-
-      // Sync Lenis scroll with GSAP ScrollTrigger
-      lenis.on('scroll', ScrollTrigger.update);
-
-      // Use GSAP ticker to drive Lenis (ensures perfect sync)
-      gsap.ticker.add((time) => {
-        lenis.raf(time * 1000); // Convert to milliseconds
-      });
-      gsap.ticker.lagSmoothing(0); // Disable lag smoothing for smoother animations
-
-      // Store lenis instance for cleanup
-      lenisRef.current = lenis;
-      // Expose Lenis globally so GSAP Observer-based sections can temporarily pause it.
-      (window as unknown as { __lenis?: Lenis }).__lenis = lenis;
-
-      // Scroll to #journey section after splash completes
-      setTimeout(() => {
-        const journeyElement = document.getElementById('journey');
-        if (journeyElement && lenis) {
-          // Offset for fixed main header height so content doesn't render behind it
-          lenis.scrollTo('#journey', { duration: 1.5, offset: -188 });
-        }
-      }, 300);
-    }, 200);
-
-    return () => {
-      clearTimeout(initTimer);
-      gsap.ticker.remove(lenisRef.current?.raf as gsap.TickerCallback);
-      lenisRef.current?.destroy();
-      lenisRef.current = null;
-      (window as unknown as { __lenis?: Lenis }).__lenis = undefined;
-    };
-  }, [splashComplete]);
-
-  // Failsafe: once splash is complete, ensure scroll is enabled and triggers are fresh
+  // Scroll to journey section after splash completes
   useEffect(() => {
     if (!splashComplete) return;
+
+    // Ensure scroll is enabled
     document.body.style.overflow = '';
     document.documentElement.style.overflow = '';
-    lenisRef.current?.start?.();
-    ScrollTrigger.refresh(true);
+
+    // Scroll to #journey section with native smooth scroll
+    setTimeout(() => {
+      const journeyElement = document.getElementById('journey');
+      if (journeyElement) {
+        // Calculate offset for fixed header (148px main header + 40px padding)
+        const headerOffset = 188;
+        const elementPosition = journeyElement.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      }
+    }, 500);
+
+    // Refresh ScrollTrigger after scroll
+    setTimeout(() => {
+      ScrollTrigger.refresh(true);
+    }, 2000);
   }, [splashComplete]);
 
   const handleSplashComplete = () => {
@@ -114,7 +82,6 @@ export default function Home() {
 
       {/* Main Content - Only visible after splash completes */}
       <div
-        ref={contentRef}
         className="relative z-10 w-full pt-[90px] sm:pt-[108px] lg:pt-[148px]"
         style={{
           opacity: splashComplete ? 1 : 0,

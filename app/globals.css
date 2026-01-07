@@ -80,6 +80,10 @@
 }
 
 /* Custom font variables - update these when font files are available */
+html {
+  scroll-behavior: smooth;
+}
+
 :root {
   --font-saphira: 'Safira March Personal Use Only', Georgia, serif;
   --font-graphik: 'Graphik Trial', Arial, Helvetica, sans-serif;
