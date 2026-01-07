@@ -1,0 +1,46 @@
+Files to Convert to WebP (14 files)
+=====================================
+
+Location: C:\Users\athar\Atharva-freelance\antarpravaah\public
+
+Files:
+1. immersion_1.svg (18MB)
+2. immersion_2.svg (15MB)
+3. immersion_workshop_1.svg (13MB)
+4. immersion_workshop_2.svg (15MB)
+5. immersion_workshop_3.svg (11MB)
+6. namita_two.svg (14MB)
+7. namita_four.svg (11MB)
+8. namita_six.svg (16MB)
+9. training_1.svg (2.0MB)
+10. training_2.svg (6.8MB)
+11. training_3.svg (3.1MB)
+12. we_work_together_vector_one.svg (2.9MB)
+13. we_work_together_vector_two.svg (15MB)
+14. we_work_together_vector_four.svg (4.8MB)
+
+Total Size: ~125MB
+Expected After: ~6-12MB
+
+Conversion Settings:
+- Format: WebP
+- Quality: 82%
+- Method/Effort: 6 (if available)
+
+Output Names (keep exact same filename, just change extension):
+1. immersion_1.webp
+2. immersion_2.webp
+3. immersion_workshop_1.webp
+4. immersion_workshop_2.webp
+5. immersion_workshop_3.webp
+6. namita_two.webp
+7. namita_four.webp
+8. namita_six.webp
+9. training_1.webp
+10. training_2.webp
+11. training_3.webp
+12. we_work_together_vector_one.webp
+13. we_work_together_vector_two.webp
+14. we_work_together_vector_four.webp
+
+After conversion, save all .webp files to: C:\Users\athar\Atharva-freelance\antarpravaah\public

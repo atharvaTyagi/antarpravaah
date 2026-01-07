@@ -10,7 +10,16 @@
       "Bash(more:*)",
       "Bash(powershell:*)",
       "Bash(npx tsc:*)",
-      "Bash(npm run lint)"
+      "Bash(npm run lint)",
+      "Bash(dir:*)",
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(choco install:*)",
+      "Bash(node scripts/convert-images-alternative.js:*)",
+      "Bash(where magick)",
+      "Bash(node scripts/extract-and-convert.js:*)",
+      "Bash(node scripts/update-image-refs.js:*)",
+      "Bash(du:*)"
     ]
   }
 }

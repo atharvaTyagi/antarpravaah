@@ -280,7 +280,7 @@ export default function WeWorkTogether() {
               <div className="card absolute left-0 right-0 top-0 mx-auto w-full rounded-[24px] bg-[#d6c68e] p-10 text-center shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
                 <div className="mb-10 flex justify-center">
                   <img
-                    src="/we_work_together_vector_one.svg"
+                    src="/we_work_together_vector_one.webp"
                     alt=""
                     className="block h-[452px] w-[431px] max-w-full object-contain"
                   />
@@ -296,7 +296,7 @@ export default function WeWorkTogether() {
               {/* Cards 02-04 */}
               {workCards.map((card, index) => {
                 const isLeft = card.imagePosition === 'left';
-                const smallCardSrcs = ["/we_work_together_vector_two.svg", "/we_work_together_vector_three.svg", "/we_work_together_vector_four.svg"]; const imageSrc = smallCardSrcs[index] ?? smallCardSrcs[0];
+                const smallCardSrcs = ["/we_work_together_vector_two.webp", "/we_work_together_vector_three.webp", "/we_work_together_vector_four.webp"]; const imageSrc = smallCardSrcs[index] ?? smallCardSrcs[0];
                 return (
                   <div
                     key={index}

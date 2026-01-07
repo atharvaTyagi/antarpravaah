@@ -122,13 +122,13 @@ export default function AboutPage() {
               {/* Photo row 1 (Figma sizes) — overlaps into the green band slightly */}
               <div className="relative z-10 -mb-[140px] flex flex-col items-center justify-center gap-6 md:flex-row md:items-end md:gap-10">
                 <div className="h-[289px] w-[276px] overflow-hidden rounded-full">
-                  <FadeInImage src="/namita_one.svg" alt="" className="h-full w-full object-cover" />
+                  <FadeInImage src="/namita_one.webp" alt="" className="h-full w-full object-cover" />
                 </div>
                 <div className="h-[419px] w-[400px] overflow-hidden rounded-full">
-                  <FadeInImage src="/namita_two.svg" alt="" className="h-full w-full object-cover" />
+                  <FadeInImage src="/namita_two.webp" alt="" className="h-full w-full object-cover" />
                 </div>
                 <div className="h-[233px] w-[222px] overflow-hidden rounded-full">
-                  <FadeInImage src="/namita_three.svg" alt="" className="h-full w-full object-cover" />
+                  <FadeInImage src="/namita_three.webp" alt="" className="h-full w-full object-cover" />
                 </div>
               </div>
             </div>
@@ -211,13 +211,13 @@ export default function AboutPage() {
                 {/* Photo row 2 (Figma sizes) — slightly spills out of the green band */}
                 <div className="relative z-10 -mb-[160px] flex flex-col items-center justify-center gap-6 md:flex-row md:items-start md:gap-10">
                   <div className="h-[266px] w-[254px] overflow-hidden rounded-full">
-                    <FadeInImage src="/namita_four.svg" alt="" className="h-full w-full object-cover" />
+                    <FadeInImage src="/namita_four.webp" alt="" className="h-full w-full object-cover" />
                   </div>
                   <div className="h-[419px] w-[400px] overflow-hidden rounded-full">
-                    <FadeInImage src="/namita_five.svg" alt="" className="h-full w-full object-cover" />
+                    <FadeInImage src="/namita_five.webp" alt="" className="h-full w-full object-cover" />
                   </div>
                   <div className="h-[327px] w-[312px] overflow-hidden rounded-full">
-                    <FadeInImage src="/namita_six.svg" alt="" className="h-full w-full object-cover" />
+                    <FadeInImage src="/namita_six.webp" alt="" className="h-full w-full object-cover" />
                   </div>
                 </div>
               </div>

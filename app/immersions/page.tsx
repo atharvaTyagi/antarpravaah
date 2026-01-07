@@ -78,7 +78,7 @@ export default function ImmersionsPage() {
           <div className="flex items-start justify-center gap-8">
             {/* Left decorative image */}
             <div className="pointer-events-none mt-8 h-[200px] w-[200px] shrink-0">
-              <img src="/immersion_1.svg"/>
+              <img src="/immersion_1.webp"/>
             </div>
 
             {/* Center content */}
@@ -111,13 +111,13 @@ export default function ImmersionsPage() {
 
             {/* Right decorative image */}
             <div className="pointer-events-none mt-16 h-[180px] w-[180px] shrink-0">
-              <img src="/immersion_3.svg"/>
+              <img src="/immersion_2.webp"/>
             </div>
           </div>
 
           {/* Bottom center decorative image */}
           <div className="pointer-events-none mx-auto mt-8 h-[280px] w-[280px]">
-            <img src="/immersion_2.svg" />
+            <img src="/immersion_3.webp" />
           </div>
         </div>
       </Section>
@@ -193,7 +193,7 @@ export default function ImmersionsPage() {
                   {/* Right column: Image + Details */}
                   <div className="flex flex-1 flex-col gap-4">
                     <img
-                      src="/immersion_workshop_1.svg"
+                      src="/immersion_workshop_1.webp"
                       alt="Antar Smaran Immersive"
                       className="h-[206px] w-full rounded-2xl object-cover"
                     />
@@ -302,7 +302,7 @@ export default function ImmersionsPage() {
 
                   <div className="flex flex-1 flex-col gap-4">
                     <img
-                      src="/immersion_workshop_2.svg"
+                      src="/immersion_workshop_2.webp"
                       alt="Thread of Life"
                       className="h-[206px] w-full rounded-2xl object-cover"
                     />
@@ -399,7 +399,7 @@ export default function ImmersionsPage() {
 
                   <div className="flex flex-1 flex-col gap-4">
                     <img
-                      src="/immersion_workshop_3.svg"
+                      src="/immersion_workshop_3.webp"
                       alt="Primary Animal Guide"
                       className="h-[206px] w-full rounded-2xl object-cover"
                     />
@@ -457,7 +457,7 @@ export default function ImmersionsPage() {
           <div className="flex items-start justify-center gap-8">
             {/* Left decorative image */}
             <div className="pointer-events-none mt-8 h-[200px] w-[200px] shrink-0">
-              <img src="/training_1.svg" alt="" className="h-full w-full rounded-full object-cover" />
+              <img src="/training_1.webp" />
             </div>
 
             {/* Center content */}
@@ -487,13 +487,13 @@ export default function ImmersionsPage() {
 
             {/* Right decorative image */}
             <div className="pointer-events-none mt-16 h-[180px] w-[180px] shrink-0">
-              <img src="/training_2.svg" alt="" className="h-full w-full rounded-full object-cover" />
+              <img src="/training_2.webp" />
             </div>
           </div>
 
           {/* Bottom center decorative image */}
           <div className="pointer-events-none mx-auto mt-8 h-[280px] w-[280px]">
-            <img src="/training_3.svg" alt="" className="h-full w-full rounded-full object-cover" />
+            <img src="/training_3.webp" />
           </div>
         </div>
       </Section>
