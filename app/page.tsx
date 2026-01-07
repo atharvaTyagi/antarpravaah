@@ -96,6 +96,15 @@ export default function Home() {
     };
   }, [splashComplete]);
 
+  // Failsafe: once splash is complete, ensure scroll is enabled and triggers are fresh
+  useEffect(() => {
+    if (!splashComplete) return;
+    document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
+    lenisRef.current?.start?.();
+    ScrollTrigger.refresh(true);
+  }, [splashComplete]);
+
   const handleSplashComplete = () => {
     setSplashComplete(true);
     setGlobalSplashComplete(true);
