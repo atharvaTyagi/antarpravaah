@@ -235,43 +235,43 @@ export default function WeWorkTogether() {
   return (
     <Section
       id="work-together"
-      className="relative min-h-screen w-full bg-[#f6edd0] pb-24 pt-[96px] overflow-hidden"
+      className="relative min-h-screen w-full bg-[#f6edd0] pb-16 sm:pb-20 lg:pb-24 pt-[60px] sm:pt-[76px] lg:pt-[96px] overflow-hidden"
     >
-      {/* Subtle repeating spiral background - larger and well-spaced */}
+      {/* Subtle repeating spiral background - larger and well-spaced, smaller on mobile */}
       <div className="absolute inset-0 pointer-events-none opacity-[0.06] z-0">
         <img
           src="/splash_vector.svg"
           alt=""
-          className="absolute"
-          style={{ width: '380px', height: 'auto', top: '5%', left: '5%', transform: 'rotate(15deg)' }}
+          className="absolute hidden sm:block w-[25%] h-auto"
+          style={{ top: '5%', left: '5%', transform: 'rotate(15deg)' }}
         />
         <img
           src="/splash_vector.svg"
           alt=""
-          className="absolute"
-          style={{ width: '360px', height: 'auto', top: '8%', right: '8%', transform: 'rotate(-60deg)' }}
+          className="absolute w-[15%] sm:w-[12%] h-auto"
+          style={{ top: '8%', right: '8%', transform: 'rotate(-60deg)' }}
         />
         <img
           src="/splash_vector.svg"
           alt=""
-          className="absolute"
-          style={{ width: '400px', height: 'auto', bottom: '30%', left: '10%', transform: 'rotate(85deg)' }}
+          className="absolute hidden sm:block w-[26%] h-auto"
+          style={{ bottom: '30%', left: '10%', transform: 'rotate(85deg)' }}
         />
         <img
           src="/splash_vector.svg"
           alt=""
-          className="absolute"
-          style={{ width: '370px', height: 'auto', bottom: '25%', right: '12%', transform: 'rotate(-120deg)' }}
+          className="absolute hidden lg:block w-[24%] h-auto"
+          style={{ bottom: '25%', right: '12%', transform: 'rotate(-120deg)' }}
         />
         <img
           src="/splash_vector.svg"
           alt=""
-          className="absolute"
-          style={{ width: '390px', height: 'auto', bottom: '5%', left: '50%', transform: 'translate(-50%, 0) rotate(40deg)' }}
+          className="absolute w-[17%] sm:w-[14%] h-auto"
+          style={{ bottom: '5%', left: '50%', transform: 'translate(-50%, 0) rotate(40deg)' }}
         />
       </div>
 
-      <div className="relative z-10 mx-auto max-w-[1177px] px-8 pt-10">
+      <div className="relative z-10 mx-auto max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1177px] px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 lg:pt-10">
         {/* GSAP card lock + stack */}
         <div ref={cardsSectionRef} className="cards-section relative w-full">
           {/* Keep width consistent with other sections (same max-w wrapper as page content). */}
@@ -279,8 +279,8 @@ export default function WeWorkTogether() {
             {/* Stage: cards overlap here */}
             <div ref={stageRef} className="relative w-full" style={{ height: `${stageHeight}px` }}>
               {/* Card 01 */}
-              <div className="card absolute left-0 right-0 top-0 mx-auto w-full rounded-[24px] bg-[#d6c68e] p-10 text-center shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
-                <div className="mb-10 flex justify-center">
+              <div className="card absolute left-0 right-0 top-0 mx-auto w-full rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d6c68e] p-6 sm:p-8 lg:p-10 text-center shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
+                <div className="mb-6 sm:mb-8 lg:mb-10 flex justify-center">
                   <Image
                     src={getCloudinaryUrl('antarpravaah/we-work/antarpravaah/we-work/we_work_together_vector_one')}
                     alt=""
@@ -288,11 +288,11 @@ export default function WeWorkTogether() {
                     height={452}
                     quality={85}
                     loading="lazy"
-                    className="block h-[452px] w-[431px] max-w-full object-contain"
+                    className="block h-auto w-full max-w-[280px] sm:max-w-[350px] lg:max-w-[431px] object-contain"
                   />
                 </div>
                 <p
-                  className="text-center text-[24px] leading-[normal] text-[#645c42]"
+                  className="text-center text-[18px] sm:text-[20px] lg:text-[24px] leading-[normal] text-[#645c42] px-2"
                   style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
                 >
                   At Antar Pravaah, healing is a shared responsibility. We both do the work.
@@ -311,10 +311,10 @@ export default function WeWorkTogether() {
                 return (
                   <div
                     key={index}
-                    className="card absolute left-0 right-0 top-0 mx-auto w-full rounded-[24px] bg-[#d6c68e] p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)]"
+                    className="card absolute left-0 right-0 top-0 mx-auto w-full rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d6c68e] p-6 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)]"
                   >
                     <div
-                      className={`flex flex-col items-center gap-10 md:flex-row ${
+                      className={`flex flex-col items-center gap-6 sm:gap-8 lg:gap-10 md:flex-row ${
                         isLeft ? '' : 'md:flex-row-reverse'
                       }`}
                     >
@@ -325,10 +325,10 @@ export default function WeWorkTogether() {
                         height={272}
                         quality={85}
                         loading="lazy"
-                        className="block h-[272px] w-[258px] shrink-0 object-contain"
+                        className="block h-auto w-full max-w-[180px] sm:max-w-[220px] lg:max-w-[258px] shrink-0 object-contain"
                       />
                       <p
-                        className="flex-1 text-justify text-[24px] leading-[normal] text-[#645c42]"
+                        className="flex-1 text-justify text-[18px] sm:text-[20px] lg:text-[24px] leading-[normal] text-[#645c42]"
                         style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
                       >
                         {card.text}
@@ -339,7 +339,7 @@ export default function WeWorkTogether() {
               })}
 
               {/* CTA Card (part of the stack; final card) */}
-              <div className="card absolute left-0 right-0 top-0 mx-auto flex w-full items-center justify-center rounded-[24px] bg-[#645c42] p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] min-h-[280px] sm:min-h-[320px]">
+              <div className="card absolute left-0 right-0 top-0 mx-auto flex w-full items-center justify-center rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#645c42] p-6 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] min-h-[240px] sm:min-h-[280px] lg:min-h-[320px]">
                 <Button text="Explore Our Approach" size="large" mode="light" href="/approach" />
               </div>
             </div>

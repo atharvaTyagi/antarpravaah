@@ -130,26 +130,26 @@ export default function TherapiesPage() {
       {/* Introduction Section */}
       <Section
         id="therapies-intro"
-        className="relative z-10 min-h-[60vh] flex flex-col items-center justify-center px-8 pt-[200px] pb-24"
+        className="relative z-10 min-h-[60vh] flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 pt-[120px] sm:pt-[160px] lg:pt-[200px] pb-16 sm:pb-20 lg:pb-24"
       >
-        <div className="max-w-[723px] mx-auto text-center flex flex-col gap-5">
+        <div className="max-w-full sm:max-w-[600px] lg:max-w-[723px] mx-auto text-center flex flex-col gap-3 sm:gap-4 lg:gap-5">
           <h1
-            className="text-[48px] leading-normal text-[#645c42]"
+            className="text-[32px] sm:text-[40px] lg:text-[48px] leading-normal text-[#645c42]"
             style={{ fontFamily: 'var(--font-saphira), serif' }}
           >
             Therapies
           </h1>
           <p
-            className="text-[24px] leading-normal text-[#645c42] uppercase tracking-[3.84px]"
+            className="text-[18px] sm:text-[20px] lg:text-[24px] leading-normal text-[#645c42] uppercase tracking-[2.5px] sm:tracking-[3px] lg:tracking-[3.84px]"
             style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
           >
             Possibilities for Change
           </p>
           <div
-            className="text-[#645c42] text-[12px] leading-normal text-justify"
+            className="text-[#645c42] text-[11px] sm:text-[12px] leading-normal text-justify px-2"
             style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
           >
-            <p className="mb-4">
+            <p className="mb-3 sm:mb-4">
               Combining bodywork and energy healing modalities opens powerful possibilities for
               healing—from acute and chronic illnesses to pain management, trauma release, and
               recovery from abuse. These therapies support the transformation of patterns related to
@@ -169,17 +169,17 @@ export default function TherapiesPage() {
       {antarSmaranProcess && (
         <Section
           id="therapies-asp"
-          className="relative z-10 w-full px-8 pb-24"
+          className="relative z-10 w-full px-4 sm:px-6 lg:px-8 pb-16 sm:pb-20 lg:pb-24"
         >
-          <div className="max-w-[1347px] mx-auto">
+          <div className="max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1347px] mx-auto">
             <TherapyCard therapy={antarSmaranProcess} />
           </div>
         </Section>
       )}
 
       {/* Modalities Section with GSAP Observer Card Stack */}
-      <Section id="therapies-modalities" className="relative z-10 w-full px-8 pb-8">
-        <div className="max-w-[1347px] mx-auto">
+      <Section id="therapies-modalities" className="relative z-10 w-full px-4 sm:px-6 lg:px-8 pb-6 sm:pb-8">
+        <div className="max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1347px] mx-auto">
           <TherapiesCardStack cards={therapyCards} title="Our Modalities" />
         </div>
       </Section>
@@ -187,22 +187,22 @@ export default function TherapiesPage() {
       {/* Not Sure Section */}
       <Section
         id="therapies-not-sure"
-        className="relative z-10 flex flex-col items-center justify-center px-8 pt-16 pb-24"
+        className="relative z-10 flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 pt-10 sm:pt-12 lg:pt-16 pb-16 sm:pb-20 lg:pb-24"
       >
-        <div className="max-w-[1347px] mx-auto flex flex-col items-center gap-10 text-center">
+        <div className="max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1347px] mx-auto flex flex-col items-center gap-6 sm:gap-8 lg:gap-10 text-center">
           <h2
-            className="text-[48px] leading-normal text-[#645c42]"
+            className="text-[28px] sm:text-[38px] lg:text-[48px] leading-normal text-[#645c42] px-4"
             style={{ fontFamily: 'var(--font-saphira), serif' }}
           >
             Not sure which therapy is right for you?
           </h2>
 
           {/* Decorative divider */}
-          <div className="flex items-center justify-center py-5">
+          <div className="flex items-center justify-center py-3 sm:py-4 lg:py-5">
             <img 
               src="/page_end_blob.svg" 
               alt="" 
-              className="w-[163px] h-auto"
+              className="w-[120px] sm:w-[140px] lg:w-[163px] h-auto"
               style={{
                 filter: 'brightness(0) saturate(100%) invert(83%) sepia(15%) saturate(630%) hue-rotate(7deg) brightness(95%) contrast(85%)'
               }}
@@ -210,14 +210,14 @@ export default function TherapiesPage() {
           </div>
 
           <p
-            className="text-[24px] leading-normal text-[#645c42] uppercase tracking-[3.84px]"
+            className="text-[18px] sm:text-[20px] lg:text-[24px] leading-normal text-[#645c42] uppercase tracking-[2.5px] sm:tracking-[3px] lg:tracking-[3.84px]"
             style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
           >
             Find your path
           </p>
 
           <p
-            className="text-[24px] leading-normal text-[#645c42] max-w-[687px]"
+            className="text-[18px] sm:text-[20px] lg:text-[24px] leading-normal text-[#645c42] max-w-full sm:max-w-[600px] lg:max-w-[687px] px-4"
             style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
           >
             Every body speaks a different language. If you're unsure which modality will resonate
@@ -225,7 +225,7 @@ export default function TherapiesPage() {
             to the therapy that will serve your healing journey best.
           </p>
 
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-2 sm:gap-3">
             <Button text="Schedule a Free Consultation" size="large" colors={therapiesButtonColors} />
           </div>
         </div>
@@ -234,16 +234,16 @@ export default function TherapiesPage() {
       {/* Come and Find Me Section */}
       <Section
         id="therapies-come-find-me"
-        className="relative z-10 min-h-[100vh] flex flex-col items-center justify-center px-8 py-24"
+        className="relative z-10 min-h-[100vh] flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24"
       >
-        <div className="max-w-[1347px] mx-auto flex flex-col items-center gap-16">
+        <div className="max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1347px] mx-auto flex flex-col items-center gap-10 sm:gap-12 lg:gap-16">
           {/* Blob with text inside */}
           <div className="relative flex items-center justify-center" ref={blobTextContainerRef}>
             {/* Background blob - using about_text_blob.svg */}
             <img
               src="/about_text_blob.svg"
               alt=""
-              className="w-[640px] md:w-[800px] lg:w-[900px] h-auto"
+              className="w-[340px] sm:w-[540px] md:w-[700px] lg:w-[900px] h-auto"
               style={{
                 filter:
                   'brightness(0) saturate(100%) invert(87%) sepia(11%) saturate(939%) hue-rotate(7deg) brightness(102%) contrast(85%)'
@@ -251,18 +251,18 @@ export default function TherapiesPage() {
             />
 
             {/* Content positioned inside the blob */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center px-12 md:px-20 lg:px-28 py-16">
-              <div className="text-center flex flex-col gap-4 max-w-[500px] lg:max-w-[580px]">
+            <div className="absolute inset-0 flex flex-col items-center justify-center px-8 sm:px-12 md:px-16 lg:px-28 py-10 sm:py-12 lg:py-16">
+              <div className="text-center flex flex-col gap-3 sm:gap-4 max-w-[280px] sm:max-w-[420px] md:max-w-[500px] lg:max-w-[580px]">
                 <h2
                   ref={heading1Ref}
-                  className="text-[32px] md:text-[40px] lg:text-[48px] leading-tight text-[#645c42]"
+                  className="text-[24px] sm:text-[32px] md:text-[38px] lg:text-[48px] leading-tight text-[#645c42]"
                   style={{ fontFamily: 'var(--font-saphira), serif' }}
                 >
                   Come and find me....
                 </h2>
 
                 <div
-                  className="text-[14px] md:text-[18px] lg:text-[20px] leading-relaxed text-[#645c42]"
+                  className="text-[12px] sm:text-[14px] md:text-[16px] lg:text-[20px] leading-relaxed text-[#645c42]"
                   style={{ fontFamily: 'var(--font-saphira), serif' }}
                 >
                   <p className="mb-1" ref={(el) => { textLineRefs.current[0] = el; }}>Find me when you have lost track of your path,</p>
@@ -285,7 +285,7 @@ export default function TherapiesPage() {
 
                 <h2
                   ref={heading2Ref}
-                  className="text-[28px] md:text-[36px] lg:text-[42px] leading-tight text-[#645c42] mt-4"
+                  className="text-[22px] sm:text-[28px] md:text-[34px] lg:text-[42px] leading-tight text-[#645c42] mt-3 sm:mt-4"
                   style={{ fontFamily: 'var(--font-saphira), serif' }}
                 >
                   Find me when you are ready to find yourself.
@@ -295,7 +295,7 @@ export default function TherapiesPage() {
           </div>
 
           {/* CTA buttons below the blob */}
-          <div className="flex flex-col gap-3 items-center">
+          <div className="flex flex-col gap-2 sm:gap-3 items-center">
             <Button text="Book your first session" size="large" colors={therapiesButtonColors} />
             <Button text="Schedule a Free Consultation" size="small" colors={therapiesButtonColors} />
           </div>

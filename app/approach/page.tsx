@@ -48,27 +48,27 @@ export default function ApproachPage() {
   }));
 
   return (
-    <main className="relative min-h-screen bg-[#f6edd0] pt-[148px]">
+    <main className="relative min-h-screen bg-[#f6edd0] pt-[90px] sm:pt-[108px] lg:pt-[148px]">
       {/* Hero/Introduction Section */}
-      <Section id="approach" className="relative w-full bg-[#f6edd0] px-8 py-24">
-        <div className="mx-auto flex max-w-[1349px] flex-col items-center gap-4 text-center">
+      <Section id="approach" className="relative w-full bg-[#f6edd0] px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24">
+        <div className="mx-auto flex max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1349px] flex-col items-center gap-3 sm:gap-4 text-center">
           {/* Large Spiral SVG from assets */}
-          <div className="mb-8 flex h-[460px] w-[155px] items-center justify-center">
+          <div className="mb-6 sm:mb-8 flex w-[25%] sm:w-[18%] lg:w-[155px] max-w-[155px] items-center justify-center">
             <img
               src="/approach_vector.svg"
               alt=""
-              className="h-full w-full object-contain"
+              className="w-full h-auto object-contain"
             />
           </div>
 
           <h1
-            className="text-[48px] leading-normal text-[#9ac1bf]"
+            className="text-[32px] sm:text-[40px] lg:text-[48px] leading-normal text-[#9ac1bf]"
             style={{ fontFamily: 'var(--font-saphira), serif' }}
           >
             We Work Together
           </h1>
 
-          <div className="max-w-[401px] text-justify text-[12px] leading-normal text-[#474e3a]">
+          <div className="max-w-full sm:max-w-[360px] lg:max-w-[401px] text-justify text-[11px] sm:text-[12px] leading-normal text-[#474e3a] px-4">
             <p className="mb-4">
               At Antar Pravaah, healing is a shared responsibility. We both do the work.
               Transformation demands commitment and persistence. It's not force, it's flow, but
@@ -104,50 +104,50 @@ export default function ApproachPage() {
         </div>
 
         {/* Three Pathways Section with GSAP Card Stack */}
-        <Section id="pathways" className="relative z-10 w-full px-8 py-20">
-          <div className="mx-auto max-w-[1347px]">
+        <Section id="pathways" className="relative z-10 w-full px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
+          <div className="mx-auto max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1347px]">
             <PathwaysCardStack cards={pathwayCards} title="Three Pathways for You" />
           </div>
         </Section>
 
         {/* Thoughts & Ponderings Section */}
-        <Section id="thoughts" className="relative z-10 w-full bg-[#f6edd0] px-8 py-20">
-          <div className="mx-auto flex max-w-[1349px] flex-col items-center gap-10">
+        <Section id="thoughts" className="relative z-10 w-full bg-[#f6edd0] px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
+          <div className="mx-auto flex max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1349px] flex-col items-center gap-6 sm:gap-8 lg:gap-10">
             <h2
-              className="text-center text-[48px] leading-normal text-[#354443]"
+              className="text-center text-[32px] sm:text-[40px] lg:text-[48px] leading-normal text-[#354443] px-4"
               style={{ fontFamily: 'var(--font-saphira), serif' }}
             >
               Thoughts & Ponderings
             </h2>
             <p
-              className="text-center text-[24px] uppercase leading-normal tracking-[3.84px] text-[#354443]"
+              className="text-center text-[18px] sm:text-[20px] lg:text-[24px] uppercase leading-normal tracking-[2.5px] sm:tracking-[3px] lg:tracking-[3.84px] text-[#354443] px-4"
               style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
             >
               A wall of my current thoughts & ponderings
             </p>
 
             {/* Grid of thought cards - text only */}
-            <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid w-full grid-cols-1 gap-4 sm:gap-5 lg:gap-6 md:grid-cols-2 lg:grid-cols-3">
               {/* Row 1 */}
-              <div className="flex min-h-[200px] items-center justify-center rounded-[24px] bg-[#9ac1bf] p-10">
+              <div className="flex min-h-[180px] sm:min-h-[200px] items-center justify-center rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#9ac1bf] p-6 sm:p-8 lg:p-10">
                 <p
-                  className="text-center text-[24px] leading-normal text-[#354443]"
+                  className="text-center text-[18px] sm:text-[20px] lg:text-[24px] leading-normal text-[#354443]"
                   style={{ fontFamily: 'var(--font-saphira), serif' }}
                 >
                   This is a thought card with some text
                 </p>
               </div>
-              <div className="flex min-h-[200px] items-center justify-center rounded-[24px] bg-[#9ac1bf] p-10">
+              <div className="flex min-h-[180px] sm:min-h-[200px] items-center justify-center rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#9ac1bf] p-6 sm:p-8 lg:p-10">
                 <p
-                  className="text-center text-[24px] leading-normal text-[#354443]"
+                  className="text-center text-[18px] sm:text-[20px] lg:text-[24px] leading-normal text-[#354443]"
                   style={{ fontFamily: 'var(--font-saphira), serif' }}
                 >
                   This is a thought card with some text
                 </p>
               </div>
-              <div className="row-span-2 flex min-h-[416px] items-center justify-center rounded-[24px] bg-[#9ac1bf] p-10">
+              <div className="lg:row-span-2 flex min-h-[180px] sm:min-h-[200px] lg:min-h-[416px] items-center justify-center rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#9ac1bf] p-6 sm:p-8 lg:p-10">
                 <p
-                  className="text-center text-[24px] leading-normal text-[#354443]"
+                  className="text-center text-[18px] sm:text-[20px] lg:text-[24px] leading-normal text-[#354443]"
                   style={{ fontFamily: 'var(--font-saphira), serif' }}
                 >
                   This is a thought card with some text
@@ -155,17 +155,17 @@ export default function ApproachPage() {
               </div>
 
               {/* Row 2 */}
-              <div className="flex min-h-[200px] items-center justify-center rounded-[24px] bg-[#9ac1bf] p-10">
+              <div className="flex min-h-[180px] sm:min-h-[200px] items-center justify-center rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#9ac1bf] p-6 sm:p-8 lg:p-10">
                 <p
-                  className="text-center text-[24px] leading-normal text-[#354443]"
+                  className="text-center text-[18px] sm:text-[20px] lg:text-[24px] leading-normal text-[#354443]"
                   style={{ fontFamily: 'var(--font-saphira), serif' }}
                 >
                   This is a thought card with some text
                 </p>
               </div>
-              <div className="flex min-h-[200px] items-center justify-center rounded-[24px] bg-[#9ac1bf] p-10">
+              <div className="flex min-h-[180px] sm:min-h-[200px] items-center justify-center rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#9ac1bf] p-6 sm:p-8 lg:p-10">
                 <p
-                  className="text-center text-[24px] leading-normal text-[#354443]"
+                  className="text-center text-[18px] sm:text-[20px] lg:text-[24px] leading-normal text-[#354443]"
                   style={{ fontFamily: 'var(--font-saphira), serif' }}
                 >
                   This is a thought card with some text
@@ -178,15 +178,15 @@ export default function ApproachPage() {
         </Section>
 
         {/* CTA Section */}
-        <Section id="approach-cta" className="relative z-10 w-full bg-[#f6edd0] px-8 py-20">
-          <div className="mx-auto flex max-w-[1349px] flex-col items-center gap-6 text-center">
+        <Section id="approach-cta" className="relative z-10 w-full bg-[#f6edd0] px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
+          <div className="mx-auto flex max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1349px] flex-col items-center gap-4 sm:gap-5 lg:gap-6 text-center">
             {/* Decorative blob */}
-            <div className="mb-4">
-              <PageEndBlob color="#9ac1bf" className="h-auto w-[163px]" />
+            <div className="mb-3 sm:mb-4">
+              <PageEndBlob color="#9ac1bf" className="h-auto w-[120px] sm:w-[140px] lg:w-[163px]" />
             </div>
 
             <p
-              className="max-w-[799px] text-[48px] leading-normal text-[#9ac1bf]"
+              className="max-w-full sm:max-w-[680px] lg:max-w-[799px] text-[28px] sm:text-[38px] lg:text-[48px] leading-normal text-[#9ac1bf] px-4"
               style={{ fontFamily: 'var(--font-saphira), serif' }}
             >
               If you feel called, I welcome you. Whatever you carry, you're not alone.

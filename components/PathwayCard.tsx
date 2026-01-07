@@ -26,7 +26,7 @@ interface PathwayCardProps {
 
 export default function PathwayCard({ pathway }: PathwayCardProps) {
   return (
-    <div className="relative flex h-[680px] items-end overflow-hidden rounded-[24px] border-[16px] border-[#9ac1bf]">
+    <div className="relative flex h-auto min-h-[480px] sm:min-h-[580px] lg:h-[680px] items-end overflow-hidden rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] border-[8px] sm:border-[12px] lg:border-[16px] border-[#9ac1bf]">
       {/* Background Image with blur */}
       <div className="absolute inset-0 -z-10">
         <img
@@ -38,29 +38,29 @@ export default function PathwayCard({ pathway }: PathwayCardProps) {
       </div>
 
       {/* Content Card */}
-      <div className="w-full max-w-[640px] rounded-[20px] bg-[rgba(53,68,67,0.85)] p-6 m-8 backdrop-blur-[2px]">
+      <div className="w-full max-w-full sm:max-w-[540px] lg:max-w-[640px] rounded-[14px] sm:rounded-[16px] lg:rounded-[20px] bg-[rgba(53,68,67,0.85)] p-4 sm:p-5 lg:p-6 m-4 sm:m-6 lg:m-8 backdrop-blur-[2px]">
         <h3
-          className="mb-2 text-[32px] leading-tight text-[#9ac1bf]"
+          className="mb-1.5 sm:mb-2 text-[24px] sm:text-[28px] lg:text-[32px] leading-tight text-[#9ac1bf]"
           style={{ fontFamily: 'var(--font-saphira), serif' }}
         >
           {pathway.title}
         </h3>
         <p
-          className="mb-3 text-[16px] uppercase leading-normal tracking-[2.56px] text-[#9ac1bf]"
+          className="mb-2 sm:mb-3 text-[14px] sm:text-[15px] lg:text-[16px] uppercase leading-normal tracking-[2px] sm:tracking-[2.3px] lg:tracking-[2.56px] text-[#9ac1bf]"
           style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
         >
           {pathway.subtitle}
         </p>
-        <div className="mb-3 text-justify text-[11px] leading-relaxed text-[#9ac1bf]">
+        <div className="mb-2 sm:mb-3 text-justify text-[10px] sm:text-[10.5px] lg:text-[11px] leading-relaxed text-[#9ac1bf]">
           {pathway.description.map((para, idx) => (
-            <p key={idx} className={idx < pathway.description.length - 1 ? 'mb-2' : ''}>
+            <p key={idx} className={idx < pathway.description.length - 1 ? 'mb-1.5 sm:mb-2' : ''}>
               {para}
             </p>
           ))}
         </div>
-        <div className="mb-3 text-[11px] leading-relaxed text-[#9ac1bf]">
-          <p className="mb-1 font-medium">What to Expect:</p>
-          <ul className="list-inside list-disc">
+        <div className="mb-2 sm:mb-3 text-[10px] sm:text-[10.5px] lg:text-[11px] leading-relaxed text-[#9ac1bf]">
+          <p className="mb-0.5 sm:mb-1 font-medium">What to Expect:</p>
+          <ul className="list-inside list-disc space-y-0.5">
             {pathway.whatToExpect.map((item, idx) => (
               <li key={idx}>{item}</li>
             ))}

@@ -93,36 +93,36 @@ export default function AboutPage() {
 
   return (
     <main className="relative min-h-screen">
-      <div className="relative z-10 w-full pt-[148px]">
-        <Section id="about" className="w-full bg-[#f6edd0] pb-24">
-          <div className="mx-auto max-w-[1177px] px-8 pt-10">
-            <div className="flex flex-col items-center gap-10 rounded-[24px] py-10">
+      <div className="relative z-10 w-full pt-[90px] sm:pt-[108px] lg:pt-[148px]">
+        <Section id="about" className="w-full bg-[#f6edd0] pb-16 sm:pb-20 lg:pb-24">
+          <div className="mx-auto max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1177px] px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 lg:pt-10">
+            <div className="flex flex-col items-center gap-6 sm:gap-8 lg:gap-10 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] py-6 sm:py-8 lg:py-10">
               {/* Top mark */}
-              <div className="h-[204px] w-[241px]">
+              <div className="w-[40%] sm:w-[30%] lg:w-[241px] max-w-[241px]">
                 <img
                   src="/about_splash_vector.svg"
                   alt=""
-                  className="block h-full w-full object-contain"
+                  className="block w-full h-auto object-contain"
                 />
               </div>
 
               <h1
-                className="text-center text-[48px] leading-[1.0] text-[#93a378]"
+                className="text-center text-[32px] sm:text-[40px] lg:text-[48px] leading-[1.0] text-[#93a378]"
                 style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400 }}
               >
                 About Namita
               </h1>
 
               <p
-                className="text-center text-[24px] leading-[normal] text-[#474e3a]"
+                className="text-center text-[16px] sm:text-[20px] lg:text-[24px] leading-[normal] text-[#474e3a] px-4 max-w-[680px]"
                 style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
               >
                 Founder of Antar Pravaah | Healer &amp; Facilitator | Host at Aalayam, Himachal Pradesh
               </p>
 
               {/* Photo row 1 (Figma sizes) — overlaps into the green band slightly */}
-              <div className="relative z-10 -mb-[140px] flex flex-col items-center justify-center gap-6 md:flex-row md:items-end md:gap-10">
-                <div className="h-[289px] w-[276px] overflow-hidden rounded-full">
+              <div className="relative z-10 -mb-[80px] sm:-mb-[100px] lg:-mb-[140px] flex flex-col items-center justify-center gap-4 sm:gap-6 md:flex-row md:items-end md:gap-8 lg:gap-10">
+                <div className="h-[200px] w-[192px] sm:h-[240px] sm:w-[230px] lg:h-[289px] lg:w-[276px] overflow-hidden rounded-full">
                   <FadeInImage 
                     src={getCloudinaryUrl('antarpravaah/about/antarpravaah/about/namita_one')} 
                     alt="Namita" 
@@ -131,7 +131,7 @@ export default function AboutPage() {
                     className="h-full w-full object-cover" 
                   />
                 </div>
-                <div className="h-[419px] w-[400px] overflow-hidden rounded-full">
+                <div className="h-[290px] w-[277px] sm:h-[350px] sm:w-[334px] lg:h-[419px] lg:w-[400px] overflow-hidden rounded-full">
                   <FadeInImage 
                     src={getCloudinaryUrl('antarpravaah/about/antarpravaah/about/namita_two')} 
                     alt="Namita" 
@@ -140,7 +140,7 @@ export default function AboutPage() {
                     className="h-full w-full object-cover" 
                   />
                 </div>
-                <div className="h-[233px] w-[222px] overflow-hidden rounded-full">
+                <div className="h-[162px] w-[154px] sm:h-[194px] sm:w-[185px] lg:h-[233px] lg:w-[222px] overflow-hidden rounded-full">
                   <FadeInImage 
                     src={getCloudinaryUrl('antarpravaah/about/antarpravaah/about/namita_three')} 
                     alt="Namita" 
@@ -154,7 +154,7 @@ export default function AboutPage() {
           </div>
 
           {/* Deep green band with swirl + body circle */}
-          <div className="relative w-full bg-[#474e3a] pt-[200px] pb-24">
+          <div className="relative w-full bg-[#474e3a] pt-[120px] sm:pt-[150px] lg:pt-[200px] pb-16 sm:pb-20 lg:pb-24">
             {}
             <div className="pointer-events-none absolute inset-0 overflow-hidden">
               <img
@@ -164,8 +164,8 @@ export default function AboutPage() {
               />
             </div>
 
-            <div className="relative mx-auto max-w-[1177px] px-8">
-              <div className="flex flex-col items-center gap-14">
+            <div className="relative mx-auto max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1177px] px-4 sm:px-6 lg:px-8">
+              <div className="flex flex-col items-center gap-10 sm:gap-12 lg:gap-14">
                 <div className="relative flex w-full justify-center">
                   {/* Text blob shape container */}
                   <div className="relative flex items-center justify-center" ref={blobTextContainerRef}>
@@ -228,8 +228,8 @@ export default function AboutPage() {
                 </div>
 
                 {/* Photo row 2 (Figma sizes) — slightly spills out of the green band */}
-                <div className="relative z-10 -mb-[160px] flex flex-col items-center justify-center gap-6 md:flex-row md:items-start md:gap-10">
-                  <div className="h-[266px] w-[254px] overflow-hidden rounded-full">
+                <div className="relative z-10 -mb-[90px] sm:-mb-[120px] lg:-mb-[160px] flex flex-col items-center justify-center gap-4 sm:gap-6 md:flex-row md:items-start md:gap-8 lg:gap-10">
+                  <div className="h-[185px] w-[176px] sm:h-[222px] sm:w-[212px] lg:h-[266px] lg:w-[254px] overflow-hidden rounded-full">
                     <FadeInImage 
                       src={getCloudinaryUrl('antarpravaah/about/antarpravaah/about/namita_four')} 
                       alt="Namita" 
@@ -238,7 +238,7 @@ export default function AboutPage() {
                       className="h-full w-full object-cover" 
                     />
                   </div>
-                  <div className="h-[419px] w-[400px] overflow-hidden rounded-full">
+                  <div className="h-[290px] w-[277px] sm:h-[350px] sm:w-[334px] lg:h-[419px] lg:w-[400px] overflow-hidden rounded-full">
                     <FadeInImage 
                       src={getCloudinaryUrl('antarpravaah/about/antarpravaah/about/namita_five')} 
                       alt="Namita" 
@@ -247,7 +247,7 @@ export default function AboutPage() {
                       className="h-full w-full object-cover" 
                     />
                   </div>
-                  <div className="h-[327px] w-[312px] overflow-hidden rounded-full">
+                  <div className="h-[227px] w-[217px] sm:h-[273px] sm:w-[260px] lg:h-[327px] lg:w-[312px] overflow-hidden rounded-full">
                     <FadeInImage 
                       src={getCloudinaryUrl('antarpravaah/about/antarpravaah/about/namita_six')} 
                       alt="Namita" 
@@ -262,13 +262,13 @@ export default function AboutPage() {
           </div>
 
           {/* CTA */}
-          <div className="mx-auto max-w-[1177px] px-8 pt-[220px]">
-            <div className="flex flex-col items-center gap-6 py-10">
-              <div className="flex items-center justify-center py-5">
-                <PageEndBlob color="#474e3a" className="h-10 w-auto opacity-60" />
+          <div className="mx-auto max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1177px] px-4 sm:px-6 lg:px-8 pt-[140px] sm:pt-[180px] lg:pt-[220px]">
+            <div className="flex flex-col items-center gap-4 sm:gap-5 lg:gap-6 py-6 sm:py-8 lg:py-10">
+              <div className="flex items-center justify-center py-3 sm:py-4 lg:py-5">
+                <PageEndBlob color="#474e3a" className="h-8 sm:h-9 lg:h-10 w-auto opacity-60" />
               </div>
               <p
-                className="max-w-[799px] text-center text-[48px] leading-[normal] text-[#93a378]"
+                className="max-w-full sm:max-w-[680px] lg:max-w-[799px] text-center text-[28px] sm:text-[38px] lg:text-[48px] leading-[normal] text-[#93a378] px-4"
                 style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400 }}
               >
                 If you feel called, I welcome you. Whatever you carry, you&apos;re not alone.

@@ -108,12 +108,8 @@ export default function SectionSubheader() {
       className="fixed left-0 right-0 z-[55]"
       style={{
         top: '148px',
-        height: '90px',
-        background: 'linear-gradient(to bottom, rgba(246, 237, 208, 0.95) 0%, rgba(246, 237, 208, 0.7) 50%, rgba(246, 237, 208, 0.3) 80%, rgba(246, 237, 208, 0) 100%)',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-        maskImage: 'linear-gradient(to bottom, black 0%, black 40%, transparent 100%)',
-        WebkitMaskImage: 'linear-gradient(to bottom, black 0%, black 40%, transparent 100%)',
+        height: '70px',
+        backgroundColor: '#f6edd0',
       }}
     >
       <div className="mx-auto max-w-[1177px] px-8 py-3">

@@ -38,17 +38,17 @@ export default function Footer() {
         : '#f6edd0';
 
   return (
-    <footer className="relative z-20 w-full px-6 py-14 md:p-20" style={{ backgroundColor: footerBg }}>
-      <div className="mx-auto flex max-w-[1282px] flex-col items-center gap-10">
+    <footer className="relative z-20 w-full px-4 py-8 sm:px-6 sm:py-10 lg:px-6 lg:py-14" style={{ backgroundColor: footerBg }}>
+      <div className="mx-auto flex max-w-full sm:max-w-[calc(100vw-48px)] lg:max-w-[1282px] flex-col items-center gap-6 sm:gap-8 lg:gap-10">
         {/* Quick Links */}
-        <div className="flex flex-col items-center gap-4 w-full">
+        <div className="flex flex-col items-center gap-3 sm:gap-4 w-full">
           <p
-            className="text-center text-[24px] leading-[normal]"
+            className="text-center text-[20px] sm:text-[22px] lg:text-[24px] leading-[normal]"
             style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400, color: footerAccent }}
           >
             Quick Links
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-3">
+          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-2.5 lg:gap-3 max-w-full">
             <QuickLink href="/about" label="About Namita" accentColor={footerAccent} bgColor={footerBg} />
             <QuickLink href="/approach" label="Approach" accentColor={footerAccent} bgColor={footerBg} />
             <QuickLink href="/therapies" label="Therapies" accentColor={footerAccent} bgColor={footerBg} />
@@ -59,11 +59,11 @@ export default function Footer() {
         </div>
 
         {/* Logo */}
-        <div className="w-full overflow-hidden">
+        <div className="w-full overflow-hidden px-2 sm:px-4">
           <img
             src="/logo_full.svg"
             alt="Antar Pravaah"
-            className="mx-auto block h-auto w-full max-w-[1282px]"
+            className="mx-auto block h-auto w-full max-w-full sm:max-w-[800px] lg:max-w-[1282px]"
           />
         </div>
       </div>

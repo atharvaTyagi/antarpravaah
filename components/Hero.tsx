@@ -9,7 +9,7 @@ export default function Hero() {
       <div className="absolute inset-0 bg-[#6a3f33]" />
       
       {/* Spiral Loader - placeholder for now */}
-      <div className="absolute left-[22px] top-[53px] h-[1140px] w-[1339px] opacity-30 pointer-events-none">
+      <div className="absolute left-[2%] top-[5%] w-[85%] aspect-[1339/1140] opacity-30 pointer-events-none">
         {/* Spiral graphic will be added here when available */}
         <div className="h-full w-full" />
       </div>

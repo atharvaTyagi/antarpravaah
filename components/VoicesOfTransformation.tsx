@@ -133,14 +133,14 @@ export default function VoicesOfTransformation() {
   return (
     <Section
       id="voices"
-      className="relative min-h-screen w-full bg-[#f6edd0] pb-24 pt-[96px]"
+      className="relative min-h-screen w-full bg-[#f6edd0] pb-16 sm:pb-20 lg:pb-24 pt-[60px] sm:pt-[76px] lg:pt-[96px]"
       ref={sectionRef}
     >
       {/* Carousel */}
-      <div className="w-full px-10 pt-10">
+      <div className="w-full px-4 sm:px-6 lg:px-10 pt-6 sm:pt-8 lg:pt-10">
         <div
           ref={scrollerRef}
-          className="no-scrollbar flex w-full gap-4 overflow-x-auto overscroll-contain pb-6 touch-pan-x"
+          className="no-scrollbar flex w-full gap-3 sm:gap-4 overflow-x-auto overscroll-contain pb-4 sm:pb-6 touch-pan-x"
         >
           {testimonials.map((t, idx) => (
             <div
@@ -148,7 +148,7 @@ export default function VoicesOfTransformation() {
               ref={(el) => {
                 cardRefs.current[idx] = el;
               }}
-              className="shrink-0 rounded-[24px] border border-[#474e3a] bg-[#474e3a] p-10"
+              className="shrink-0 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] border border-[#474e3a] bg-[#474e3a] p-6 sm:p-8 lg:p-10"
               style={{
                 width: 'min(911px, 90vw)',
                 height: cardHeight ?? undefined,
@@ -156,20 +156,20 @@ export default function VoicesOfTransformation() {
             >
               <div className="flex h-full flex-col">
                 <p
-                  className="flex-1 text-justify text-[24px] leading-[normal] text-[#f6edd0]"
+                  className="flex-1 text-justify text-[16px] sm:text-[20px] lg:text-[24px] leading-[normal] text-[#f6edd0]"
                   style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
                 >
                   {t.copy}
                 </p>
-                <div className="mt-auto pt-10 text-center text-[#f6edd0]">
+                <div className="mt-auto pt-6 sm:pt-8 lg:pt-10 text-center text-[#f6edd0]">
                   <p
-                    className="text-[24px] leading-[normal]"
+                    className="text-[20px] sm:text-[22px] lg:text-[24px] leading-[normal]"
                     style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400 }}
                   >
                     {t.name}
                   </p>
                   <p
-                    className="mt-1 text-[12px] uppercase tracking-[1.92px]"
+                    className="mt-0.5 sm:mt-1 text-[10px] sm:text-[11px] lg:text-[12px] uppercase tracking-[1.5px] sm:tracking-[1.7px] lg:tracking-[1.92px]"
                     style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
                   >
                     {t.subtitle}
@@ -182,13 +182,13 @@ export default function VoicesOfTransformation() {
       </div>
 
       {/* CTA */}
-      <div className="mx-auto w-full max-w-[1177px] px-10 pb-10">
-        <div className="flex flex-col items-center gap-6 py-10">
-          <div className="flex items-center justify-center py-5">
-            <PageEndBlob color="#474e3a" className="h-10 w-auto" />
+      <div className="mx-auto w-full max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1177px] px-4 sm:px-6 lg:px-10 pb-6 sm:pb-8 lg:pb-10">
+        <div className="flex flex-col items-center gap-4 sm:gap-5 lg:gap-6 py-6 sm:py-8 lg:py-10">
+          <div className="flex items-center justify-center py-3 sm:py-4 lg:py-5">
+            <PageEndBlob color="#474e3a" className="h-8 sm:h-9 lg:h-10 w-auto" />
           </div>
           <p
-            className="text-center text-[48px] leading-[normal] text-[#93a378]"
+            className="text-center text-[28px] sm:text-[38px] lg:text-[48px] leading-[normal] text-[#93a378] px-4"
             style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400 }}
           >
             Ready to begin your own transformation?

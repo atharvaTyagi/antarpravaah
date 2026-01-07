@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import { useThemeStore } from '@/lib/stores/useThemeStore';
 import { SECTION_THEMES, SectionId } from '@/lib/themeConfig';
 import { useUiStore } from '@/lib/stores/useUiStore';
+import HamburgerMenu from './HamburgerMenu';
 
 const navItems = [
   { label: 'Therapies', href: '/therapies', themeId: 'therapies' as SectionId },
@@ -63,7 +64,7 @@ export default function Header() {
 
   return (
     <header
-      className="fixed top-0 left-0 right-0 z-[60] w-full py-6 transition-all duration-500"
+      className="fixed top-0 left-0 right-0 z-[60] w-full py-3 sm:py-4 lg:py-6 transition-all duration-500"
       style={{
         opacity: isVisible ? 1 : 0,
         pointerEvents: isVisible ? 'auto' : 'none',
@@ -71,13 +72,13 @@ export default function Header() {
         backgroundColor: headerOuterBg,
       }}
     >
-      <div className="w-full px-4 md:px-6">
+      <div className="w-full px-2 sm:px-4 md:px-6">
         <div
-          className="flex h-[100px] w-full items-center justify-between rounded-[24px] px-5 py-4 transition-colors duration-500 ease-in-out"
+          className="flex h-[70px] sm:h-[80px] lg:h-[100px] w-full items-center justify-between rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] px-3 sm:px-4 lg:px-5 py-3 sm:py-3.5 lg:py-4 transition-colors duration-500 ease-in-out"
           style={{ backgroundColor: headerBg }}
         >
           {/* Logo */}
-          <Link href="/" className="flex h-[42px] w-[309px] items-center">
+          <Link href="/" className="flex h-[28px] sm:h-[34px] lg:h-[42px] w-[180px] sm:w-[240px] lg:w-[309px] items-center shrink-0">
             <img
               src="/logo_full.svg"
               alt="Antar Pravaah"
@@ -88,8 +89,8 @@ export default function Header() {
             />
           </Link>
 
-          {/* Navigation */}
-          <nav className="flex items-center gap-[37px]">
+          {/* Desktop Navigation - Hidden on mobile/tablet */}
+          <nav className="hidden lg:flex items-center gap-[37px]">
             {navItems.map((item) => {
               const isActive = pathname === item.href;
               return (
@@ -112,6 +113,16 @@ export default function Header() {
               );
             })}
           </nav>
+
+          {/* Mobile/Tablet Hamburger Menu */}
+          <div className="flex lg:hidden">
+            <HamburgerMenu
+              headerBg={headerBg}
+              navTextColor={navTextColor}
+              navHoverColor={navHoverColor}
+              isLightHeader={isLightHeader}
+            />
+          </div>
         </div>
       </div>
     </header>
