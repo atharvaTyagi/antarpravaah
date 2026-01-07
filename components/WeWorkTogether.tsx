@@ -1,11 +1,13 @@
 'use client';
 
 import { useLayoutEffect, useRef, useState, useEffect } from 'react';
+import Image from 'next/image';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Observer } from 'gsap/dist/Observer';
 import Section from './Section';
 import Button from './Button';
+import { getCloudinaryUrl } from '@/lib/cloudinary';
 
 const workCards = [
   {
@@ -279,9 +281,13 @@ export default function WeWorkTogether() {
               {/* Card 01 */}
               <div className="card absolute left-0 right-0 top-0 mx-auto w-full rounded-[24px] bg-[#d6c68e] p-10 text-center shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
                 <div className="mb-10 flex justify-center">
-                  <img
-                    src="/we_work_together_vector_one.webp"
+                  <Image
+                    src={getCloudinaryUrl('antarpravaah/we-work/antarpravaah/we-work/we_work_together_vector_one')}
                     alt=""
+                    width={431}
+                    height={452}
+                    quality={85}
+                    loading="lazy"
                     className="block h-[452px] w-[431px] max-w-full object-contain"
                   />
                 </div>
@@ -296,7 +302,12 @@ export default function WeWorkTogether() {
               {/* Cards 02-04 */}
               {workCards.map((card, index) => {
                 const isLeft = card.imagePosition === 'left';
-                const smallCardSrcs = ["/we_work_together_vector_two.webp", "/we_work_together_vector_three.webp", "/we_work_together_vector_four.webp"]; const imageSrc = smallCardSrcs[index] ?? smallCardSrcs[0];
+                const smallCardSrcs = [
+                  getCloudinaryUrl('antarpravaah/we-work/antarpravaah/we-work/we_work_together_vector_two'),
+                  getCloudinaryUrl('antarpravaah/we-work/antarpravaah/we-work/we_work_together_vector_three'),
+                  getCloudinaryUrl('antarpravaah/we-work/antarpravaah/we-work/we_work_together_vector_four')
+                ];
+                const imageSrc = smallCardSrcs[index] ?? smallCardSrcs[0];
                 return (
                   <div
                     key={index}
@@ -307,9 +318,13 @@ export default function WeWorkTogether() {
                         isLeft ? '' : 'md:flex-row-reverse'
                       }`}
                     >
-                      <img
+                      <Image
                         src={imageSrc}
                         alt=""
+                        width={258}
+                        height={272}
+                        quality={85}
+                        loading="lazy"
                         className="block h-[272px] w-[258px] shrink-0 object-contain"
                       />
                       <p

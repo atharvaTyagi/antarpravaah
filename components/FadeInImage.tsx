@@ -1,47 +1,49 @@
 'use client';
 
-import { useCallback, useRef, useState } from 'react';
+import { useState } from 'react';
+import Image from 'next/image';
 
 type FadeInImageProps = {
   src: string;
   alt: string;
+  width: number;
+  height: number;
   className?: string;
   /**
    * Duration in ms for the opacity transition.
    */
   durationMs?: number;
+  /**
+   * Image quality (1-100)
+   */
+  quality?: number;
 };
 
 export default function FadeInImage({
   src,
   alt,
+  width,
+  height,
   className = '',
   durationMs = 350,
+  quality = 85,
 }: FadeInImageProps) {
-  const imgRef = useRef<HTMLImageElement | null>(null);
-  const [loadedSrc, setLoadedSrc] = useState<string | null>(null);
-  const loaded = loadedSrc === src;
-
-  const handleRef = useCallback(
-    (node: HTMLImageElement | null) => {
-      imgRef.current = node;
-      // Handle cached images where onLoad may not fire.
-      if (node?.complete) setLoadedSrc(src);
-    },
-    [src]
-  );
+  const [loaded, setLoaded] = useState(false);
 
   return (
-    <img
-      ref={handleRef}
+    <Image
       src={src}
       alt={alt}
-      onLoad={() => setLoadedSrc(src)}
+      width={width}
+      height={height}
+      quality={quality}
+      onLoad={() => setLoaded(true)}
       className={`${className} transition-opacity`}
       style={{
         opacity: loaded ? 1 : 0,
         transitionDuration: `${durationMs}ms`,
       }}
+      loading="lazy"
     />
   );
 }

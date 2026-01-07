@@ -8,6 +8,7 @@ import Section from '@/components/Section';
 import Button from '@/components/Button';
 import PageEndBlob from '@/components/PageEndBlob';
 import FadeInImage from '@/components/FadeInImage';
+import { getCloudinaryUrl } from '@/lib/cloudinary';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -122,13 +123,31 @@ export default function AboutPage() {
               {/* Photo row 1 (Figma sizes) — overlaps into the green band slightly */}
               <div className="relative z-10 -mb-[140px] flex flex-col items-center justify-center gap-6 md:flex-row md:items-end md:gap-10">
                 <div className="h-[289px] w-[276px] overflow-hidden rounded-full">
-                  <FadeInImage src="/namita_one.webp" alt="" className="h-full w-full object-cover" />
+                  <FadeInImage 
+                    src={getCloudinaryUrl('antarpravaah/about/antarpravaah/about/namita_one')} 
+                    alt="Namita" 
+                    width={276} 
+                    height={289}
+                    className="h-full w-full object-cover" 
+                  />
                 </div>
                 <div className="h-[419px] w-[400px] overflow-hidden rounded-full">
-                  <FadeInImage src="/namita_two.webp" alt="" className="h-full w-full object-cover" />
+                  <FadeInImage 
+                    src={getCloudinaryUrl('antarpravaah/about/antarpravaah/about/namita_two')} 
+                    alt="Namita" 
+                    width={400} 
+                    height={419}
+                    className="h-full w-full object-cover" 
+                  />
                 </div>
                 <div className="h-[233px] w-[222px] overflow-hidden rounded-full">
-                  <FadeInImage src="/namita_three.webp" alt="" className="h-full w-full object-cover" />
+                  <FadeInImage 
+                    src={getCloudinaryUrl('antarpravaah/about/antarpravaah/about/namita_three')} 
+                    alt="Namita" 
+                    width={222} 
+                    height={233}
+                    className="h-full w-full object-cover" 
+                  />
                 </div>
               </div>
             </div>
@@ -211,13 +230,31 @@ export default function AboutPage() {
                 {/* Photo row 2 (Figma sizes) — slightly spills out of the green band */}
                 <div className="relative z-10 -mb-[160px] flex flex-col items-center justify-center gap-6 md:flex-row md:items-start md:gap-10">
                   <div className="h-[266px] w-[254px] overflow-hidden rounded-full">
-                    <FadeInImage src="/namita_four.webp" alt="" className="h-full w-full object-cover" />
+                    <FadeInImage 
+                      src={getCloudinaryUrl('antarpravaah/about/antarpravaah/about/namita_four')} 
+                      alt="Namita" 
+                      width={254} 
+                      height={266}
+                      className="h-full w-full object-cover" 
+                    />
                   </div>
                   <div className="h-[419px] w-[400px] overflow-hidden rounded-full">
-                    <FadeInImage src="/namita_five.webp" alt="" className="h-full w-full object-cover" />
+                    <FadeInImage 
+                      src={getCloudinaryUrl('antarpravaah/about/antarpravaah/about/namita_five')} 
+                      alt="Namita" 
+                      width={400} 
+                      height={419}
+                      className="h-full w-full object-cover" 
+                    />
                   </div>
                   <div className="h-[327px] w-[312px] overflow-hidden rounded-full">
-                    <FadeInImage src="/namita_six.webp" alt="" className="h-full w-full object-cover" />
+                    <FadeInImage 
+                      src={getCloudinaryUrl('antarpravaah/about/antarpravaah/about/namita_six')} 
+                      alt="Namita" 
+                      width={312} 
+                      height={327}
+                      className="h-full w-full object-cover" 
+                    />
                   </div>
                 </div>
               </div>

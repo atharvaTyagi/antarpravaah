@@ -42,4 +42,8 @@ next-env.d.ts
 
 # Image backups (do not commit large SVG originals)
 /public-svg-backup
+
+# Cloudinary mapping
+cloudinary-urls.json
+
 nul

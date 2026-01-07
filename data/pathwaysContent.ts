@@ -15,7 +15,7 @@ export const pathways: Pathway[] = [
     ],
     ctaText: 'Book a Private Session',
     ctaHref: '#',
-    image: '/Private Sessions.webp',
+    image: 'https://res.cloudinary.com/dtipijiwr/image/upload/c_fit,q_auto:good,f_auto/antarpravaah/general/antarpravaah/general/Private%20Sessions',
   },
   {
     id: 'immersions',
@@ -32,7 +32,7 @@ export const pathways: Pathway[] = [
     ],
     ctaText: 'View Upcoming Immersions',
     ctaHref: '#',
-    image: '/AP Immersions.webp',
+    image: 'https://res.cloudinary.com/dtipijiwr/image/upload/c_fit,q_auto:good,f_auto/antarpravaah/general/antarpravaah/general/AP%20Immersions',
   },
   {
     id: 'trainings',
@@ -49,6 +49,6 @@ export const pathways: Pathway[] = [
     ],
     ctaText: 'Explore Training Programs',
     ctaHref: '#',
-    image: '/Trainings.webp',
+    image: 'https://res.cloudinary.com/dtipijiwr/image/upload/c_fit,q_auto:good,f_auto/antarpravaah/general/antarpravaah/general/Trainings',
   },
 ];

@@ -1,10 +1,12 @@
 'use client';
 
 import { useEffect } from 'react';
+import Image from 'next/image';
 import Lenis from 'lenis';
 import Section from '@/components/Section';
 import Button from '@/components/Button';
 import PageEndBlob from '@/components/PageEndBlob';
+import { getCloudinaryUrl } from '@/lib/cloudinary';
 
 export default function ImmersionsPage() {
   useEffect(() => {
@@ -78,7 +80,14 @@ export default function ImmersionsPage() {
           <div className="flex items-start justify-center gap-8">
             {/* Left decorative image */}
             <div className="pointer-events-none mt-8 h-[200px] w-[200px] shrink-0">
-              <img src="/immersion_1.webp"/>
+              <Image 
+                src={getCloudinaryUrl('antarpravaah/immersions/antarpravaah/immersions/immersion_1')} 
+                alt="" 
+                width={200} 
+                height={200}
+                quality={85}
+                loading="lazy"
+              />
             </div>
 
             {/* Center content */}
@@ -111,13 +120,27 @@ export default function ImmersionsPage() {
 
             {/* Right decorative image */}
             <div className="pointer-events-none mt-16 h-[180px] w-[180px] shrink-0">
-              <img src="/immersion_2.webp"/>
+              <Image 
+                src={getCloudinaryUrl('antarpravaah/immersions/antarpravaah/immersions/immersion_3')} 
+                alt="" 
+                width={180} 
+                height={180}
+                quality={85}
+                loading="lazy"
+              />
             </div>
           </div>
 
           {/* Bottom center decorative image */}
           <div className="pointer-events-none mx-auto mt-8 h-[280px] w-[280px]">
-            <img src="/immersion_3.webp" />
+            <Image 
+              src={getCloudinaryUrl('antarpravaah/immersions/antarpravaah/immersions/immersion_2')} 
+              alt="" 
+              width={280} 
+              height={280}
+              quality={85}
+              loading="lazy"
+            />
           </div>
         </div>
       </Section>
@@ -192,9 +215,13 @@ export default function ImmersionsPage() {
 
                   {/* Right column: Image + Details */}
                   <div className="flex flex-1 flex-col gap-4">
-                    <img
-                      src="/immersion_workshop_1.webp"
+                    <Image
+                      src={getCloudinaryUrl('antarpravaah/immersions/workshops/antarpravaah/immersions/workshops/immersion_workshop_1')}
                       alt="Antar Smaran Immersive"
+                      width={400}
+                      height={206}
+                      quality={85}
+                      loading="lazy"
                       className="h-[206px] w-full rounded-2xl object-cover"
                     />
 
@@ -301,9 +328,13 @@ export default function ImmersionsPage() {
                   </div>
 
                   <div className="flex flex-1 flex-col gap-4">
-                    <img
-                      src="/immersion_workshop_2.webp"
+                    <Image
+                      src={getCloudinaryUrl('antarpravaah/immersions/workshops/antarpravaah/immersions/workshops/immersion_workshop_2')}
                       alt="Thread of Life"
+                      width={400}
+                      height={206}
+                      quality={85}
+                      loading="lazy"
                       className="h-[206px] w-full rounded-2xl object-cover"
                     />
 
@@ -398,9 +429,13 @@ export default function ImmersionsPage() {
                   </div>
 
                   <div className="flex flex-1 flex-col gap-4">
-                    <img
-                      src="/immersion_workshop_3.webp"
+                    <Image
+                      src={getCloudinaryUrl('antarpravaah/immersions/workshops/antarpravaah/immersions/workshops/immersion_workshop_3')}
                       alt="Primary Animal Guide"
+                      width={400}
+                      height={206}
+                      quality={85}
+                      loading="lazy"
                       className="h-[206px] w-full rounded-2xl object-cover"
                     />
 
@@ -457,7 +492,14 @@ export default function ImmersionsPage() {
           <div className="flex items-start justify-center gap-8">
             {/* Left decorative image */}
             <div className="pointer-events-none mt-8 h-[200px] w-[200px] shrink-0">
-              <img src="/training_1.webp" />
+              <Image 
+                src={getCloudinaryUrl('antarpravaah/trainings/antarpravaah/trainings/training_1')} 
+                alt="" 
+                width={200} 
+                height={200}
+                quality={85}
+                loading="lazy"
+              />
             </div>
 
             {/* Center content */}
@@ -487,13 +529,27 @@ export default function ImmersionsPage() {
 
             {/* Right decorative image */}
             <div className="pointer-events-none mt-16 h-[180px] w-[180px] shrink-0">
-              <img src="/training_2.webp" />
+              <Image 
+                src={getCloudinaryUrl('antarpravaah/trainings/antarpravaah/trainings/training_2')} 
+                alt="" 
+                width={180} 
+                height={180}
+                quality={85}
+                loading="lazy"
+              />
             </div>
           </div>
 
           {/* Bottom center decorative image */}
           <div className="pointer-events-none mx-auto mt-8 h-[280px] w-[280px]">
-            <img src="/training_3.webp" />
+            <Image 
+              src={getCloudinaryUrl('antarpravaah/trainings/antarpravaah/trainings/training_3')} 
+              alt="" 
+              width={280} 
+              height={280}
+              quality={85}
+              loading="lazy"
+            />
           </div>
         </div>
       </Section>
