@@ -85,6 +85,23 @@ html {
 }
 
 :root {
+  /* Header height CSS variables for responsive layouts */
+  --header-height: 90px;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --header-height: 108px;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --header-height: 148px;
+  }
+}
+
+:root {
   --font-saphira: 'Safira March Personal Use Only', Georgia, serif;
   --font-graphik: 'Graphik Trial', Arial, Helvetica, sans-serif;
   --radius: 0.625rem;

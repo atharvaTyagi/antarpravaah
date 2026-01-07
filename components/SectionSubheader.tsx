@@ -97,15 +97,14 @@ export default function SectionSubheader() {
     <div
       className="fixed left-0 right-0 z-[55]"
       style={{
-        top: '148px',
-        height: '70px',
+        top: 'var(--header-height, 90px)', // Responsive: 90px on mobile, 108px on sm, 148px on lg
         backgroundColor: '#f6edd0',
       }}
     >
-      <div className="mx-auto max-w-[1177px] px-8 py-3">
+      <div className="mx-auto max-w-[1177px] px-4 sm:px-6 lg:px-8 py-2 sm:py-2.5 lg:py-3">
         <div className="relative text-center">
           <h2
-            className="text-[42px] leading-[1.0] transition-colors duration-500"
+            className="text-[24px] sm:text-[32px] lg:text-[42px] leading-[1.0] transition-colors duration-500"
             style={{
               fontFamily: 'var(--font-saphira), serif',
               color: currentSection.color,

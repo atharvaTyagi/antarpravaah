@@ -82,7 +82,7 @@ export default function Home() {
 
       {/* Main Content - Only visible after splash completes */}
       <div
-        className="relative z-10 w-full pt-[90px] sm:pt-[108px] lg:pt-[148px]"
+        className="relative z-10 w-full pt-[140px] sm:pt-[160px] lg:pt-[218px]"
         style={{
           opacity: splashComplete ? 1 : 0,
           pointerEvents: splashComplete ? 'auto' : 'none',
