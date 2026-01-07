@@ -36,6 +36,22 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
     document.body.style.overflow = 'hidden';
     document.documentElement.style.overflow = 'hidden';
 
+    const finishSplash = () => {
+      if (isCompleting.current) return;
+      isCompleting.current = true;
+      setSpiralOpacity(0);
+      setBlobOpacity(0);
+      setSplashOpacity(0);
+
+      // Let the opacity transition complete before unmounting / enabling scroll
+      window.setTimeout(() => {
+        setIsVisible(false);
+        document.body.style.overflow = originalOverflow;
+        document.documentElement.style.overflow = originalOverflowHtml;
+        onCompleteSafe();
+      }, 500);
+    };
+
     // Shared function to update animation based on scroll amount
     const updateAnimationPhase = () => {
       const s = scrollAmount.current;
@@ -92,20 +108,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
       }
 
       // Finish: fade out completed -> reveal homepage
-      if (!isCompleting.current) {
-        isCompleting.current = true;
-        setSpiralOpacity(0);
-        setBlobOpacity(0);
-        setSplashOpacity(0);
-
-        // Let the opacity transition complete before unmounting / enabling scroll
-        window.setTimeout(() => {
-          setIsVisible(false);
-          document.body.style.overflow = originalOverflow;
-          document.documentElement.style.overflow = originalOverflowHtml;
-          onCompleteSafe();
-        }, 500);
-      }
+      finishSplash();
     };
 
     // Handle wheel events for desktop
@@ -140,17 +143,35 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
       updateAnimationPhase();
     };
 
+    const handleTouchEnd = () => {
+      if (!isVisible || isCompleting.current) return;
+      // If user lifts finger and we haven't progressed enough, complete to prevent lock-up
+      if (scrollAmount.current < splashFadeOutEnd) {
+        scrollAmount.current = splashFadeOutEnd + 1;
+        updateAnimationPhase();
+      }
+    };
+
+    // Failsafe: auto-complete after a few seconds to avoid being stuck
+    const autoCompleteTimer = window.setTimeout(() => {
+      if (!isVisible || isCompleting.current) return;
+      finishSplash();
+    }, 4500);
+
     window.addEventListener('wheel', handleWheel, { passive: false });
     window.addEventListener('touchstart', handleTouchStart, { passive: false });
     window.addEventListener('touchmove', handleTouchMove, { passive: false });
+    window.addEventListener('touchend', handleTouchEnd, { passive: false });
 
     return () => {
       // Cleanup: restore scroll
+      window.clearTimeout(autoCompleteTimer);
       document.body.style.overflow = originalOverflow;
       document.documentElement.style.overflow = originalOverflowHtml;
       window.removeEventListener('wheel', handleWheel);
       window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
     };
   }, [isVisible, onCompleteSafe]);
 
