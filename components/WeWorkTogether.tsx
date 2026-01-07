@@ -211,6 +211,7 @@ export default function WeWorkTogether() {
       id: 'WORK-CARDS-LOCK',
       trigger: cardsSection,
       pin: true,
+      pinSpacing: false, // Don't add extra spacing after pin ends
       // Start when the card stack is comfortably below fixed headers (main header 148px + subheader ~70px)
       start: 'top top+=230',
       // Short end – once Observer releases, native scroll continues and unpins quickly.
@@ -236,7 +237,7 @@ export default function WeWorkTogether() {
   return (
     <Section
       id="work-together"
-      className="relative w-full bg-[#f6edd0] pb-16 sm:pb-20 lg:pb-24 pt-[60px] sm:pt-[76px] lg:pt-[96px] overflow-hidden"
+      className="relative w-full bg-[#f6edd0] pb-8 sm:pb-10 lg:pb-12 pt-8 sm:pt-10 lg:pt-12 overflow-hidden"
     >
       {/* Subtle repeating spiral background - larger and well-spaced, smaller on mobile */}
       <div className="absolute inset-0 pointer-events-none opacity-[0.06] z-0">

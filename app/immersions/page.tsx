@@ -13,23 +13,23 @@ export default function ImmersionsPage() {
   }, []);
 
   return (
-    <main className="relative min-h-screen bg-[#f6edd0] pt-[148px]">
+    <main className="relative min-h-screen bg-[#f6edd0] pt-[90px] sm:pt-[108px] lg:pt-[148px]">
       {/* Hero/Introduction Section */}
-      <Section id="immersions" className="relative z-10 w-full px-8 py-24">
-        <div className="mx-auto flex max-w-[723px] flex-col items-center gap-5 text-center">
+      <Section id="immersions" className="relative z-10 w-full px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-24">
+        <div className="mx-auto flex max-w-[723px] flex-col items-center gap-3 sm:gap-4 lg:gap-5 text-center">
           <h1
-            className="text-[48px] leading-normal text-[#6a3f33]"
+            className="text-[32px] sm:text-[40px] lg:text-[48px] leading-normal text-[#6a3f33]"
             style={{ fontFamily: 'var(--font-saphira), serif' }}
           >
             Immersions & Trainings
           </h1>
           <h2
-            className="text-[24px] leading-normal text-[#6a3f33]"
+            className="text-[18px] sm:text-[20px] lg:text-[24px] leading-normal text-[#6a3f33]"
             style={{ fontFamily: 'var(--font-saphira), serif' }}
           >
             Gather, Learn, Transform Together
           </h2>
-          <div className="text-justify text-[12px] leading-normal text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif' }}>
+          <div className="text-justify text-[11px] sm:text-[11.5px] lg:text-[12px] leading-normal text-[#6a3f33] px-4" style={{ fontFamily: 'var(--font-graphik), sans-serif' }}>
             <p className="mb-0">
               Healing deepens when experienced in community. Whether you&apos;re exploring a theme that
               resonates with your journey, or stepping into the role of healer yourself, our immersions
@@ -45,45 +45,44 @@ export default function ImmersionsPage() {
         </div>
       </Section>
 
-      {/* Decorative blob background for Immersions section */}
-      <div className="absolute left-1/2 top-[283px] z-0 flex h-[1374px] w-[1326px] -translate-x-1/2 items-center justify-center">
-        
-          <img src="/immersion_main_blob.svg" alt="" className="h-[744px] w-[1171px]" />
-        
+      {/* Decorative blob background for Immersions section - Hidden on mobile */}
+      <div className="absolute left-1/2 top-[283px] z-0 hidden lg:flex h-[1374px] w-[1326px] -translate-x-1/2 items-center justify-center">
+        <img src="/immersion_main_blob.svg" alt="" className="h-[744px] w-[1171px]" />
       </div>
 
       {/* Immersion Introduction */}
-      <Section id="immersions-intro" className="relative z-10 w-full px-8 py-16">
+      <Section id="immersions-intro" className="relative z-10 w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
         <div className="relative mx-auto max-w-[1000px]">
-          {/* Three column layout: left image | center content | right image */}
-          <div className="flex items-start justify-center gap-8">
-            {/* Left decorative image */}
-            <div className="pointer-events-none mt-8 h-[200px] w-[200px] shrink-0">
-              <Image 
-                src={getCloudinaryUrl('antarpravaah/immersions/antarpravaah/immersions/immersion_1')} 
-                alt="" 
-                width={200} 
+          {/* Three column layout: left image | center content | right image (stacks on mobile) */}
+          <div className="flex flex-col lg:flex-row items-center lg:items-start justify-center gap-4 sm:gap-6 lg:gap-8">
+            {/* Left decorative image - Hidden on mobile */}
+            <div className="pointer-events-none mt-0 lg:mt-8 h-[120px] w-[120px] sm:h-[160px] sm:w-[160px] lg:h-[200px] lg:w-[200px] shrink-0 hidden sm:block">
+              <Image
+                src={getCloudinaryUrl('antarpravaah/immersions/antarpravaah/immersions/immersion_1')}
+                alt=""
+                width={200}
                 height={200}
                 quality={85}
                 loading="lazy"
+                className="w-full h-full object-contain"
               />
             </div>
 
             {/* Center content */}
-            <div className="flex max-w-[400px] flex-col items-center gap-4 text-center text-[#6a3f33]">
+            <div className="flex w-full max-w-[400px] flex-col items-center gap-3 sm:gap-4 text-center text-[#6a3f33]">
               <h2
-                className="text-[48px] leading-normal"
+                className="text-[32px] sm:text-[40px] lg:text-[48px] leading-normal"
                 style={{ fontFamily: 'var(--font-saphira), serif' }}
               >
                 Immersions
               </h2>
               <h3
-                className="text-[24px] uppercase leading-normal tracking-[3.84px]"
+                className="text-[16px] sm:text-[20px] lg:text-[24px] uppercase leading-normal tracking-[2px] sm:tracking-[3px] lg:tracking-[3.84px]"
                 style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
               >
                 Transformative Gatherings
               </h3>
-              <div className="text-justify text-[12px] leading-normal" style={{ fontFamily: 'var(--font-graphik), sans-serif' }}>
+              <div className="text-justify text-[11px] sm:text-[11.5px] lg:text-[12px] leading-normal px-4" style={{ fontFamily: 'var(--font-graphik), sans-serif' }}>
                 <p className="mb-0">
                   Immersions at Antar Pravaah focus on meaningful themes without delving deeply into personal
                   histories. These gatherings create space for broader awareness—exploring how different areas
@@ -97,28 +96,30 @@ export default function ImmersionsPage() {
               </div>
             </div>
 
-            {/* Right decorative image */}
-            <div className="pointer-events-none mt-16 h-[180px] w-[180px] shrink-0">
-              <Image 
-                src={getCloudinaryUrl('antarpravaah/immersions/antarpravaah/immersions/immersion_2')} 
-                alt="" 
-                width={180} 
+            {/* Right decorative image - Hidden on mobile/tablet */}
+            <div className="pointer-events-none mt-0 lg:mt-16 h-[140px] w-[140px] lg:h-[180px] lg:w-[180px] shrink-0 hidden lg:block">
+              <Image
+                src={getCloudinaryUrl('antarpravaah/immersions/antarpravaah/immersions/immersion_2')}
+                alt=""
+                width={180}
                 height={180}
                 quality={85}
                 loading="lazy"
+                className="w-full h-full object-contain"
               />
             </div>
           </div>
 
           {/* Bottom center decorative image */}
-          <div className="pointer-events-none mx-auto mt-8 h-[280px] w-[280px]">
-            <Image 
-              src={getCloudinaryUrl('antarpravaah/immersions/antarpravaah/immersions/immersion_3')} 
-              alt="" 
-              width={280} 
+          <div className="pointer-events-none mx-auto mt-4 sm:mt-6 lg:mt-8 h-[180px] w-[180px] sm:h-[220px] sm:w-[220px] lg:h-[280px] lg:w-[280px]">
+            <Image
+              src={getCloudinaryUrl('antarpravaah/immersions/antarpravaah/immersions/immersion_3')}
+              alt=""
+              width={280}
               height={280}
               quality={85}
               loading="lazy"
+              className="w-full h-full object-contain"
             />
           </div>
         </div>
@@ -126,39 +127,39 @@ export default function ImmersionsPage() {
 
       {/* Dark section for Immersions listings */}
       <div className="relative w-full bg-[#6a3f33]">
-        <Section id="immersions-listings" className="relative z-10 w-full px-16 py-20">
-          <div className="mx-auto flex max-w-[2463px] flex-col gap-8">
+        <Section id="immersions-listings" className="relative z-10 w-full px-4 sm:px-6 lg:px-16 py-12 sm:py-16 lg:py-20">
+          <div className="mx-auto flex max-w-[2463px] flex-col gap-6 sm:gap-8">
             <h3
-              className="text-[24px] leading-normal text-[#d58761]"
+              className="text-[20px] sm:text-[22px] lg:text-[24px] leading-normal text-[#d58761]"
               style={{ fontFamily: 'var(--font-saphira), serif' }}
             >
               Upcoming Immersions & Workshops
             </h3>
 
             {/* Horizontal scrollable container */}
-            <div className="no-scrollbar flex gap-5 overflow-x-auto pb-4">
+            <div className="no-scrollbar flex gap-4 sm:gap-5 overflow-x-auto pb-4">
               {/* Card 1: Antar Smaran */}
-              <div className="flex min-w-[760px] flex-col justify-between gap-5 rounded-[24px] bg-[#d58761] p-5">
-                <div className="flex gap-4">
+              <div className="flex min-w-[320px] sm:min-w-[500px] lg:min-w-[760px] flex-col justify-between gap-4 sm:gap-5 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d58761] p-4 sm:p-5">
+                <div className="flex flex-col lg:flex-row gap-4">
                   {/* Left column: Info */}
-                  <div className="flex flex-1 flex-col gap-3 rounded-lg border border-[#6a3f33] p-4">
-                    <div className="flex flex-col gap-2">
+                  <div className="flex flex-1 flex-col gap-2 sm:gap-3 rounded-lg border border-[#6a3f33] p-3 sm:p-4">
+                    <div className="flex flex-col gap-1 sm:gap-2">
                       <h4
-                        className="text-[48px] leading-normal text-[#6a3f33]"
+                        className="text-[24px] sm:text-[36px] lg:text-[48px] leading-tight sm:leading-normal text-[#6a3f33]"
                         style={{ fontFamily: 'var(--font-saphira), serif' }}
                       >
                         Antar Smaran Immersive Residential Retreat
                       </h4>
-                      <span className="inline-flex w-fit items-center justify-center rounded-full bg-[#6a3f33] px-2 py-0.5 text-[12px] text-[#d58761]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                      <span className="inline-flex w-fit items-center justify-center rounded-full bg-[#6a3f33] px-2 py-0.5 text-[10px] sm:text-[11px] lg:text-[12px] text-[#d58761]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
                         Immersion
                       </span>
                     </div>
 
-                    <div className="flex flex-col gap-2">
-                      <p className="text-[12px] uppercase tracking-[1.92px] text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}>
+                    <div className="flex flex-col gap-1 sm:gap-2">
+                      <p className="text-[10px] sm:text-[11px] lg:text-[12px] uppercase tracking-[1.5px] sm:tracking-[1.92px] text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}>
                         Duration
                       </p>
-                      <p className="text-[24px] leading-normal text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                      <p className="text-[18px] sm:text-[20px] lg:text-[24px] leading-normal text-[#6a3f33]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
                         2 Days
                       </p>
                     </div>
@@ -254,17 +255,17 @@ export default function ImmersionsPage() {
               </div>
 
               {/* Card 2: Thread of Life */}
-              <div className="flex min-w-[760px] flex-col justify-between gap-5 rounded-[24px] bg-[#d58761] p-5">
-                <div className="flex gap-4">
-                  <div className="flex flex-1 flex-col gap-3 rounded-lg border border-[#6a3f33] p-4">
-                    <div className="flex flex-col gap-2">
+              <div className="flex min-w-[320px] sm:min-w-[500px] lg:min-w-[760px] flex-col justify-between gap-4 sm:gap-5 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d58761] p-4 sm:p-5">
+                <div className="flex flex-col lg:flex-row gap-4">
+                  <div className="flex flex-1 flex-col gap-2 sm:gap-3 rounded-lg border border-[#6a3f33] p-3 sm:p-4">
+                    <div className="flex flex-col gap-1 sm:gap-2">
                       <h4
-                        className="text-[48px] leading-normal text-[#6a3f33]"
+                        className="text-[24px] sm:text-[36px] lg:text-[48px] leading-tight sm:leading-normal text-[#6a3f33]"
                         style={{ fontFamily: 'var(--font-saphira), serif' }}
                       >
                         Thread of Life - A Systemic Constellations experience
                       </h4>
-                      <span className="inline-flex w-fit items-center justify-center rounded-full bg-[#6a3f33] px-2 py-0.5 text-[12px] text-[#d58761]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                      <span className="inline-flex w-fit items-center justify-center rounded-full bg-[#6a3f33] px-2 py-0.5 text-[10px] sm:text-[11px] lg:text-[12px] text-[#d58761]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
                         Immersion
                       </span>
                     </div>
@@ -355,17 +356,17 @@ export default function ImmersionsPage() {
               </div>
 
               {/* Card 3: Meet your Primary Animal Guide */}
-              <div className="flex min-w-[760px] flex-col justify-between gap-5 rounded-[24px] bg-[#d58761] p-5">
-                <div className="flex gap-4">
-                  <div className="flex flex-1 flex-col gap-3 rounded-lg border border-[#6a3f33] p-4">
-                    <div className="flex flex-col gap-2">
+              <div className="flex min-w-[320px] sm:min-w-[500px] lg:min-w-[760px] flex-col justify-between gap-4 sm:gap-5 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d58761] p-4 sm:p-5">
+                <div className="flex flex-col lg:flex-row gap-4">
+                  <div className="flex flex-1 flex-col gap-2 sm:gap-3 rounded-lg border border-[#6a3f33] p-3 sm:p-4">
+                    <div className="flex flex-col gap-1 sm:gap-2">
                       <h4
-                        className="text-[48px] leading-normal text-[#6a3f33]"
+                        className="text-[24px] sm:text-[36px] lg:text-[48px] leading-tight sm:leading-normal text-[#6a3f33]"
                         style={{ fontFamily: 'var(--font-saphira), serif' }}
                       >
                         Meet your Primary Animal Guide
                       </h4>
-                      <span className="inline-flex w-fit items-center justify-center rounded-full bg-[#6a3f33] px-2 py-0.5 text-[12px] text-[#d58761]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                      <span className="inline-flex w-fit items-center justify-center rounded-full bg-[#6a3f33] px-2 py-0.5 text-[10px] sm:text-[11px] lg:text-[12px] text-[#d58761]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
                         Workshop
                       </span>
                     </div>
@@ -457,45 +458,46 @@ export default function ImmersionsPage() {
         </Section>
       </div>
 
-      {/* Decorative blob background for Trainings section */}
-      <div className="absolute left-1/2 top-[2082px] z-0 flex h-[1374px] w-[1326px] -translate-x-1/2 items-center justify-center">
+      {/* Decorative blob background for Trainings section - Hidden on mobile */}
+      <div className="absolute left-1/2 top-[2082px] z-0 hidden lg:flex h-[1374px] w-[1326px] -translate-x-1/2 items-center justify-center">
         <div className="rotate-[130.5deg] scale-y-[-1]">
           <img src="/immersion_main_blob.svg" alt="" className="h-[744px] w-[1171px]" />
         </div>
       </div>
 
       {/* Trainings Introduction */}
-      <Section id="trainings-intro" className="relative z-10 w-full px-8 py-16">
+      <Section id="trainings-intro" className="relative z-10 w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
         <div className="relative mx-auto max-w-[1000px]">
-          {/* Three column layout: left image | center content | right image */}
-          <div className="flex items-start justify-center gap-8">
-            {/* Left decorative image */}
-            <div className="pointer-events-none mt-8 h-[200px] w-[200px] shrink-0">
-              <Image 
-                src={getCloudinaryUrl('antarpravaah/trainings/antarpravaah/trainings/training_1')} 
-                alt="" 
-                width={200} 
+          {/* Three column layout: left image | center content | right image (stacks on mobile) */}
+          <div className="flex flex-col lg:flex-row items-center lg:items-start justify-center gap-4 sm:gap-6 lg:gap-8">
+            {/* Left decorative image - Hidden on mobile */}
+            <div className="pointer-events-none mt-0 lg:mt-8 h-[120px] w-[120px] sm:h-[160px] sm:w-[160px] lg:h-[200px] lg:w-[200px] shrink-0 hidden sm:block">
+              <Image
+                src={getCloudinaryUrl('antarpravaah/trainings/antarpravaah/trainings/training_1')}
+                alt=""
+                width={200}
                 height={200}
                 quality={85}
                 loading="lazy"
+                className="w-full h-full object-contain"
               />
             </div>
 
             {/* Center content */}
-            <div className="flex max-w-[400px] flex-col items-center gap-4 text-center text-[#6a3f33]">
+            <div className="flex w-full max-w-[400px] flex-col items-center gap-3 sm:gap-4 text-center text-[#6a3f33]">
               <h2
-                className="text-[48px] leading-normal"
+                className="text-[32px] sm:text-[40px] lg:text-[48px] leading-normal"
                 style={{ fontFamily: 'var(--font-saphira), serif' }}
               >
                 Trainings
               </h2>
               <h3
-                className="text-[24px] uppercase leading-normal tracking-[3.84px]"
+                className="text-[16px] sm:text-[20px] lg:text-[24px] uppercase leading-normal tracking-[2px] sm:tracking-[3px] lg:tracking-[3.84px]"
                 style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
               >
                 Become Your Own Healer
               </h3>
-              <div className="text-justify text-[12px] leading-normal" style={{ fontFamily: 'var(--font-graphik), sans-serif' }}>
+              <div className="text-justify text-[11px] sm:text-[11.5px] lg:text-[12px] leading-normal px-4" style={{ fontFamily: 'var(--font-graphik), sans-serif' }}>
                 <p className="mb-0">
                   Our training programs offer more than certification—they offer transformation. As you learn to facilitate healing for others, you become your own most skilled healer. These programs are intensive, experiential, and designed to change not just what you know, but who you are.
                 </p>
@@ -506,28 +508,30 @@ export default function ImmersionsPage() {
               </div>
             </div>
 
-            {/* Right decorative image */}
-            <div className="pointer-events-none mt-16 h-[180px] w-[180px] shrink-0">
-              <Image 
-                src={getCloudinaryUrl('antarpravaah/trainings/antarpravaah/trainings/training_2')} 
-                alt="" 
-                width={180} 
+            {/* Right decorative image - Hidden on mobile/tablet */}
+            <div className="pointer-events-none mt-0 lg:mt-16 h-[140px] w-[140px] lg:h-[180px] lg:w-[180px] shrink-0 hidden lg:block">
+              <Image
+                src={getCloudinaryUrl('antarpravaah/trainings/antarpravaah/trainings/training_2')}
+                alt=""
+                width={180}
                 height={180}
                 quality={85}
                 loading="lazy"
+                className="w-full h-full object-contain"
               />
             </div>
           </div>
 
           {/* Bottom center decorative image */}
-          <div className="pointer-events-none mx-auto mt-8 h-[280px] w-[280px]">
-            <Image 
-              src={getCloudinaryUrl('antarpravaah/trainings/antarpravaah/trainings/training_3')} 
-              alt="" 
-              width={280} 
+          <div className="pointer-events-none mx-auto mt-4 sm:mt-6 lg:mt-8 h-[180px] w-[180px] sm:h-[220px] sm:w-[220px] lg:h-[280px] lg:w-[280px]">
+            <Image
+              src={getCloudinaryUrl('antarpravaah/trainings/antarpravaah/trainings/training_3')}
+              alt=""
+              width={280}
               height={280}
               quality={85}
               loading="lazy"
+              className="w-full h-full object-contain"
             />
           </div>
         </div>
@@ -535,24 +539,24 @@ export default function ImmersionsPage() {
 
       {/* Dark section for Trainings listings */}
       <div className="relative w-full bg-[#6a3f33]">
-        <Section id="trainings-listings" className="relative z-10 w-full px-16 py-20">
-          <div className="mx-auto flex max-w-[2463px] flex-col gap-8">
+        <Section id="trainings-listings" className="relative z-10 w-full px-4 sm:px-6 lg:px-16 py-12 sm:py-16 lg:py-20">
+          <div className="mx-auto flex max-w-[2463px] flex-col gap-6 sm:gap-8">
             <h3
-              className="text-[24px] leading-normal text-[#d58761]"
+              className="text-[20px] sm:text-[22px] lg:text-[24px] leading-normal text-[#d58761]"
               style={{ fontFamily: 'var(--font-saphira), serif' }}
             >
               Upcoming Trainings
             </h3>
 
             {/* Grid of training cards */}
-            <div className="no-scrollbar flex gap-5 overflow-x-auto pb-4">
+            <div className="no-scrollbar flex gap-4 sm:gap-5 overflow-x-auto pb-4">
               {/* Training Card 1: Foundations of Shamanic Practice */}
-              <div className="flex min-w-[600px] flex-col justify-between gap-3 rounded-[24px] bg-[#d58761] p-5">
-                <div className="flex flex-col gap-4">
-                  <div className="flex flex-col gap-3 rounded-lg border border-[#6a3f33] p-4">
-                    <div className="flex flex-col gap-2">
+              <div className="flex min-w-[300px] sm:min-w-[450px] lg:min-w-[600px] flex-col justify-between gap-3 sm:gap-4 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d58761] p-4 sm:p-5">
+                <div className="flex flex-col gap-3 sm:gap-4">
+                  <div className="flex flex-col gap-2 sm:gap-3 rounded-lg border border-[#6a3f33] p-3 sm:p-4">
+                    <div className="flex flex-col gap-1 sm:gap-2">
                       <h4
-                        className="text-[48px] leading-normal text-[#6a3f33]"
+                        className="text-[24px] sm:text-[36px] lg:text-[48px] leading-tight sm:leading-normal text-[#6a3f33]"
                         style={{ fontFamily: 'var(--font-saphira), serif' }}
                       >
                         Foundations of Shamanic Practice
@@ -657,12 +661,12 @@ export default function ImmersionsPage() {
               </div>
 
               {/* Training Card 2: AP Energy Healing Level 1 */}
-              <div className="flex min-w-[600px] flex-col justify-between gap-3 rounded-[24px] bg-[#d58761] p-5">
-                <div className="flex flex-col gap-4">
-                  <div className="flex flex-col gap-3 rounded-lg border border-[#6a3f33] p-4">
-                    <div className="flex flex-col gap-2">
+              <div className="flex min-w-[300px] sm:min-w-[450px] lg:min-w-[600px] flex-col justify-between gap-3 sm:gap-4 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d58761] p-4 sm:p-5">
+                <div className="flex flex-col gap-3 sm:gap-4">
+                  <div className="flex flex-col gap-2 sm:gap-3 rounded-lg border border-[#6a3f33] p-3 sm:p-4">
+                    <div className="flex flex-col gap-1 sm:gap-2">
                       <h4
-                        className="text-[48px] leading-normal text-[#6a3f33]"
+                        className="text-[24px] sm:text-[36px] lg:text-[48px] leading-tight sm:leading-normal text-[#6a3f33]"
                         style={{ fontFamily: 'var(--font-saphira), serif' }}
                       >
                         Antar Pravaah Energy Healing Level 1 Training
@@ -766,12 +770,12 @@ export default function ImmersionsPage() {
               </div>
 
               {/* Training Card 3: Chakra Energy System */}
-              <div className="flex min-w-[600px] flex-col justify-between gap-3 rounded-[24px] bg-[#d58761] p-5">
-                <div className="flex flex-col gap-4">
-                  <div className="flex flex-col gap-3 rounded-lg border border-[#6a3f33] p-4">
-                    <div className="flex flex-col gap-2">
+              <div className="flex min-w-[300px] sm:min-w-[450px] lg:min-w-[600px] flex-col justify-between gap-3 sm:gap-4 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d58761] p-4 sm:p-5">
+                <div className="flex flex-col gap-3 sm:gap-4">
+                  <div className="flex flex-col gap-2 sm:gap-3 rounded-lg border border-[#6a3f33] p-3 sm:p-4">
+                    <div className="flex flex-col gap-1 sm:gap-2">
                       <h4
-                        className="text-[48px] leading-normal text-[#6a3f33]"
+                        className="text-[24px] sm:text-[36px] lg:text-[48px] leading-tight sm:leading-normal text-[#6a3f33]"
                         style={{ fontFamily: 'var(--font-saphira), serif' }}
                       >
                         Chakra Energy System Fundamentals
@@ -878,21 +882,21 @@ export default function ImmersionsPage() {
       </div>
 
       {/* CTA Section - Light beige background */}
-      <Section id="cta" className="relative z-10 w-full bg-[#f6edd0] px-8 py-24">
-        <div className="mx-auto flex max-w-[687px] flex-col items-center gap-10 text-center">
+      <Section id="cta" className="relative z-10 w-full bg-[#f6edd0] px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-24">
+        <div className="mx-auto flex max-w-[687px] flex-col items-center gap-6 sm:gap-8 lg:gap-10 text-center">
           <h2
-            className="text-[48px] leading-normal text-[#d58761]"
+            className="text-[32px] sm:text-[40px] lg:text-[48px] leading-normal text-[#d58761]"
             style={{ fontFamily: 'var(--font-saphira), serif' }}
           >
             Ready to step into your power?
           </h2>
 
-          <div className="flex h-[40px] w-[163px] items-center justify-center py-5">
-            <PageEndBlob color="#d58761" />
+          <div className="flex h-[32px] sm:h-[36px] lg:h-[40px] w-[130px] sm:w-[146px] lg:w-[163px] items-center justify-center py-3 sm:py-4 lg:py-5">
+            <PageEndBlob color="#d58761" className="w-full h-full" />
           </div>
 
           <p
-            className="text-[24px] leading-normal text-[#d58761]"
+            className="text-[16px] sm:text-[20px] lg:text-[24px] leading-normal text-[#d58761] px-4"
             style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
           >
             Whether you&apos;re joining us for a single workshop or embarking on a comprehensive training
@@ -900,7 +904,7 @@ export default function ImmersionsPage() {
             outward—to your family, your community, and the world.
           </p>
 
-          <div className="flex flex-col items-center gap-3">
+          <div className="flex flex-col items-center gap-3 w-full sm:w-auto">
             <Button
               text="Explore Upcoming Immersions"
               size="large"

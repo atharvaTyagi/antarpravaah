@@ -22,7 +22,7 @@ export default function ApproachPage() {
   return (
     <main className="relative min-h-screen bg-[#f6edd0] pt-[90px] sm:pt-[108px] lg:pt-[148px]">
       {/* Hero/Introduction Section */}
-      <Section id="approach" className="relative w-full bg-[#f6edd0] px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24">
+      <Section id="approach" className="relative w-full bg-[#f6edd0] px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 pb-12 sm:pb-16 lg:pb-20">
         <div className="mx-auto flex max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1349px] flex-col items-center gap-3 sm:gap-4 text-center">
           {/* Large Spiral SVG from assets */}
           <div className="mb-6 sm:mb-8 flex w-[25%] sm:w-[18%] lg:w-[155px] max-w-[155px] items-center justify-center">
@@ -76,9 +76,18 @@ export default function ApproachPage() {
         </div>
 
         {/* Three Pathways Section with GSAP Card Stack */}
-        <Section id="pathways" className="relative z-10 w-full px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
+        <Section id="pathways" className="relative z-10 w-full px-4 sm:px-6 lg:px-8 pt-8 sm:pt-12 lg:pt-16 pb-12 sm:pb-16 lg:pb-20">
           <div className="mx-auto max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1347px]">
-            <PathwaysCardStack cards={pathwayCards} title="Three Pathways for You" />
+            {/* Section Title - Outside card stack so it scrolls normally */}
+            <div className="mb-8 sm:mb-10 lg:mb-12 text-center">
+              <h2
+                className="text-[32px] sm:text-[38px] lg:text-[48px] leading-normal text-[#9ac1bf]"
+                style={{ fontFamily: 'var(--font-saphira), serif' }}
+              >
+                Three Pathways for You
+              </h2>
+            </div>
+            <PathwaysCardStack cards={pathwayCards} />
           </div>
         </Section>
 

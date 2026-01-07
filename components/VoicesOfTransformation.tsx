@@ -8,8 +8,6 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 export default function VoicesOfTransformation() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const scrollerRef = useRef<HTMLDivElement | null>(null);
-  const [isScrollTakeoverActive, setIsScrollTakeoverActive] = useState(false);
-  const bodyScrollLock = useRef<{ overflow: string; paddingRight: string } | null>(null);
   const cardRefs = useRef<Array<HTMLDivElement | null>>([]);
   const [cardHeight, setCardHeight] = useState<number | null>(null);
 
@@ -27,94 +25,6 @@ export default function VoicesOfTransformation() {
     window.addEventListener('resize', compute);
     return () => window.removeEventListener('resize', compute);
   }, []);
-
-  // Convert vertical wheel/trackpad scroll into horizontal carousel scroll while this section is active.
-  // Only enable on desktop (not mobile/tablet) since they can swipe horizontally naturally
-  useEffect(() => {
-    const el = sectionRef.current;
-    if (!el) return;
-
-    // Check if device is mobile/tablet
-    const isMobileOrTablet = window.innerWidth < 1024;
-    if (isMobileOrTablet) return; // Skip scroll takeover on mobile/tablet
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsScrollTakeoverActive(Boolean(entry?.isIntersecting));
-      },
-      {
-        root: null,
-        // Activate when the section is meaningfully in view (below the sticky header).
-        rootMargin: '-220px 0px -220px 0px',
-        threshold: 0.1,
-      }
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    const lockBodyScroll = () => {
-      if (bodyScrollLock.current) return;
-      const body = document.body;
-      const docEl = document.documentElement;
-      const scrollbarWidth = window.innerWidth - docEl.clientWidth;
-      bodyScrollLock.current = {
-        overflow: body.style.overflow,
-        paddingRight: body.style.paddingRight,
-      };
-      body.style.overflow = 'hidden';
-      if (scrollbarWidth > 0) {
-        body.style.paddingRight = `${scrollbarWidth}px`;
-      }
-    };
-
-    const unlockBodyScroll = () => {
-      const prev = bodyScrollLock.current;
-      if (!prev) return;
-      document.body.style.overflow = prev.overflow;
-      document.body.style.paddingRight = prev.paddingRight;
-      bodyScrollLock.current = null;
-    };
-
-    const onWheel = (e: WheelEvent) => {
-      if (!isScrollTakeoverActive) return;
-      const scroller = scrollerRef.current;
-      if (!scroller) return;
-
-      // If user is using shift+wheel for horizontal, let the browser handle it.
-      if (e.shiftKey) return;
-
-      const primaryDelta = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
-      if (!primaryDelta) return;
-
-      const maxScrollLeft = scroller.scrollWidth - scroller.clientWidth;
-      if (maxScrollLeft <= 0) return;
-      const atStart = scroller.scrollLeft <= 0;
-      const atEnd = scroller.scrollLeft >= maxScrollLeft - 1;
-
-      // Only "take over" if we can actually scroll horizontally in that direction.
-      const scrollingForward = primaryDelta > 0; // right
-      const canScrollRight = !atEnd;
-      const canScrollLeft = !atStart;
-
-      if ((scrollingForward && !canScrollRight) || (!scrollingForward && !canScrollLeft)) {
-        unlockBodyScroll();
-        return; // release back to normal vertical page scroll
-      }
-
-      e.preventDefault();
-      lockBodyScroll();
-      scroller.scrollLeft += primaryDelta;
-    };
-
-    window.addEventListener('wheel', onWheel, { passive: false });
-    return () => {
-      window.removeEventListener('wheel', onWheel);
-      unlockBodyScroll();
-    };
-  }, [isScrollTakeoverActive]);
 
   const testimonials = [
     {
@@ -138,7 +48,7 @@ export default function VoicesOfTransformation() {
   return (
     <Section
       id="voices"
-      className="relative w-full bg-[#f6edd0] pb-16 sm:pb-20 lg:pb-24 pt-[60px] sm:pt-[76px] lg:pt-[96px]"
+      className="relative w-full bg-[#f6edd0] pb-16 sm:pb-20 lg:pb-24 pt-8 sm:pt-10 lg:pt-12"
       ref={sectionRef}
     >
       {/* Carousel */}

@@ -197,8 +197,9 @@ export default function TherapiesCardStack({ cards, title }: TherapiesCardStackP
       id: 'THERAPIES-CARDS-LOCK',
       trigger: cardsSection,
       pin: true,
-      // Start when the card stack is comfortably below the fixed headers.
-      start: 'top top+=200',
+      pinSpacing: false, // Don't add extra spacing after pin ends
+      // Start when the card stack is comfortably below the fixed headers (main header 148px + subheader ~70px)
+      start: 'top top+=230',
       // Short end – once Observer releases, native scroll continues and unpins quickly.
       end: '+=120',
       onEnter: () => {
@@ -223,9 +224,9 @@ export default function TherapiesCardStack({ cards, title }: TherapiesCardStackP
     <div ref={cardsSectionRef} className="cards-section relative w-full">
       {/* Section Title */}
       {title && (
-        <div className="mb-10 text-center">
+        <div className="mb-6 sm:mb-8 lg:mb-10 text-center">
           <h2
-            className="text-[48px] leading-normal text-[#645c42]"
+            className="text-[32px] sm:text-[40px] lg:text-[48px] leading-normal text-[#645c42]"
             style={{ fontFamily: 'var(--font-saphira), serif' }}
           >
             {title}

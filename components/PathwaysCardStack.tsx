@@ -199,8 +199,9 @@ export default function PathwaysCardStack({ cards, title }: PathwaysCardStackPro
       id: 'PATHWAYS-CARDS-LOCK',
       trigger: cardsSection,
       pin: true,
-      // Start when the card stack is comfortably below the fixed headers.
-      start: 'top top+=200',
+      pinSpacing: false, // Don't add extra spacing after pin ends
+      // Start when the card stack is comfortably below the fixed headers (main header 148px + subheader ~70px)
+      start: 'top top+=230',
       // Short end – once Observer releases, native scroll continues and unpins quickly.
       end: '+=120',
       onEnter: () => {
@@ -225,9 +226,9 @@ export default function PathwaysCardStack({ cards, title }: PathwaysCardStackPro
     <div ref={cardsSectionRef} className="cards-section relative w-full flex flex-col items-center">
       {/* Section Title */}
       {title && (
-        <div className="mb-8 text-center">
+        <div className="mb-6 sm:mb-8 text-center">
           <h2
-            className="text-[40px] leading-normal text-[#9ac1bf]"
+            className="text-[28px] sm:text-[36px] lg:text-[40px] leading-normal text-[#9ac1bf]"
             style={{ fontFamily: 'var(--font-saphira), serif' }}
           >
             {title}
