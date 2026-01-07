@@ -74,7 +74,32 @@ export default function TheJourney() {
     const stepsContainer = stepsContainerRef.current;
     if (!section || !stepsContainer) return;
 
-    // Delay to ensure Lenis is ready
+    // Check if mobile/tablet - simplify or disable animations
+    const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+    const isMobileSize = window.innerWidth < 768;
+
+    // On mobile, show elements immediately without scroll animations
+    if (isTouchDevice || isMobileSize) {
+      const steps = stepRefs.current.filter(Boolean) as HTMLDivElement[];
+      const connectors = connectorRefs.current.filter(Boolean) as HTMLDivElement[];
+
+      // Make all steps visible immediately
+      steps.forEach((step) => {
+        gsap.set(step, { opacity: 1, y: 0 });
+      });
+
+      // Make all connectors visible immediately
+      connectors.forEach((connector) => {
+        const clipRect = connector.querySelector('.clip-rect');
+        if (clipRect) {
+          gsap.set(clipRect, { attr: { width: 462 } });
+        }
+      });
+
+      return;
+    }
+
+    // Desktop: Use scroll animations
     const initTimeout = setTimeout(() => {
       const steps = stepRefs.current.filter(Boolean) as HTMLDivElement[];
       const connectors = connectorRefs.current.filter(Boolean) as HTMLDivElement[];
