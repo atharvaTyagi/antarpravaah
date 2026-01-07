@@ -17,6 +17,8 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
   const [isVisible, setIsVisible] = useState(true); // unmount after fade-out
   const isCompleting = useRef(false);
   const scrollAmount = useRef(0);
+  const touchStartY = useRef(0);
+  const lastTouchY = useRef(0);
   
   // Scroll thresholds for animation sequence
   const spiralDrawEnd = 200; // spiral draws in (0..200)
@@ -34,14 +36,8 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
     document.body.style.overflow = 'hidden';
     document.documentElement.style.overflow = 'hidden';
 
-    // Handle wheel events to trigger animation sequence
-    const handleWheel = (e: WheelEvent) => {
-      if (!isVisible || isCompleting.current) return;
-      
-      e.preventDefault();
-      e.stopPropagation();
-      scrollAmount.current += Math.abs(e.deltaY);
-      
+    // Shared function to update animation based on scroll amount
+    const updateAnimationPhase = () => {
       const s = scrollAmount.current;
 
       // Phase 1: Draw spiral (0 -> spiralDrawEnd)
@@ -96,27 +92,65 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
       }
 
       // Finish: fade out completed -> reveal homepage
-      isCompleting.current = true;
-      setSpiralOpacity(0);
-      setBlobOpacity(0);
-      setSplashOpacity(0);
+      if (!isCompleting.current) {
+        isCompleting.current = true;
+        setSpiralOpacity(0);
+        setBlobOpacity(0);
+        setSplashOpacity(0);
 
-      // Let the opacity transition complete before unmounting / enabling scroll
-      window.setTimeout(() => {
-        setIsVisible(false);
-        document.body.style.overflow = originalOverflow;
-        document.documentElement.style.overflow = originalOverflowHtml;
-        onCompleteSafe();
-      }, 500);
+        // Let the opacity transition complete before unmounting / enabling scroll
+        window.setTimeout(() => {
+          setIsVisible(false);
+          document.body.style.overflow = originalOverflow;
+          document.documentElement.style.overflow = originalOverflowHtml;
+          onCompleteSafe();
+        }, 500);
+      }
+    };
+
+    // Handle wheel events for desktop
+    const handleWheel = (e: WheelEvent) => {
+      if (!isVisible || isCompleting.current) return;
+      
+      e.preventDefault();
+      e.stopPropagation();
+      scrollAmount.current += Math.abs(e.deltaY);
+      updateAnimationPhase();
+    };
+
+    // Handle touch events for mobile/tablet
+    const handleTouchStart = (e: TouchEvent) => {
+      if (!isVisible || isCompleting.current) return;
+      touchStartY.current = e.touches[0].clientY;
+      lastTouchY.current = e.touches[0].clientY;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!isVisible || isCompleting.current) return;
+      
+      e.preventDefault();
+      e.stopPropagation();
+      
+      const currentY = e.touches[0].clientY;
+      const deltaY = lastTouchY.current - currentY;
+      lastTouchY.current = currentY;
+      
+      // Accumulate scroll amount based on touch movement
+      scrollAmount.current += Math.abs(deltaY);
+      updateAnimationPhase();
     };
 
     window.addEventListener('wheel', handleWheel, { passive: false });
+    window.addEventListener('touchstart', handleTouchStart, { passive: false });
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
 
     return () => {
       // Cleanup: restore scroll
       document.body.style.overflow = originalOverflow;
       document.documentElement.style.overflow = originalOverflowHtml;
       window.removeEventListener('wheel', handleWheel);
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
     };
   }, [isVisible, onCompleteSafe]);
 
