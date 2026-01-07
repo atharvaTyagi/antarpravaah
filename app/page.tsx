@@ -109,9 +109,13 @@ export default function Home() {
     setSplashComplete(true);
     setGlobalSplashComplete(true);
     
-    // Show guided journey modal after a short delay
+    // Show guided journey modal after a short delay (desktop only to avoid mobile scroll lock)
     setTimeout(() => {
-      setShowGuidedJourney(true);
+      const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+      const isMobileSize = window.innerWidth < 1024;
+      if (!isTouchDevice && !isMobileSize) {
+        setShowGuidedJourney(true);
+      }
     }, 2000); // 2 seconds after splash completes
   };
 
