@@ -193,8 +193,7 @@ export default function TheJourney() {
                     ref={(el) => {
                       connectorRefs.current[index] = el;
                     }}
-                    className="mx-auto my-8 sm:my-12 lg:my-16 w-full max-w-[280px] sm:max-w-[360px] lg:max-w-[462px] journey-connector"
-                    style={{ minHeight: '180px', minHeight: '200px', minHeight: '250px' }}
+                    className="mx-auto my-8 sm:my-12 lg:my-16 w-full max-w-[280px] sm:max-w-[360px] lg:max-w-[462px] journey-connector min-h-[180px] sm:min-h-[200px] lg:min-h-[250px]"
                   >
                     <ConnectorPath flip={index % 2 !== 0} clipId={`connector-clip-${index}`} />
                   </div>
