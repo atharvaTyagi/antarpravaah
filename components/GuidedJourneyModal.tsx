@@ -62,10 +62,10 @@ export default function GuidedJourneyModal({ isOpen, onClose }: GuidedJourneyMod
       html.style.overflow = '';
     }
 
-    return () => {
+      return () => {
       body.style.overflow = originalBodyOverflow;
       html.style.overflow = originalHtmlOverflow;
-    };
+      };
   }, [isOpen]);
 
   const handleStartGuidedFlow = () => {

@@ -1,8 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import Button from './Button';
 import { useThemeStore } from '@/lib/stores/useThemeStore';
 import { SECTION_THEMES } from '@/lib/themeConfig';
+import PrivacyPolicyModal from './PrivacyPolicyModal';
 
 function QuickLink({ href, label, accentColor, bgColor }: { href: string; label: string; accentColor: string; bgColor: string }) {
   return (
@@ -21,6 +23,7 @@ function QuickLink({ href, label, accentColor, bgColor }: { href: string; label:
 }
 
 export default function Footer() {
+  const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
   const currentTheme = useThemeStore((state) => state.currentTheme);
   const theme = SECTION_THEMES[currentTheme] || SECTION_THEMES['hero'];
 
@@ -66,7 +69,31 @@ export default function Footer() {
             className="mx-auto block h-auto w-full max-w-full sm:max-w-[800px] lg:max-w-[1282px]"
           />
         </div>
+
+        {/* Bottom meta row */}
+        <div className="w-full px-2 sm:px-4">
+          <div className="mx-auto flex w-full max-w-full sm:max-w-[800px] lg:max-w-[1282px] flex-col sm:flex-row items-center justify-between gap-2 pt-4">
+            <div className="flex items-center gap-3 text-[12px] sm:text-[13px] leading-normal">
+              <button
+                onClick={() => setIsPrivacyModalOpen(true)}
+                className="underline-offset-2 hover:underline tracking-[1.5px] sm:tracking-[1.92px] cursor-pointer"
+                style={{ color: footerAccent, fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
+              >
+                PRIVACY POLICY
+              </button>
+            </div>
+            <div
+              className="text-[12px] sm:text-[13px] leading-normal text-center sm:text-right tracking-[1.5px] sm:tracking-[1.92px]"
+              style={{ color: footerAccent, fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
+            >
+              © 2022 PRAKRITEE & {new Date().getFullYear()} ANTAR PRAVAAH. ALL RIGHTS RESERVED.
+            </div>
+          </div>
+        </div>
       </div>
+
+      {/* Privacy Policy Modal */}
+      <PrivacyPolicyModal isOpen={isPrivacyModalOpen} onClose={() => setIsPrivacyModalOpen(false)} />
     </footer>
   );
 }
