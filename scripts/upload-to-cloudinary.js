@@ -95,28 +95,31 @@ async function uploadImage(file, folder) {
     const publicId = path.basename(file.filename, '.webp');
     const fullPublicId = `${folder}/${publicId}`;
     
-    // Check if already uploaded
-    try {
-      await cloudinary.api.resource(fullPublicId);
-      log(`  ⏭️  Skipped: ${file.filename} (already uploaded)`, 'yellow');
-      return {
-        success: true,
-        skipped: true,
-        filename: file.filename,
-        publicId: fullPublicId,
-      };
-    } catch (error) {
-      // Image doesn't exist, proceed with upload
+    // Check if already uploaded (set FORCE_UPLOAD=true to skip this check)
+    if (process.env.FORCE_UPLOAD !== 'true') {
+      try {
+        await cloudinary.api.resource(fullPublicId);
+        log(`  ⏭️  Skipped: ${file.filename} (already uploaded)`, 'yellow');
+        return {
+          success: true,
+          skipped: true,
+          filename: file.filename,
+          publicId: fullPublicId,
+        };
+      } catch (error) {
+        // Image doesn't exist, proceed with upload
+      }
     }
     
     // Upload to Cloudinary
+    // Note: Don't set both 'folder' and a path in 'public_id' - Cloudinary concatenates them
     const result = await cloudinary.uploader.upload(file.path, {
       public_id: fullPublicId,
       resource_type: 'image',
-      folder: folder,
+      // folder: folder,  // Removed - public_id already contains the folder path
       use_filename: true,
       unique_filename: false,
-      overwrite: false,
+      overwrite: true,  // Changed to true to allow re-uploading
       quality: 'auto:good',
       fetch_format: 'auto',
     });
