@@ -130,25 +130,24 @@ export const imageDimensions: Record<string, { width: number; height: number }> 
 /**
  * Get Cloudinary public ID from local path
  * Maps local image paths to their Cloudinary public IDs
- * Note: These match the actual uploaded structure on Cloudinary
  */
 export function getCloudinaryPublicId(localPath: string): string {
   // Remove leading slash and extension
   const filename = localPath.replace(/^\//, '').replace(/\.(webp|svg|jpg|png)$/, '');
   
-  // Map to Cloudinary folder structure (with duplicate paths as uploaded)
+  // Map to Cloudinary folder structure (clean paths without duplication)
   if (filename.startsWith('namita_')) {
-    return `antarpravaah/about/antarpravaah/about/${filename}`;
+    return `antarpravaah/about/${filename}`;
   } else if (filename.match(/^immersion_[123]$/)) {
-    return `antarpravaah/immersions/antarpravaah/immersions/${filename}`;
+    return `antarpravaah/immersions/${filename}`;
   } else if (filename.startsWith('immersion_workshop_')) {
-    return `antarpravaah/immersions/workshops/antarpravaah/immersions/workshops/${filename}`;
+    return `antarpravaah/immersions/workshops/${filename}`;
   } else if (filename.startsWith('training_')) {
-    return `antarpravaah/trainings/antarpravaah/trainings/${filename}`;
+    return `antarpravaah/trainings/${filename}`;
   } else if (filename.startsWith('we_work_together_')) {
-    return `antarpravaah/we-work/antarpravaah/we-work/${filename}`;
+    return `antarpravaah/we-work/${filename}`;
   } else if (['AP Immersions', 'Private Sessions', 'Trainings'].includes(filename)) {
-    return `antarpravaah/general/antarpravaah/general/${filename}`;
+    return `antarpravaah/general/${filename}`;
   }
   
   // Fallback: return as-is

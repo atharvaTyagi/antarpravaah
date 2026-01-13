@@ -23,7 +23,10 @@
       "Bash(npm uninstall:*)",
       "Bash(git push:*)",
       "Bash(npm run build:*)",
-      "Bash(timeout:*)"
+      "Bash(timeout:*)",
+      "Bash(node scripts/upload-to-cloudinary.js:*)",
+      "Bash(set FORCE_UPLOAD=true)",
+      "Bash($env:FORCE_UPLOAD=\"true\")"
     ]
   }
 }

@@ -103,7 +103,7 @@ export default function AboutPage() {
               <div className="relative z-10 -mb-[80px] sm:-mb-[100px] lg:-mb-[140px] flex flex-col items-center justify-center gap-4 sm:gap-6 md:flex-row md:items-end md:gap-8 lg:gap-10">
                 <div className="h-[200px] w-[192px] sm:h-[240px] sm:w-[230px] lg:h-[289px] lg:w-[276px] overflow-hidden rounded-full">
                   <FadeInImage 
-                    src={getCloudinaryUrl('antarpravaah/about/antarpravaah/about/namita_one')} 
+                    src={getCloudinaryUrl('antarpravaah/about/namita_one')} 
                     alt="Namita" 
                     width={276} 
                     height={289}
@@ -112,7 +112,7 @@ export default function AboutPage() {
                 </div>
                 <div className="h-[290px] w-[277px] sm:h-[350px] sm:w-[334px] lg:h-[419px] lg:w-[400px] overflow-hidden rounded-full">
                   <FadeInImage 
-                    src={getCloudinaryUrl('antarpravaah/about/antarpravaah/about/namita_two')} 
+                    src={getCloudinaryUrl('antarpravaah/about/namita_two')} 
                     alt="Namita" 
                     width={400} 
                     height={419}
@@ -121,7 +121,7 @@ export default function AboutPage() {
                 </div>
                 <div className="h-[162px] w-[154px] sm:h-[194px] sm:w-[185px] lg:h-[233px] lg:w-[222px] overflow-hidden rounded-full">
                   <FadeInImage 
-                    src={getCloudinaryUrl('antarpravaah/about/antarpravaah/about/namita_three')} 
+                    src={getCloudinaryUrl('antarpravaah/about/namita_three')} 
                     alt="Namita" 
                     width={222} 
                     height={233}
@@ -210,7 +210,7 @@ export default function AboutPage() {
                 <div className="relative z-10 -mb-[90px] sm:-mb-[120px] lg:-mb-[160px] flex flex-col items-center justify-center gap-4 sm:gap-6 md:flex-row md:items-start md:gap-8 lg:gap-10">
                   <div className="h-[185px] w-[176px] sm:h-[222px] sm:w-[212px] lg:h-[266px] lg:w-[254px] overflow-hidden rounded-full">
                     <FadeInImage 
-                      src={getCloudinaryUrl('antarpravaah/about/antarpravaah/about/namita_four')} 
+                      src={getCloudinaryUrl('antarpravaah/about/namita_four')} 
                       alt="Namita" 
                       width={254} 
                       height={266}
@@ -219,7 +219,7 @@ export default function AboutPage() {
                   </div>
                   <div className="h-[290px] w-[277px] sm:h-[350px] sm:w-[334px] lg:h-[419px] lg:w-[400px] overflow-hidden rounded-full">
                     <FadeInImage 
-                      src={getCloudinaryUrl('antarpravaah/about/antarpravaah/about/namita_five')} 
+                      src={getCloudinaryUrl('antarpravaah/about/namita_five')} 
                       alt="Namita" 
                       width={400} 
                       height={419}
@@ -228,7 +228,7 @@ export default function AboutPage() {
                   </div>
                   <div className="h-[227px] w-[217px] sm:h-[273px] sm:w-[260px] lg:h-[327px] lg:w-[312px] overflow-hidden rounded-full">
                     <FadeInImage 
-                      src={getCloudinaryUrl('antarpravaah/about/antarpravaah/about/namita_six')} 
+                      src={getCloudinaryUrl('antarpravaah/about/namita_six')} 
                       alt="Namita" 
                       width={312} 
                       height={327}

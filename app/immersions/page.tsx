@@ -58,7 +58,7 @@ export default function ImmersionsPage() {
             {/* Left decorative image - Hidden on mobile */}
             <div className="pointer-events-none mt-0 lg:mt-8 h-[120px] w-[120px] sm:h-[160px] sm:w-[160px] lg:h-[200px] lg:w-[200px] shrink-0 hidden sm:block">
               <Image
-                src={getCloudinaryUrl('antarpravaah/immersions/antarpravaah/immersions/immersion_1')}
+                src={getCloudinaryUrl('antarpravaah/immersions/immersion_1')}
                 alt=""
                 width={200}
                 height={200}
@@ -99,7 +99,7 @@ export default function ImmersionsPage() {
             {/* Right decorative image - Hidden on mobile/tablet */}
             <div className="pointer-events-none mt-0 lg:mt-16 h-[140px] w-[140px] lg:h-[180px] lg:w-[180px] shrink-0 hidden lg:block">
               <Image
-                src={getCloudinaryUrl('antarpravaah/immersions/antarpravaah/immersions/immersion_2')}
+                src={getCloudinaryUrl('antarpravaah/immersions/immersion_2')}
                 alt=""
                 width={180}
                 height={180}
@@ -113,7 +113,7 @@ export default function ImmersionsPage() {
           {/* Bottom center decorative image */}
           <div className="pointer-events-none mx-auto mt-4 sm:mt-6 lg:mt-8 h-[180px] w-[180px] sm:h-[220px] sm:w-[220px] lg:h-[280px] lg:w-[280px]">
             <Image
-              src={getCloudinaryUrl('antarpravaah/immersions/antarpravaah/immersions/immersion_3')}
+              src={getCloudinaryUrl('antarpravaah/immersions/immersion_3')}
               alt=""
               width={280}
               height={280}
@@ -196,7 +196,7 @@ export default function ImmersionsPage() {
                   {/* Right column: Image + Details */}
                   <div className="flex flex-1 flex-col gap-4">
                     <Image
-                      src={getCloudinaryUrl('antarpravaah/immersions/workshops/antarpravaah/immersions/workshops/immersion_workshop_1')}
+                      src={getCloudinaryUrl('antarpravaah/immersions/workshops/immersion_workshop_1')}
                       alt="Antar Smaran Immersive"
                       width={400}
                       height={206}
@@ -309,7 +309,7 @@ export default function ImmersionsPage() {
 
                   <div className="flex flex-1 flex-col gap-4">
                     <Image
-                      src={getCloudinaryUrl('antarpravaah/immersions/workshops/antarpravaah/immersions/workshops/immersion_workshop_2')}
+                      src={getCloudinaryUrl('antarpravaah/immersions/workshops/immersion_workshop_2')}
                       alt="Thread of Life"
                       width={400}
                       height={206}
@@ -410,7 +410,7 @@ export default function ImmersionsPage() {
 
                   <div className="flex flex-1 flex-col gap-4">
                     <Image
-                      src={getCloudinaryUrl('antarpravaah/immersions/workshops/antarpravaah/immersions/workshops/immersion_workshop_3')}
+                      src={getCloudinaryUrl('antarpravaah/immersions/workshops/immersion_workshop_3')}
                       alt="Primary Animal Guide"
                       width={400}
                       height={206}
@@ -473,7 +473,7 @@ export default function ImmersionsPage() {
             {/* Left decorative image - Hidden on mobile */}
             <div className="pointer-events-none mt-0 lg:mt-8 h-[120px] w-[120px] sm:h-[160px] sm:w-[160px] lg:h-[200px] lg:w-[200px] shrink-0 hidden sm:block">
               <Image
-                src={getCloudinaryUrl('antarpravaah/trainings/antarpravaah/trainings/training_1')}
+                src={getCloudinaryUrl('antarpravaah/trainings/training_1')}
                 alt=""
                 width={200}
                 height={200}
@@ -511,7 +511,7 @@ export default function ImmersionsPage() {
             {/* Right decorative image - Hidden on mobile/tablet */}
             <div className="pointer-events-none mt-0 lg:mt-16 h-[140px] w-[140px] lg:h-[180px] lg:w-[180px] shrink-0 hidden lg:block">
               <Image
-                src={getCloudinaryUrl('antarpravaah/trainings/antarpravaah/trainings/training_2')}
+                src={getCloudinaryUrl('antarpravaah/trainings/training_2')}
                 alt=""
                 width={180}
                 height={180}
@@ -525,7 +525,7 @@ export default function ImmersionsPage() {
           {/* Bottom center decorative image */}
           <div className="pointer-events-none mx-auto mt-4 sm:mt-6 lg:mt-8 h-[180px] w-[180px] sm:h-[220px] sm:w-[220px] lg:h-[280px] lg:w-[280px]">
             <Image
-              src={getCloudinaryUrl('antarpravaah/trainings/antarpravaah/trainings/training_3')}
+              src={getCloudinaryUrl('antarpravaah/trainings/training_3')}
               alt=""
               width={280}
               height={280}

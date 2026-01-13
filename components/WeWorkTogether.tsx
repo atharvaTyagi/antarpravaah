@@ -284,7 +284,7 @@ export default function WeWorkTogether() {
               <div className="card absolute left-0 right-0 top-0 mx-auto w-full rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d6c68e] p-6 sm:p-8 lg:p-10 text-center shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
                 <div className="mb-6 sm:mb-8 lg:mb-10 flex justify-center">
                   <Image
-                    src={getCloudinaryUrl('antarpravaah/we-work/antarpravaah/we-work/we_work_together_vector_one')}
+                    src={getCloudinaryUrl('antarpravaah/we-work/we_work_together_vector_one')}
                     alt=""
                     width={431}
                     height={452}
@@ -305,9 +305,9 @@ export default function WeWorkTogether() {
               {workCards.map((card, index) => {
                 const isLeft = card.imagePosition === 'left';
                 const smallCardSrcs = [
-                  getCloudinaryUrl('antarpravaah/we-work/antarpravaah/we-work/we_work_together_vector_two'),
-                  getCloudinaryUrl('antarpravaah/we-work/antarpravaah/we-work/we_work_together_vector_three'),
-                  getCloudinaryUrl('antarpravaah/we-work/antarpravaah/we-work/we_work_together_vector_four')
+                  getCloudinaryUrl('antarpravaah/we-work/we_work_together_vector_two'),
+                  getCloudinaryUrl('antarpravaah/we-work/we_work_together_vector_three'),
+                  getCloudinaryUrl('antarpravaah/we-work/we_work_together_vector_four')
                 ];
                 const imageSrc = smallCardSrcs[index] ?? smallCardSrcs[0];
                 return (
