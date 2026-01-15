@@ -1,9 +1,14 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
-import { motion } from 'framer-motion';
-import Lottie from 'lottie-react';
+import { useEffect, useRef } from 'react';
+import gsap from 'gsap';
+import { Observer } from 'gsap/Observer';
+import Lottie, { LottieRefCurrentProps } from 'lottie-react';
 import animationData from '@/public/spiral_animation.json';
+
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(Observer);
+}
 
 interface SplashScreenProps {
   onComplete: () => void;
@@ -11,190 +16,182 @@ interface SplashScreenProps {
 
 export default function SplashScreen({ onComplete }: SplashScreenProps) {
   const onCompleteSafe = typeof onComplete === 'function' ? onComplete : () => {};
-  const [spiralOpacity, setSpiralOpacity] = useState(1); // for fade out after reveal
-  const [blobOpacity, setBlobOpacity] = useState(0); // hidden on load
-  const [splashOpacity, setSplashOpacity] = useState(1); // fades out at the end
-  const [isVisible, setIsVisible] = useState(true); // unmount after fade-out
+  const containerRef = useRef<HTMLDivElement>(null);
+  const spiralContainerRef = useRef<HTMLDivElement>(null);
+  const blobContainerRef = useRef<HTMLDivElement>(null);
+  const lottieRef = useRef<LottieRefCurrentProps>(null);
+  const timelineRef = useRef<gsap.core.Timeline | null>(null);
+  const observerRef = useRef<Observer | null>(null);
   const isCompleting = useRef(false);
-  const scrollAmount = useRef(0);
-  const touchStartY = useRef(0);
-  const lastTouchY = useRef(0);
-  
-  // Scroll thresholds for animation sequence
-  const spiralDrawEnd = 200; // spiral draws in (0..200)
-  const spiralHoldEnd = 260; // spiral stays visible (200..260)
-  const spiralFadeEnd = 340; // spiral fades out (260..340)
-  const blobFadeInEnd = 460; // blob fades in (340..460)
-  const holdEnd = 520; // blob stays fully visible (460..520)
-  const splashFadeOutEnd = 700; // blob+splash fade out (520..700)
+  const scrollProgress = useRef(0);
+  const lottieCompleted = useRef(false);
 
   useEffect(() => {
-    // Disable body scroll when splash is visible
+    if (!containerRef.current || !spiralContainerRef.current || !blobContainerRef.current) return;
+
+    // Store original overflow values
     const originalOverflow = document.body.style.overflow;
     const originalOverflowHtml = document.documentElement.style.overflow;
     
+    // Disable body scroll
     document.body.style.overflow = 'hidden';
     document.documentElement.style.overflow = 'hidden';
+
+    let autoCompleteTimer: ReturnType<typeof setTimeout>;
+
+    // Set initial states
+    gsap.set(spiralContainerRef.current, { opacity: 1 });
+    gsap.set(blobContainerRef.current, { opacity: 0 });
+    gsap.set(containerRef.current, { opacity: 1 });
 
     const finishSplash = () => {
       if (isCompleting.current) return;
       isCompleting.current = true;
-      setSpiralOpacity(0);
-      setBlobOpacity(0);
-      setSplashOpacity(0);
-
-      // Let the opacity transition complete before unmounting / enabling scroll
-      window.setTimeout(() => {
-        setIsVisible(false);
-        document.body.style.overflow = originalOverflow;
-        document.documentElement.style.overflow = originalOverflowHtml;
-        onCompleteSafe();
-      }, 500);
-    };
-
-    // Shared function to update animation based on scroll amount
-    const updateAnimationPhase = () => {
-      const s = scrollAmount.current;
-
-      // Phase 1: Draw spiral (0 -> spiralDrawEnd)
-      if (s <= spiralDrawEnd) {
-        setSpiralOpacity(1);
-        setBlobOpacity(0);
-        setSplashOpacity(1);
-        return;
-      }
-
-      // Phase 2: Hold spiral fully visible (spiralDrawEnd -> spiralHoldEnd)
-      if (s <= spiralHoldEnd) {
-        setSpiralOpacity(1);
-        setBlobOpacity(0);
-        setSplashOpacity(1);
-        return;
-      }
-
-      // Phase 3: Fade out spiral (spiralHoldEnd -> spiralFadeEnd)
-      if (s <= spiralFadeEnd) {
-        const t = (s - spiralHoldEnd) / (spiralFadeEnd - spiralHoldEnd);
-        setSpiralOpacity(Math.max(0, 1 - t));
-        setBlobOpacity(0);
-        setSplashOpacity(1);
-        return;
-      }
-
-      // Phase 4: Fade in blob (spiralFadeEnd -> blobFadeInEnd)
-      if (s <= blobFadeInEnd) {
-        const t = (s - spiralFadeEnd) / (blobFadeInEnd - spiralFadeEnd);
-        setSpiralOpacity(0);
-        setBlobOpacity(Math.min(1, t));
-        setSplashOpacity(1);
-        return;
-      }
-
-      // Phase 5: Hold blob (blobFadeInEnd -> holdEnd)
-      if (s <= holdEnd) {
-        setSpiralOpacity(0);
-        setBlobOpacity(1);
-        setSplashOpacity(1);
-        return;
-      }
-
-      // Phase 6: Fade out everything (holdEnd -> splashFadeOutEnd)
-      if (s <= splashFadeOutEnd) {
-        const t = (s - holdEnd) / (splashFadeOutEnd - holdEnd);
-        setSpiralOpacity(0);
-        setBlobOpacity(Math.max(0, 1 - t));
-        setSplashOpacity(Math.max(0, 1 - t));
-        return;
-      }
-
-      // Finish: fade out completed -> reveal homepage
-      finishSplash();
-    };
-
-    // Handle wheel events for desktop
-    const handleWheel = (e: WheelEvent) => {
-      if (!isVisible || isCompleting.current) return;
       
-      e.preventDefault();
-      e.stopPropagation();
-      scrollAmount.current += Math.abs(e.deltaY);
-      updateAnimationPhase();
-    };
-
-    // Handle touch events for mobile/tablet
-    const handleTouchStart = (e: TouchEvent) => {
-      if (!isVisible || isCompleting.current) return;
-      touchStartY.current = e.touches[0].clientY;
-      lastTouchY.current = e.touches[0].clientY;
-    };
-
-    const handleTouchMove = (e: TouchEvent) => {
-      if (!isVisible || isCompleting.current) return;
-      
-      e.preventDefault();
-      e.stopPropagation();
-      
-      const currentY = e.touches[0].clientY;
-      const deltaY = lastTouchY.current - currentY;
-      lastTouchY.current = currentY;
-      
-      // Accumulate scroll amount based on touch movement
-      scrollAmount.current += Math.abs(deltaY);
-      updateAnimationPhase();
-    };
-
-    const handleTouchEnd = () => {
-      if (!isVisible || isCompleting.current) return;
-      // If user lifts finger and we haven't progressed enough, complete to prevent lock-up
-      if (scrollAmount.current < splashFadeOutEnd) {
-        scrollAmount.current = splashFadeOutEnd + 1;
-        updateAnimationPhase();
+      // Kill observer first to stop intercepting events
+      if (observerRef.current) {
+        observerRef.current.kill();
+        observerRef.current = null;
       }
+      
+      // Restore scroll immediately
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+      
+      // Disable pointer events on container
+      if (containerRef.current) {
+        containerRef.current.style.pointerEvents = 'none';
+      }
+      
+      // Hide container
+      gsap.to(containerRef.current, {
+        opacity: 0,
+        duration: 0.5,
+        onComplete: () => {
+          if (containerRef.current) {
+            containerRef.current.style.display = 'none';
+          }
+          onCompleteSafe();
+        },
+      });
     };
 
-    // Failsafe: auto-complete after a few seconds to avoid being stuck
-    const autoCompleteTimer = window.setTimeout(() => {
-      if (!isVisible || isCompleting.current) return;
-      finishSplash();
-    }, 4500);
+    // Create timeline for scroll-controlled transitions
+    const tl = gsap.timeline({
+      paused: true,
+      onComplete: finishSplash,
+    });
 
-    window.addEventListener('wheel', handleWheel, { passive: false });
-    window.addEventListener('touchstart', handleTouchStart, { passive: false });
-    window.addEventListener('touchmove', handleTouchMove, { passive: false });
-    window.addEventListener('touchend', handleTouchEnd, { passive: false });
+    // Phase 1: Fade out spiral
+    tl.to(spiralContainerRef.current, {
+      opacity: 0,
+      duration: 2,
+      ease: 'power2.inOut',
+    });
 
+    // Phase 2: Fade in blob (starts after spiral begins fading)
+    tl.to(
+      blobContainerRef.current,
+      {
+        opacity: 1,
+        duration: 2,
+        ease: 'power2.inOut',
+      },
+      '-=1'
+    );
+
+    // Phase 3: Hold blob visible (give user time to read)
+    tl.to({}, { duration: 2 });
+
+    // Phase 4: Fade out blob and container
+    tl.to(blobContainerRef.current, {
+      opacity: 0,
+      duration: 2,
+      ease: 'power2.inOut',
+    });
+
+    timelineRef.current = tl;
+
+    const handleScroll = (direction: number) => {
+      // Allow scrolling anytime - no waiting for Lottie
+      if (isCompleting.current || !timelineRef.current) return;
+
+      // Increment scroll progress (each scroll = 15% of timeline for smoother transitions)
+      scrollProgress.current += direction * 0.15;
+      scrollProgress.current = Math.max(0, Math.min(1, scrollProgress.current));
+
+      // Update timeline progress smoothly
+      gsap.to(timelineRef.current, {
+        progress: scrollProgress.current,
+        duration: 0.8,
+        ease: 'power2.out',
+      });
+    };
+
+    // Handle scroll/swipe with GSAP Observer - attach to container only
+    const observer = Observer.create({
+      target: containerRef.current,
+      type: 'wheel,touch,pointer',
+      wheelSpeed: -1,
+      onDown: () => handleScroll(-1),
+      onUp: () => handleScroll(1),
+      tolerance: 10,
+      preventDefault: true,
+    });
+
+    observerRef.current = observer;
+
+    // Failsafe: auto-complete after timeout
+    autoCompleteTimer = setTimeout(() => {
+      if (isCompleting.current || !timelineRef.current) return;
+      // Mark lottie as complete and auto-finish
+      lottieCompleted.current = true;
+      gsap.to(timelineRef.current, {
+        progress: 1,
+        duration: 2,
+        ease: 'power2.inOut',
+      });
+    }, 15000);
+
+    // Cleanup function
     return () => {
-      // Cleanup: restore scroll
-      window.clearTimeout(autoCompleteTimer);
+      clearTimeout(autoCompleteTimer);
+      
+      if (observerRef.current) {
+        observerRef.current.kill();
+        observerRef.current = null;
+      }
+      
+      if (timelineRef.current) {
+        timelineRef.current.kill();
+        timelineRef.current = null;
+      }
+      
+      // Restore scroll
       document.body.style.overflow = originalOverflow;
       document.documentElement.style.overflow = originalOverflowHtml;
-      window.removeEventListener('wheel', handleWheel);
-      window.removeEventListener('touchstart', handleTouchStart);
-      window.removeEventListener('touchmove', handleTouchMove);
-      window.removeEventListener('touchend', handleTouchEnd);
     };
-  }, [isVisible, onCompleteSafe]);
+  }, [onCompleteSafe]);
 
-  if (!isVisible) return null;
+  // Handle Lottie animation complete
+  const handleLottieComplete = () => {
+    lottieCompleted.current = true;
+  };
 
   return (
-    <motion.div
+    <div
+      ref={containerRef}
       className="fixed inset-0 z-[100] bg-[#6a3f33]"
       style={{ 
         width: '100vw',
         height: '100vh',
-        pointerEvents: isVisible ? 'auto' : 'none',
-        opacity: splashOpacity,
-        transition: 'opacity 0.5s ease-in-out',
+        pointerEvents: 'auto',
       }}
     >
       {/* Spiral Lottie Animation */}
       <div
+        ref={spiralContainerRef}
         className="absolute inset-0 flex items-center justify-center p-4 md:p-12 lg:p-16"
-        style={{
-          opacity: spiralOpacity,
-          transition: 'opacity 0.4s ease-out',
-        }}
       >
         <div
           className="block"
@@ -206,6 +203,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
           }}
         >
           <Lottie
+            lottieRef={lottieRef}
             animationData={animationData}
             loop={false}
             autoplay={true}
@@ -213,17 +211,15 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
               width: '100%',
               height: '100%',
             }}
+            onComplete={handleLottieComplete}
           />
         </div>
       </div>
 
       {/* Blob message (full-screen moment; blob itself centered) */}
       <div
+        ref={blobContainerRef}
         className="absolute inset-0 flex items-center justify-center"
-        style={{
-          opacity: blobOpacity,
-          transition: 'opacity 0.6s ease-in-out',
-        }}
       >
         <div
           className="relative"
@@ -277,6 +273,6 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

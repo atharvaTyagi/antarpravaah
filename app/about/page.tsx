@@ -15,14 +15,15 @@ export default function AboutPage() {
   const hiRef = useRef<HTMLParagraphElement>(null);
   const paragraphRefs = useRef<(HTMLParagraphElement | null)[]>([]);
   const blobTextContainerRef = useRef<HTMLDivElement>(null);
+  const greenBandRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Native scroll; no smooth scroll library needed
   }, []);
 
-  // Text fade-in animation
+  // Text fade-in animation - scroll-locked sequential reveal
   useEffect(() => {
-    if (!hiRef.current || !blobTextContainerRef.current) return;
+    if (!hiRef.current || !blobTextContainerRef.current || !greenBandRef.current) return;
 
     const validParagraphs = paragraphRefs.current.filter((p) => p !== null);
     if (validParagraphs.length === 0) return;
@@ -33,12 +34,17 @@ export default function AboutPage() {
       y: 20,
     });
 
-    // Create timeline
+    // Create scroll-bound timeline with pinning - pin the entire green band
     const tl = gsap.timeline({
       scrollTrigger: {
-        trigger: blobTextContainerRef.current,
-        start: 'top 70%',
-        toggleActions: 'play none none none',
+        trigger: greenBandRef.current,
+        start: 'top top',
+        end: `+=${(validParagraphs.length + 1) * 100}%`, // Scroll distance: 100% per paragraph + "Hi!"
+        scrub: 1, // Smooth scrubbing effect
+        pin: true, // Lock the entire green band section in place
+        pinSpacing: true, // Add space for the pinned section
+        anticipatePin: 1,
+        // markers: true, // Uncomment for debugging
       },
     });
 
@@ -46,22 +52,22 @@ export default function AboutPage() {
     tl.to(hiRef.current, {
       opacity: 1,
       y: 0,
-      duration: 1,
+      duration: 0.5,
       ease: 'power2.out',
     });
 
-    // Then animate each paragraph with stagger
-    tl.to(
-      validParagraphs,
-      {
-        opacity: 1,
-        y: 0,
-        duration: 1.2,
-        stagger: 0.4,
-        ease: 'power2.out',
-      },
-      '-=0.3'
-    );
+    // Then animate each paragraph sequentially - each takes equal scroll distance
+    validParagraphs.forEach((paragraph) => {
+      tl.to(
+        paragraph,
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.5,
+          ease: 'power2.out',
+        }
+      );
+    });
 
     return () => {
       tl.kill();
@@ -133,7 +139,7 @@ export default function AboutPage() {
           </div>
 
           {/* Deep green band with swirl + body circle */}
-          <div className="relative w-full bg-[#474e3a] pt-[120px] sm:pt-[150px] lg:pt-[200px] pb-16 sm:pb-20 lg:pb-24">
+          <div ref={greenBandRef} className="relative w-full bg-[#474e3a] pt-[120px] sm:pt-[150px] lg:pt-[200px] pb-16 sm:pb-20 lg:pb-24">
             {}
             <div className="pointer-events-none absolute inset-0 overflow-hidden">
               <img

@@ -26,7 +26,8 @@
       "Bash(timeout:*)",
       "Bash(node scripts/upload-to-cloudinary.js:*)",
       "Bash(set FORCE_UPLOAD=true)",
-      "Bash($env:FORCE_UPLOAD=\"true\")"
+      "Bash($env:FORCE_UPLOAD=\"true\")",
+      "Bash(git reset:*)"
     ]
   }
 }

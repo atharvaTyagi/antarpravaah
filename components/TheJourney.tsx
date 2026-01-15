@@ -66,6 +66,9 @@ export default function TheJourney() {
   const stepsContainerRef = useRef<HTMLDivElement>(null);
   const stepRefs = useRef<Array<HTMLDivElement | null>>([]);
   const connectorRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const ctaContainerRef = useRef<HTMLDivElement>(null);
+  const ctaTextRefs = useRef<Array<HTMLParagraphElement | null>>([]);
+  const ctaButtonRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
     if (typeof window === 'undefined') return;
@@ -136,6 +139,50 @@ export default function TheJourney() {
         );
       });
 
+      // Animate CTA section
+      const ctaContainer = ctaContainerRef.current;
+      if (ctaContainer) {
+        const ctaTexts = ctaTextRefs.current.filter(Boolean) as HTMLParagraphElement[];
+        const ctaButton = ctaButtonRef.current;
+
+        // Set initial state
+        gsap.set(ctaTexts, { opacity: 0, y: 30 });
+        if (ctaButton) gsap.set(ctaButton, { opacity: 0, y: 30 });
+
+        // Create timeline for CTA animation
+        const ctaTl = gsap.timeline({
+          scrollTrigger: {
+            trigger: ctaContainer,
+            start: 'top 75%',
+            end: 'top 35%',
+            scrub: 1,
+          },
+        });
+
+        // Animate text elements with stagger
+        ctaTl.to(ctaTexts, {
+          opacity: 1,
+          y: 0,
+          duration: 1,
+          stagger: 0.15,
+          ease: 'power2.out',
+        });
+
+        // Animate button
+        if (ctaButton) {
+          ctaTl.to(
+            ctaButton,
+            {
+              opacity: 1,
+              y: 0,
+              duration: 1,
+              ease: 'power2.out',
+            },
+            '-=0.3'
+          );
+        }
+      }
+
       // Refresh ScrollTrigger
       ScrollTrigger.refresh();
     }, 600);
@@ -202,27 +249,34 @@ export default function TheJourney() {
         </div>
 
         {/* CTA Section */}
-        <div className="mt-10 sm:mt-12 lg:mt-16 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#9ac1bf] p-6 sm:p-8 lg:p-10 text-center">
+        <div 
+          ref={ctaContainerRef}
+          className="mt-10 sm:mt-12 lg:mt-16 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#9ac1bf] p-6 sm:p-8 lg:p-10 text-center"
+        >
           <div className="mb-6 sm:mb-8 lg:mb-10">
             <p
+              ref={(el) => { ctaTextRefs.current[0] = el; }}
               className="mb-3 sm:mb-3.5 lg:mb-4 text-[28px] sm:text-[38px] lg:text-[48px] leading-[1.1] sm:leading-[1.05] lg:leading-[1.0] text-[#354443]"
               style={{ fontFamily: 'var(--font-saphira), serif' }}
             >
               If you&apos;re ready
             </p>
             <p
+              ref={(el) => { ctaTextRefs.current[1] = el; }}
               className="mb-3 sm:mb-3.5 lg:mb-4 text-[28px] sm:text-[38px] lg:text-[48px] leading-[1.1] sm:leading-[1.05] lg:leading-[1.0] text-[#354443]"
               style={{ fontFamily: 'var(--font-saphira), serif' }}
             >
               to stop searching
             </p>
             <p
+              ref={(el) => { ctaTextRefs.current[2] = el; }}
               className="mb-3 sm:mb-3.5 lg:mb-4 text-[28px] sm:text-[38px] lg:text-[48px] leading-[1.1] sm:leading-[1.05] lg:leading-[1.0] text-[#354443]"
               style={{ fontFamily: 'var(--font-saphira), serif' }}
             >
               outside yourself
             </p>
             <p
+              ref={(el) => { ctaTextRefs.current[3] = el; }}
               className="mb-3 sm:mb-3.5 lg:mb-4 text-[28px] sm:text-[38px] lg:text-[48px] leading-[1.1] sm:leading-[1.05] lg:leading-[1.0] text-[#354443]"
               style={{ fontFamily: 'var(--font-saphira), serif' }}
             >
@@ -230,19 +284,22 @@ export default function TheJourney() {
             </p>
           </div>
           <p
+            ref={(el) => { ctaTextRefs.current[4] = el; }}
             className="mb-6 sm:mb-8 lg:mb-10 text-[28px] sm:text-[38px] lg:text-[48px] leading-[1.1] sm:leading-[1.05] lg:leading-[1.0] text-[#354443]"
             style={{ fontFamily: 'var(--font-saphira), serif' }}
           >
             You&apos;re in the right place.
           </p>
-          <Button
-            text="Begin Your Journey"
-            size="large"
-            mode="dark"
-            onClick={() => {
-              // Handle button click
-            }}
-          />
+          <div ref={ctaButtonRef}>
+            <Button
+              text="Begin Your Journey"
+              size="large"
+              mode="dark"
+              onClick={() => {
+                // Handle button click
+              }}
+            />
+          </div>
         </div>
       </div>
     </Section>
