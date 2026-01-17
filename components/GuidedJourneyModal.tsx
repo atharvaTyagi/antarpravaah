@@ -7,6 +7,7 @@ import QuestionScreen from './guided-journey/QuestionScreen';
 import RecommendationScreen from './guided-journey/RecommendationScreen';
 import BookingScreen from './guided-journey/BookingScreen';
 import { guidedJourneyQuestions, PathType, calculatePath } from '@/data/guidedJourneyContent';
+import { submitBooking, formatDateForBooking, type SessionType } from '@/lib/api/booking';
 
 interface GuidedJourneyModalProps {
   isOpen: boolean;
@@ -36,6 +37,8 @@ export default function GuidedJourneyModal({ isOpen, onClose }: GuidedJourneyMod
     phone?: string;
     email?: string;
   }>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   // Reset state when modal opens
   useEffect(() => {
@@ -44,6 +47,8 @@ export default function GuidedJourneyModal({ isOpen, onClose }: GuidedJourneyMod
       setAnswers({});
       setRecommendedPath(null);
       setBookingData({});
+      setIsSubmitting(false);
+      setSubmitError(null);
     }
   }, [isOpen]);
 
@@ -100,9 +105,32 @@ export default function GuidedJourneyModal({ isOpen, onClose }: GuidedJourneyMod
     setCurrentStep('booking-form');
   };
 
-  const handleBookingFormSubmit = (name: string, phone: string, email: string) => {
-    setBookingData({ ...bookingData, name, phone, email });
-    setCurrentStep('booking-confirmation');
+  const handleBookingFormSubmit = async (name: string, phone: string, email: string) => {
+    if (!bookingData.date) return;
+
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    // Determine session type based on recommended path or default to 'Workshop'
+    // PathType 'trainings' maps to SessionType 'Training', all others are 'Workshop'
+    const sessionType: SessionType = recommendedPath === 'trainings' ? 'Training' : 'Workshop';
+
+    const result = await submitBooking({
+      name,
+      email,
+      phone,
+      selectedDate: formatDateForBooking(bookingData.date),
+      sessionType,
+    });
+
+    setIsSubmitting(false);
+
+    if (result.success) {
+      setBookingData({ ...bookingData, name, phone, email });
+      setCurrentStep('booking-confirmation');
+    } else {
+      setSubmitError(result.error || 'Failed to submit booking. Please try again.');
+    }
   };
 
   const handleBack = () => {
@@ -187,6 +215,7 @@ export default function GuidedJourneyModal({ isOpen, onClose }: GuidedJourneyMod
               <BookingScreen
                 key="booking"
                 step="calendar"
+                sessionType="workshop"
                 onDateSelected={handleDateSelected}
                 onBack={handleBack}
                 onClose={onClose}
@@ -201,6 +230,8 @@ export default function GuidedJourneyModal({ isOpen, onClose }: GuidedJourneyMod
                 onFormSubmit={handleBookingFormSubmit}
                 onBack={handleBack}
                 onClose={onClose}
+                isSubmitting={isSubmitting}
+                submitError={submitError}
               />
             )}
 

@@ -3,6 +3,8 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import Button from '../Button';
+import BookingCalendar, { SessionType } from '../BookingCalendar';
+import type { CalendarDate } from '@internationalized/date';
 
 type BookingStep = 'calendar' | 'form' | 'confirmation';
 
@@ -15,20 +17,26 @@ interface BookingScreenProps {
     phone?: string;
     email?: string;
   };
+  sessionType?: SessionType;
   onDateSelected?: (date: Date) => void;
   onFormSubmit?: (name: string, phone: string, email: string) => void;
   onBack?: () => void;
   onClose: () => void;
+  isSubmitting?: boolean;
+  submitError?: string | null;
 }
 
 export default function BookingScreen({
   step,
   selectedDate,
   bookingData,
+  sessionType = 'workshop',
   onDateSelected,
   onFormSubmit,
   onBack,
   onClose,
+  isSubmitting = false,
+  submitError = null,
 }: BookingScreenProps) {
   const [formData, setFormData] = useState({
     name: '',
@@ -36,9 +44,11 @@ export default function BookingScreen({
     email: '',
   });
 
+  const [calendarSelectedDate, setCalendarSelectedDate] = useState<CalendarDate | null>(null);
+
   const buttonColors = {
     fg: '#f6edd0',
-    fgHover: '#3e3629',
+    fgHover: '#2d291f',
     bgHover: '#f6edd0',
   };
 
@@ -56,7 +66,7 @@ export default function BookingScreen({
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.25, ease: 'easeInOut' }}
-        className="relative w-full p-10 bg-[#3e3629] min-h-[750px]"
+        className="relative w-full p-10 bg-[#2d291f] min-h-[750px]"
       >
         {/* Close Button */}
         <div className="flex items-center justify-end mb-10">
@@ -85,23 +95,20 @@ export default function BookingScreen({
             Book a session with us
           </h2>
           <p
-            className="text-[16px] leading-[29px] text-[#f6edd0]"
+            className="text-[24px] leading-[100%] text-[#f6edd0]"
             style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
           >
             Pick a date that works best for you
           </p>
         </div>
 
-        {/* Calendar Placeholder */}
+        {/* Calendar */}
         <div className="max-w-[1017px] mx-auto mb-12">
-          <div className="bg-[#3e3629] border border-[#6b5d47] rounded-[16px] p-8">
-            <p
-              className="text-center text-[16px] text-[#f6edd0]"
-              style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
-            >
-              Calendar integration coming soon. For now, please use the button below to continue.
-            </p>
-          </div>
+          <BookingCalendar
+            sessionType={sessionType}
+            selectedDate={calendarSelectedDate}
+            onSelectionChange={setCalendarSelectedDate}
+          />
         </div>
 
         {/* CTAs */}
@@ -110,7 +117,18 @@ export default function BookingScreen({
             text="Next"
             size="small"
             colors={buttonColors}
-            onClick={() => onDateSelected && onDateSelected(new Date())}
+            onClick={() => {
+              if (calendarSelectedDate && onDateSelected) {
+                // Convert CalendarDate to JavaScript Date
+                const date = new Date(
+                  calendarSelectedDate.year,
+                  calendarSelectedDate.month - 1,
+                  calendarSelectedDate.day
+                );
+                onDateSelected(date);
+              }
+            }}
+            disabled={!calendarSelectedDate}
           />
           <Button
             text="Let me explore first"
@@ -135,7 +153,7 @@ export default function BookingScreen({
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.25, ease: 'easeInOut' }}
-        className="relative w-full p-10 bg-[#3e3629] min-h-[750px]"
+        className="relative w-full p-10 bg-[#2d291f] min-h-[750px]"
       >
         {/* Close Button */}
         <div className="flex items-center justify-end mb-10">
@@ -186,6 +204,18 @@ export default function BookingScreen({
             {formattedDate}
           </p>
         </div>
+
+        {/* Error Message */}
+        {submitError && (
+          <div className="max-w-[363px] mx-auto mb-6">
+            <p
+              className="text-[14px] leading-[20px] text-red-400 text-center"
+              style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
+            >
+              {submitError}
+            </p>
+          </div>
+        )}
 
         {/* Form Fields */}
         <div className="max-w-[363px] mx-auto flex flex-col gap-6 mb-12">
@@ -250,13 +280,15 @@ export default function BookingScreen({
                 size="small"
                 colors={buttonColors}
                 onClick={onBack}
+                disabled={isSubmitting}
               />
             )}
             <Button
-              text="Next"
+              text={isSubmitting ? 'Submitting...' : 'Next'}
               size="small"
               colors={buttonColors}
               onClick={handleFormSubmit}
+              disabled={isSubmitting}
             />
           </div>
           <Button
@@ -264,6 +296,7 @@ export default function BookingScreen({
             size="small"
             colors={buttonColors}
             onClick={onClose}
+            disabled={isSubmitting}
           />
         </div>
       </motion.div>
@@ -282,7 +315,7 @@ export default function BookingScreen({
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.25, ease: 'easeInOut' }}
-        className="relative w-full p-10 bg-[#3e3629] min-h-[750px]"
+        className="relative w-full p-10 bg-[#2d291f] min-h-[750px]"
       >
         {/* Close Button */}
         <div className="flex items-center justify-end mb-10">

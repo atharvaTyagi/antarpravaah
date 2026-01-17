@@ -237,45 +237,45 @@ export default function WeWorkTogether() {
   return (
     <Section
       id="work-together"
-      className="relative w-full bg-[#f6edd0] pb-8 sm:pb-10 lg:pb-12 pt-8 sm:pt-10 lg:pt-12 overflow-hidden"
+      className="relative w-full bg-[#f6edd0] overflow-hidden"
     >
-      {/* Subtle repeating spiral background - larger and well-spaced, smaller on mobile */}
-      <div className="absolute inset-0 pointer-events-none opacity-[0.06] z-0">
-        <img
-          src="/splash_vector.svg"
-          alt=""
-          className="absolute hidden sm:block w-[25%] h-auto"
-          style={{ top: '5%', left: '5%', transform: 'rotate(15deg)' }}
-        />
-        <img
-          src="/splash_vector.svg"
-          alt=""
-          className="absolute w-[15%] sm:w-[12%] h-auto"
-          style={{ top: '8%', right: '8%', transform: 'rotate(-60deg)' }}
-        />
-        <img
-          src="/splash_vector.svg"
-          alt=""
-          className="absolute hidden sm:block w-[26%] h-auto"
-          style={{ bottom: '30%', left: '10%', transform: 'rotate(85deg)' }}
-        />
-        <img
-          src="/splash_vector.svg"
-          alt=""
-          className="absolute hidden lg:block w-[24%] h-auto"
-          style={{ bottom: '25%', right: '12%', transform: 'rotate(-120deg)' }}
-        />
-        <img
-          src="/splash_vector.svg"
-          alt=""
-          className="absolute w-[17%] sm:w-[14%] h-auto"
-          style={{ bottom: '5%', left: '50%', transform: 'translate(-50%, 0) rotate(40deg)' }}
-        />
-      </div>
+      {/* GSAP card lock + stack - includes background to keep it locked during pin */}
+      <div ref={cardsSectionRef} className="cards-section relative w-full bg-[#f6edd0] pb-8 sm:pb-10 lg:pb-12 pt-8 sm:pt-10 lg:pt-12">
+        {/* Subtle repeating spiral background - larger and well-spaced, smaller on mobile */}
+        <div className="absolute inset-0 pointer-events-none opacity-[0.06] z-0">
+          <img
+            src="/splash_vector.svg"
+            alt=""
+            className="absolute hidden sm:block w-[25%] h-auto"
+            style={{ top: '5%', left: '5%', transform: 'rotate(15deg)' }}
+          />
+          <img
+            src="/splash_vector.svg"
+            alt=""
+            className="absolute w-[15%] sm:w-[12%] h-auto"
+            style={{ top: '8%', right: '8%', transform: 'rotate(-60deg)' }}
+          />
+          <img
+            src="/splash_vector.svg"
+            alt=""
+            className="absolute hidden sm:block w-[26%] h-auto"
+            style={{ bottom: '30%', left: '10%', transform: 'rotate(85deg)' }}
+          />
+          <img
+            src="/splash_vector.svg"
+            alt=""
+            className="absolute hidden lg:block w-[24%] h-auto"
+            style={{ bottom: '25%', right: '12%', transform: 'rotate(-120deg)' }}
+          />
+          <img
+            src="/splash_vector.svg"
+            alt=""
+            className="absolute w-[17%] sm:w-[14%] h-auto"
+            style={{ bottom: '5%', left: '50%', transform: 'translate(-50%, 0) rotate(40deg)' }}
+          />
+        </div>
 
-      <div className="relative z-10 mx-auto max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1177px] px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 lg:pt-10">
-        {/* GSAP card lock + stack */}
-        <div ref={cardsSectionRef} className="cards-section relative w-full">
+        <div className="relative z-10 mx-auto max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1177px] px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 lg:pt-10">
           {/* Keep width consistent with other sections (same max-w wrapper as page content). */}
           <div className="relative w-full">
             {/* Stage: cards overlap here */}

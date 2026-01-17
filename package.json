@@ -10,6 +10,7 @@
     "upload:images": "node scripts/upload-to-cloudinary.js"
   },
   "dependencies": {
+    "@internationalized/date": "^3.10.1",
     "class-variance-authority": "^0.7.1",
     "cloudinary": "^2.8.0",
     "clsx": "^2.1.1",
@@ -20,7 +21,9 @@
     "lucide-react": "^0.562.0",
     "next": "16.0.7",
     "react": "19.2.0",
+    "react-aria": "^3.45.0",
     "react-dom": "19.2.0",
+    "react-stately": "^3.43.0",
     "tailwind-merge": "^3.4.0",
     "zustand": "^5.0.9"
   },
