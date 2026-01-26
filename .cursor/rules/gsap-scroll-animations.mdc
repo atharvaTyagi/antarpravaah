@@ -1,0 +1,72 @@
+---
+description: GSAP ScrollTrigger patterns for pinned sections and smooth scroll-driven animations
+globs: components/**/*.tsx
+alwaysApply: false
+---
+
+# GSAP ScrollTrigger Patterns
+
+## Pinned Sections with Scroll-Driven Content
+
+When creating scroll-locked sections that change content based on scroll progress:
+
+```typescript
+// Use refs to track state without triggering ScrollTrigger recreation
+const activeIndexRef = useRef(0);
+const [activeIndex, setActiveIndex] = useState(0);
+
+useLayoutEffect(() => {
+  const st = ScrollTrigger.create({
+    trigger: container,
+    start: 'top top+=160', // Account for fixed header
+    end: `+=${totalScrollDistance}`,
+    pin: true,
+    pinSpacing: true,
+    onUpdate: (self) => {
+      const newIndex = Math.floor(self.progress * totalItems);
+      // Compare with ref, not state, to avoid dependency issues
+      if (newIndex !== activeIndexRef.current) {
+        activeIndexRef.current = newIndex;
+        setActiveIndex(newIndex);
+      }
+    },
+  });
+  return () => st.kill();
+}, [modalities.length]); // Only depend on array length, NOT activeIndex
+```
+
+## Scroll Distance Calculation
+
+- Use `window.innerHeight * 0.4` per item for light, natural feel
+- Higher values (0.6-0.8) create "sticky" feeling that requires more effort
+
+## Direction-Aware Parallax Transitions
+
+```typescript
+// Track previous index to determine scroll direction
+const prevIndexRef = useRef(0);
+const isScrollingDown = activeIndex > prevIndexRef.current;
+const yStart = isScrollingDown ? 30 : -30;
+
+gsap.fromTo(elements, 
+  { opacity: 0, y: yStart },
+  { opacity: 1, y: 0, duration: 0.5, stagger: 0.04, ease: 'power3.out' }
+);
+```
+
+## Excluding Pinned Sections from Page Fade Transitions
+
+When page has fade transitions between sections, exclude pinned sections:
+
+```typescript
+sections.forEach((section, index) => {
+  const sectionId = section.id;
+  
+  // Skip pinned sections - they handle their own visibility
+  if (sectionId === 'pinned-section-id') {
+    gsap.set(section, { opacity: 1 });
+    return;
+  }
+  // ... fade logic for other sections
+});
+```

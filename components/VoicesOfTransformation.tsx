@@ -1,13 +1,19 @@
 'use client';
 
 import Section from './Section';
-import Button from './Button';
-import PageEndBlob from './PageEndBlob';
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+// Register GSAP plugins
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 export default function VoicesOfTransformation() {
   const sectionRef = useRef<HTMLElement | null>(null);
-  const scrollerRef = useRef<HTMLDivElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const carouselRef = useRef<HTMLDivElement | null>(null);
   const cardRefs = useRef<Array<HTMLDivElement | null>>([]);
   const [cardHeight, setCardHeight] = useState<number | null>(null);
 
@@ -25,6 +31,52 @@ export default function VoicesOfTransformation() {
     window.addEventListener('resize', compute);
     return () => window.removeEventListener('resize', compute);
   }, []);
+
+  // Setup horizontal scroll animation with pinning
+  useLayoutEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const container = containerRef.current;
+    const carousel = carouselRef.current;
+    if (!container || !carousel) return;
+
+    // Wait for layout to settle
+    const setupTimeout = setTimeout(() => {
+      // Calculate total horizontal scroll distance
+      const scrollWidth = carousel.scrollWidth - window.innerWidth + 80; // Add padding offset
+
+      // Create horizontal scroll animation
+      const scrollTween = gsap.to(carousel, {
+        x: -scrollWidth,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: container,
+          pin: true,
+          scrub: 1,
+          end: () => `+=${scrollWidth}`,
+          invalidateOnRefresh: true,
+          anticipatePin: 1,
+        },
+      });
+
+      // Refresh ScrollTrigger after setup
+      ScrollTrigger.refresh();
+
+      return () => {
+        scrollTween.kill();
+      };
+    }, 700);
+
+    return () => {
+      clearTimeout(setupTimeout);
+      // Clean up ScrollTriggers for this component
+      ScrollTrigger.getAll().forEach((st) => {
+        if (st.vars.trigger === container) {
+          st.kill();
+        }
+      });
+    };
+  }, [cardHeight]); // Re-run when card heights are calculated
 
   const testimonials = [
     {
@@ -48,76 +100,67 @@ export default function VoicesOfTransformation() {
   return (
     <Section
       id="voices"
-      className="relative w-full bg-[#f6edd0] pb-16 sm:pb-20 lg:pb-24 pt-8 sm:pt-10 lg:pt-12"
+      className="relative w-full bg-[#f6edd0]"
       ref={sectionRef}
     >
-      {/* Carousel */}
-      <div className="w-full px-4 sm:px-6 lg:px-10 pt-6 sm:pt-8 lg:pt-10">
-        <div
-          ref={scrollerRef}
-          className="no-scrollbar flex w-full gap-3 sm:gap-4 overflow-x-auto overscroll-contain pb-4 sm:pb-6 touch-pan-x"
-        >
-          {testimonials.map((t, idx) => (
-            <div
-              key={idx}
-              ref={(el) => {
-                cardRefs.current[idx] = el;
-              }}
-              className="shrink-0 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] border border-[#474e3a] bg-[#474e3a] p-6 sm:p-8 lg:p-10"
-              style={{
-                width: 'min(911px, 90vw)',
-                height: cardHeight ?? undefined,
-              }}
-            >
-              <div className="flex h-full flex-col">
-                <p
-                  className="flex-1 text-justify text-[16px] sm:text-[20px] lg:text-[24px] leading-[normal] text-[#f6edd0]"
-                  style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
-                >
-                  {t.copy}
-                </p>
-                <div className="mt-auto pt-6 sm:pt-8 lg:pt-10 text-center text-[#f6edd0]">
-                  <p
-                    className="text-[20px] sm:text-[22px] lg:text-[24px] leading-[normal]"
-                    style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400 }}
-                  >
-                    {t.name}
-                  </p>
-                  <p
-                    className="mt-0.5 sm:mt-1 text-[10px] sm:text-[11px] lg:text-[12px] uppercase tracking-[1.5px] sm:tracking-[1.7px] lg:tracking-[1.92px]"
-                    style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
-                  >
-                    {t.subtitle}
-                  </p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* CTA */}
-      <div className="mx-auto w-full max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1177px] px-4 sm:px-6 lg:px-10 pb-6 sm:pb-8 lg:pb-10">
-        <div className="flex flex-col items-center gap-4 sm:gap-5 lg:gap-6 py-6 sm:py-8 lg:py-10">
-          <div className="flex items-center justify-center py-3 sm:py-4 lg:py-5">
-            <PageEndBlob color="#474e3a" className="h-8 sm:h-9 lg:h-10 w-auto" />
-          </div>
-          <p
-            className="text-center text-[28px] sm:text-[38px] lg:text-[48px] leading-[normal] text-[#93a378] px-4"
+      {/* Carousel Container - This gets pinned */}
+      <div 
+        ref={containerRef}
+        className="relative w-full h-screen flex flex-col justify-center overflow-hidden"
+      >
+        {/* Section Title */}
+        <div className="w-full text-center mb-6 lg:mb-8 px-4">
+          <h2
+            className="text-[36px] sm:text-[42px] lg:text-[48px] leading-[1.1] text-[#474e3a]"
             style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400 }}
           >
-            Ready to begin your own transformation?
-          </p>
-          <Button
-            text="Begin Your Journey"
-            size="large"
-            mode="light"
-            colors={{
-              fg: '#474e3a',
-              fgHover: '#f6edd0',
-              bgHover: '#474e3a',
-            }}
-          />
+            Voices of Transformation
+          </h2>
+        </div>
+
+        {/* Carousel Track */}
+        <div className="w-full px-4 sm:px-6 lg:px-10">
+          <div
+            ref={carouselRef}
+            className="flex gap-4 sm:gap-6 lg:gap-8 will-change-transform"
+          >
+            {testimonials.map((t, idx) => (
+              <div
+                key={idx}
+                ref={(el) => {
+                  cardRefs.current[idx] = el;
+                }}
+                className="shrink-0 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] border border-[#474e3a] bg-[#474e3a] p-6 sm:p-8 lg:p-10"
+                style={{
+                  width: 'min(911px, 85vw)',
+                  height: cardHeight ?? undefined,
+                }}
+              >
+                <div className="flex h-full flex-col">
+                  <p
+                    className="flex-1 text-justify text-[16px] sm:text-[20px] lg:text-[24px] leading-[normal] text-[#f6edd0]"
+                    style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
+                  >
+                    {t.copy}
+                  </p>
+                  <div className="mt-auto pt-6 sm:pt-8 lg:pt-10 text-center text-[#f6edd0]">
+                    <p
+                      className="text-[20px] sm:text-[22px] lg:text-[24px] leading-[normal]"
+                      style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400 }}
+                    >
+                      {t.name}
+                    </p>
+                    <p
+                      className="mt-0.5 sm:mt-1 text-[10px] sm:text-[11px] lg:text-[12px] uppercase tracking-[1.5px] sm:tracking-[1.7px] lg:tracking-[1.92px]"
+                      style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
+                    >
+                      {t.subtitle}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </Section>

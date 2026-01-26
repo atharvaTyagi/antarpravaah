@@ -1,5 +1,6 @@
 'use client';
 
+import { useLayoutEffect } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Section from '@/components/Section';
@@ -11,36 +12,122 @@ import { pathways } from '@/data/pathwaysContent';
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function ApproachPage() {
+// Approach page button colors
+const approachButtonColors = {
+  fg: '#354443',
+  fgHover: '#f6edd0',
+  bgHover: '#354443',
+};
 
+export default function ApproachPage() {
   // Prepare cards for the sticky stack
   const pathwayCards = pathways.map((pathway) => ({
     key: pathway.id,
     render: <PathwayCard pathway={pathway} />,
   }));
 
+  // Setup GSAP fade transitions between sections
+  useLayoutEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    // Wait for DOM to be ready
+    const setupTimeout = setTimeout(() => {
+      const sections = gsap.utils.toArray<HTMLElement>('.approach-section');
+      if (sections.length === 0) return;
+
+      // Create fade transitions for each section
+      sections.forEach((section, index) => {
+        const sectionId = section.id;
+
+        // Skip first section - it starts visible
+        if (index === 0) {
+          gsap.set(section, { opacity: 1 });
+          return;
+        }
+
+        // Skip pinned sections - they handle their own visibility
+        // The pathways section is pinned internally by PathwaysCardStack
+        if (sectionId === 'pathways') {
+          gsap.set(section, { opacity: 1 });
+          return;
+        }
+
+        // Set initial state - sections start completely invisible
+        gsap.set(section, { opacity: 0 });
+
+        // Fade in when section enters viewport
+        ScrollTrigger.create({
+          trigger: section,
+          start: 'top 80%',
+          end: 'top 20%',
+          scrub: 0.5,
+          onUpdate: (self) => {
+            gsap.set(section, { opacity: self.progress });
+          },
+        });
+
+        // Fade out the previous section as this one enters
+        if (index > 0) {
+          const prevSection = sections[index - 1];
+          const prevSectionId = prevSection.id;
+
+          // Don't fade out pinned sections
+          if (prevSectionId === 'pathways') return;
+
+          ScrollTrigger.create({
+            trigger: section,
+            start: 'top 90%',
+            end: 'top 30%',
+            scrub: 0.5,
+            onUpdate: (self) => {
+              const opacity = 1 - self.progress;
+              gsap.set(prevSection, { opacity });
+            },
+            onLeaveBack: () => {
+              gsap.to(prevSection, { opacity: 1, duration: 0.3 });
+            },
+          });
+        }
+      });
+
+      ScrollTrigger.refresh(true);
+    }, 500);
+
+    return () => {
+      clearTimeout(setupTimeout);
+    };
+  }, []);
+
   return (
-    <main className="relative min-h-screen bg-[#f6edd0] pt-[90px] sm:pt-[108px] lg:pt-[148px]">
-      {/* Hero/Introduction Section */}
-      <Section id="approach" className="relative w-full bg-[#f6edd0] px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 pb-12 sm:pb-16 lg:pb-20">
-        <div className="mx-auto flex max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1349px] flex-col items-center gap-3 sm:gap-4 text-center">
-          {/* Large Spiral SVG from assets */}
-          <div className="mb-6 sm:mb-8 flex w-[25%] sm:w-[18%] lg:w-[155px] max-w-[155px] items-center justify-center">
+    <main className="relative min-h-screen bg-[#f6edd0]">
+      {/* ===== SECTION 1: Introduction ===== */}
+      <Section
+        id="approach"
+        className="approach-section relative z-10 min-h-screen w-full flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 bg-[#f6edd0]"
+      >
+        <div className="mx-auto flex w-full max-w-full sm:max-w-[600px] lg:max-w-[723px] flex-col items-center gap-6 sm:gap-8 text-center">
+          {/* Spiral SVG Illustration */}
+          <div className="flex items-center justify-center h-[120px] sm:h-[160px] lg:h-[200px]">
             <img
               src="/approach_vector.svg"
               alt=""
-              className="w-full h-auto object-contain"
+              className="h-full w-auto object-contain"
             />
           </div>
 
+          {/* Title */}
           <h1
-            className="text-[32px] sm:text-[40px] lg:text-[48px] leading-normal text-[#9ac1bf]"
+            className="text-[36px] sm:text-[42px] lg:text-[48px] leading-[1.0] text-[#9ac1bf]"
             style={{ fontFamily: 'var(--font-saphira), serif' }}
           >
             We Work Together
           </h1>
 
-          <div className="max-w-full sm:max-w-[360px] lg:max-w-[401px] text-justify text-[11px] sm:text-[12px] leading-normal text-[#474e3a] px-4">
+          {/* Description */}
+          <div
+            className="w-full text-[14px] sm:text-[15px] lg:text-[16px] leading-[24px] text-center text-[#474e3a] px-2"
+            style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
+          >
             <p className="mb-4">
               At Antar Pravaah, healing is a shared responsibility. We both do the work.
               Transformation demands commitment and persistence. It's not force, it's flow, but
@@ -60,133 +147,129 @@ export default function ApproachPage() {
         </div>
       </Section>
 
-      {/* Dark section starts here */}
-      <div className="relative w-full bg-[#354443]">
-        {/* Subtle spiral pattern background - Grid system */}
-        <div className="pointer-events-none absolute inset-0 z-[1] grid grid-cols-10 grid-rows-10 opacity-20">
-          {Array.from({ length: 100 }).map((_, index) => (
-            <div key={index} className="flex items-center justify-center">
-              <img
-                src="/approach_blob.svg"
-                alt=""
-                className="h-full w-full object-contain"
-              />
-            </div>
-          ))}
-        </div>
+      {/* ===== SECTION 2: Three Pathways - Card Stack with Pattern Background ===== */}
+      <Section
+        id="pathways"
+        className="approach-section relative z-10 w-full bg-[#354443]"
+      >
+        <PathwaysCardStack
+          cards={pathwayCards}
+          title="Three Pathways for You"
+          showPattern
+        />
+      </Section>
 
-        {/* Three Pathways Section with GSAP Card Stack */}
-        <Section id="pathways" className="relative z-10 w-full px-4 sm:px-6 lg:px-8 pt-8 sm:pt-12 lg:pt-16 pb-12 sm:pb-16 lg:pb-20">
-          <div className="mx-auto max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1347px]">
-            {/* Section Title - Outside card stack so it scrolls normally */}
-            <div className="mb-8 sm:mb-10 lg:mb-12 text-center">
-              <h2
-                className="text-[32px] sm:text-[38px] lg:text-[48px] leading-normal text-[#9ac1bf]"
+      {/* ===== SECTION 3: Thoughts & Ponderings ===== */}
+      <Section
+        id="thoughts"
+        className="approach-section relative z-10 min-h-screen w-full flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 py-16 sm:py-20 bg-[#f6edd0]"
+      >
+        <div className="mx-auto flex max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1177px] flex-col items-center gap-8 sm:gap-10 lg:gap-12">
+          {/* Title */}
+          <h2
+            className="text-center text-[36px] sm:text-[42px] lg:text-[48px] leading-[1.0] text-[#354443]"
+            style={{ fontFamily: 'var(--font-saphira), serif' }}
+          >
+            Thoughts & Ponderings
+          </h2>
+
+          {/* Grid of thought cards */}
+          <div className="grid w-full grid-cols-1 gap-4 sm:gap-5 lg:gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {/* Row 1 - Card 1 */}
+            <div className="flex min-h-[180px] sm:min-h-[200px] items-center justify-center rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#9ac1bf] p-6 sm:p-8 lg:p-10">
+              <p
+                className="text-center text-[20px] sm:text-[22px] lg:text-[24px] leading-normal text-[#354443]"
                 style={{ fontFamily: 'var(--font-saphira), serif' }}
               >
-                Three Pathways for You
-              </h2>
+                This is a thought card with some text
+              </p>
             </div>
-            <PathwaysCardStack cards={pathwayCards} />
-          </div>
-        </Section>
 
-        {/* Thoughts & Ponderings Section */}
-        <Section id="thoughts" className="relative z-10 w-full bg-[#f6edd0] px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
-          <div className="mx-auto flex max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1349px] flex-col items-center gap-6 sm:gap-8 lg:gap-10">
-            <h2
-              className="text-center text-[32px] sm:text-[40px] lg:text-[48px] leading-normal text-[#354443] px-4"
-              style={{ fontFamily: 'var(--font-saphira), serif' }}
-            >
-              Thoughts & Ponderings
-            </h2>
-            <p
-              className="text-center text-[18px] sm:text-[20px] lg:text-[24px] uppercase leading-normal tracking-[2.5px] sm:tracking-[3px] lg:tracking-[3.84px] text-[#354443] px-4"
-              style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
-            >
-              A wall of my current thoughts & ponderings
-            </p>
+            {/* Row 1 - Card 2 */}
+            <div className="flex min-h-[180px] sm:min-h-[200px] items-center justify-center rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#9ac1bf] p-6 sm:p-8 lg:p-10">
+              <p
+                className="text-center text-[20px] sm:text-[22px] lg:text-[24px] leading-normal text-[#354443]"
+                style={{ fontFamily: 'var(--font-saphira), serif' }}
+              >
+                This is a thought card with some text
+              </p>
+            </div>
 
-            {/* Grid of thought cards - text only */}
-            <div className="grid w-full grid-cols-1 gap-4 sm:gap-5 lg:gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {/* Row 1 */}
-              <div className="flex min-h-[180px] sm:min-h-[200px] items-center justify-center rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#9ac1bf] p-6 sm:p-8 lg:p-10">
-                <p
-                  className="text-center text-[18px] sm:text-[20px] lg:text-[24px] leading-normal text-[#354443]"
-                  style={{ fontFamily: 'var(--font-saphira), serif' }}
-                >
-                  This is a thought card with some text
-                </p>
-              </div>
-              <div className="flex min-h-[180px] sm:min-h-[200px] items-center justify-center rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#9ac1bf] p-6 sm:p-8 lg:p-10">
-                <p
-                  className="text-center text-[18px] sm:text-[20px] lg:text-[24px] leading-normal text-[#354443]"
-                  style={{ fontFamily: 'var(--font-saphira), serif' }}
-                >
-                  This is a thought card with some text
-                </p>
-              </div>
-              <div className="lg:row-span-2 flex min-h-[180px] sm:min-h-[200px] lg:min-h-[416px] items-center justify-center rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#9ac1bf] p-6 sm:p-8 lg:p-10">
-                <p
-                  className="text-center text-[18px] sm:text-[20px] lg:text-[24px] leading-normal text-[#354443]"
-                  style={{ fontFamily: 'var(--font-saphira), serif' }}
-                >
-                  This is a thought card with some text
-                </p>
-              </div>
+            {/* Row 1 - Card 3 (spans 2 rows on desktop) */}
+            <div className="lg:row-span-2 flex min-h-[180px] sm:min-h-[200px] lg:min-h-[416px] items-center justify-center rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#9ac1bf] p-6 sm:p-8 lg:p-10">
+              <p
+                className="text-center text-[20px] sm:text-[22px] lg:text-[24px] leading-normal text-[#354443]"
+                style={{ fontFamily: 'var(--font-saphira), serif' }}
+              >
+                This is a thought card with some text
+              </p>
+            </div>
 
-              {/* Row 2 */}
-              <div className="flex min-h-[180px] sm:min-h-[200px] items-center justify-center rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#9ac1bf] p-6 sm:p-8 lg:p-10">
-                <p
-                  className="text-center text-[18px] sm:text-[20px] lg:text-[24px] leading-normal text-[#354443]"
-                  style={{ fontFamily: 'var(--font-saphira), serif' }}
-                >
-                  This is a thought card with some text
-                </p>
-              </div>
-              <div className="flex min-h-[180px] sm:min-h-[200px] items-center justify-center rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#9ac1bf] p-6 sm:p-8 lg:p-10">
-                <p
-                  className="text-center text-[18px] sm:text-[20px] lg:text-[24px] leading-normal text-[#354443]"
-                  style={{ fontFamily: 'var(--font-saphira), serif' }}
-                >
-                  This is a thought card with some text
-                </p>
-              </div>
+            {/* Row 2 - Card 4 */}
+            <div className="flex min-h-[180px] sm:min-h-[200px] items-center justify-center rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#9ac1bf] p-6 sm:p-8 lg:p-10">
+              <p
+                className="text-center text-[20px] sm:text-[22px] lg:text-[24px] leading-normal text-[#354443]"
+                style={{ fontFamily: 'var(--font-saphira), serif' }}
+              >
+                This is a thought card with some text
+              </p>
+            </div>
 
-              
+            {/* Row 2 - Card 5 */}
+            <div className="flex min-h-[180px] sm:min-h-[200px] items-center justify-center rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#9ac1bf] p-6 sm:p-8 lg:p-10">
+              <p
+                className="text-center text-[20px] sm:text-[22px] lg:text-[24px] leading-normal text-[#354443]"
+                style={{ fontFamily: 'var(--font-saphira), serif' }}
+              >
+                This is a thought card with some text
+              </p>
+            </div>
+
+            {/* Row 3 - Card 6 (only visible on mobile/tablet) */}
+            <div className="flex min-h-[180px] sm:min-h-[200px] items-center justify-center rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#9ac1bf] p-6 sm:p-8 lg:p-10 lg:hidden">
+              <p
+                className="text-center text-[20px] sm:text-[22px] lg:text-[24px] leading-normal text-[#354443]"
+                style={{ fontFamily: 'var(--font-saphira), serif' }}
+              >
+                This is a thought card with some text
+              </p>
             </div>
           </div>
-        </Section>
+        </div>
+      </Section>
 
-        {/* CTA Section */}
-        <Section id="approach-cta" className="relative z-10 w-full bg-[#f6edd0] px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
-          <div className="mx-auto flex max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1349px] flex-col items-center gap-4 sm:gap-5 lg:gap-6 text-center">
-            {/* Decorative blob */}
-            <div className="mb-3 sm:mb-4">
-              <PageEndBlob color="#9ac1bf" className="h-auto w-[120px] sm:w-[140px] lg:w-[163px]" />
-            </div>
-
-            <p
-              className="max-w-full sm:max-w-[680px] lg:max-w-[799px] text-[28px] sm:text-[38px] lg:text-[48px] leading-normal text-[#9ac1bf] px-4"
-              style={{ fontFamily: 'var(--font-saphira), serif' }}
-            >
-              If you feel called, I welcome you. Whatever you carry, you're not alone.
-            </p>
-
-            <Button
-              text="Begin Your Journey"
-              href="/contact"
-              size="large"
-              mode="light"
-              colors={{
-                fg: '#354443',
-                fgHover: '#f6edd0',
-                bgHover: '#354443',
-              }}
+      {/* ===== SECTION 4: CTA ===== */}
+      <Section
+        id="approach-cta"
+        className="approach-section relative z-10 min-h-screen w-full flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 bg-[#f6edd0]"
+      >
+        <div className="mx-auto flex max-w-full sm:max-w-[600px] lg:max-w-[799px] flex-col items-center gap-6 sm:gap-8 lg:gap-10 text-center">
+          {/* Decorative blob */}
+          <div className="flex items-center justify-center">
+            <PageEndBlob
+              color="#9ac1bf"
+              className="h-auto w-[100px] sm:w-[130px] lg:w-[163px]"
             />
           </div>
-        </Section>
-      </div>
+
+          {/* Message */}
+          <p
+            className="text-[28px] sm:text-[32px] lg:text-[36px] leading-normal text-[#9ac1bf] px-4"
+            style={{ fontFamily: 'var(--font-saphira), serif' }}
+          >
+            If you feel called, I welcome you. Whatever you carry, you're not alone.
+          </p>
+
+          {/* CTA Button */}
+          <Button
+            text="Begin Your Journey"
+            href="/contact"
+            size="large"
+            mode="light"
+            colors={approachButtonColors}
+          />
+        </div>
+      </Section>
     </main>
   );
 }

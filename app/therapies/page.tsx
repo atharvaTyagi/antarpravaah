@@ -1,13 +1,13 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useLayoutEffect } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Section from '@/components/Section';
-import TherapiesCardStack from '@/components/TherapiesCardStack';
+import ModalitiesScrollCard, { ModalityContent } from '@/components/ModalitiesScrollCard';
 import TherapyCard from '@/components/TherapyCard';
 import Button from '@/components/Button';
-import { therapies } from '@/data/therapiesContent';
+import { therapies, DescriptionItem } from '@/data/therapiesContent';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -23,6 +23,77 @@ export default function TherapiesPage() {
   const heading2Ref = useRef<HTMLHeadingElement>(null);
   const textLineRefs = useRef<(HTMLParagraphElement | null)[]>([]);
   const blobTextContainerRef = useRef<HTMLDivElement>(null);
+
+  // Setup GSAP fade transitions between sections
+  useLayoutEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    // Wait for DOM to be ready
+    const setupTimeout = setTimeout(() => {
+      const sections = gsap.utils.toArray<HTMLElement>('.therapies-section');
+      if (sections.length === 0) return;
+
+      // Create fade transitions for each section (except first and pinned sections)
+      sections.forEach((section, index) => {
+        const sectionId = section.id;
+        
+        // Skip first section - it starts visible
+        if (index === 0) {
+          gsap.set(section, { opacity: 1 });
+          return;
+        }
+
+        // Skip pinned sections (modalities) - they handle their own visibility
+        if (sectionId === 'therapies-modalities') {
+          gsap.set(section, { opacity: 1 });
+          return;
+        }
+
+        // Set initial state - sections start completely invisible
+        gsap.set(section, { opacity: 0 });
+
+        // Fade in when section enters viewport (0 to 100%)
+        ScrollTrigger.create({
+          trigger: section,
+          start: 'top 80%',
+          end: 'top 20%',
+          scrub: 0.5,
+          onUpdate: (self) => {
+            gsap.set(section, { opacity: self.progress });
+          },
+        });
+
+        // Fade out the previous section as this one enters (skip if previous is pinned)
+        if (index > 0) {
+          const prevSection = sections[index - 1];
+          const prevSectionId = prevSection.id;
+          
+          // Don't fade out pinned sections
+          if (prevSectionId === 'therapies-modalities') return;
+          
+          ScrollTrigger.create({
+            trigger: section,
+            start: 'top 90%',
+            end: 'top 30%',
+            scrub: 0.5,
+            onUpdate: (self) => {
+              const opacity = 1 - self.progress;
+              gsap.set(prevSection, { opacity });
+            },
+            onLeaveBack: () => {
+              gsap.to(prevSection, { opacity: 1, duration: 0.3 });
+            },
+          });
+        }
+      });
+
+      ScrollTrigger.refresh(true);
+    }, 500);
+
+    return () => {
+      clearTimeout(setupTimeout);
+    };
+  }, []);
 
   // Text fade-in animation for "Come and find me" blob
   useEffect(() => {
@@ -90,35 +161,61 @@ export default function TherapiesPage() {
   // Get all other therapies for the modalities section (excluding ASP)
   const modalityTherapies = therapies.filter((t) => t.id !== 'antar-smaran-process');
 
-  // Prepare cards for the sticky stack
-  const therapyCards = modalityTherapies.map((therapy) => ({
-    key: therapy.id,
-    render: <TherapyCard therapy={therapy} />,
-  }));
+  // Transform therapies data to ModalityContent format for the scroll card
+  const modalitiesContent: ModalityContent[] = modalityTherapies.map((therapy) => {
+    // Handle description - can be string or array
+    let descriptionArray: string[] = [];
+    if (typeof therapy.description === 'string') {
+      descriptionArray = [therapy.description];
+    } else {
+      descriptionArray = therapy.description.map((item) => {
+        if (typeof item === 'string') return item;
+        // For DescriptionItem, combine heading and text
+        const descItem = item as DescriptionItem;
+        return `${descItem.heading}: ${descItem.text}`;
+      });
+    }
+
+    // Split bestFor into two columns
+    const midpoint = Math.ceil(therapy.bestFor.length / 2);
+    const column1 = therapy.bestFor.slice(0, midpoint);
+    const column2 = therapy.bestFor.slice(midpoint);
+
+    return {
+      id: therapy.id,
+      title: therapy.title,
+      subtitle: therapy.subtitle,
+      description: descriptionArray,
+      bestFor: {
+        column1,
+        column2,
+      },
+      sessionDuration: therapy.duration,
+      ctaText: therapy.ctaText,
+      iconSrc: therapy.icon,
+    };
+  });
 
   return (
     <main className="min-h-screen bg-[#f6edd0] relative">
 
-      {/* Introduction Section */}
-      <Section
-        id="therapies-intro"
-        className="relative z-10 min-h-[60vh] flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 pt-[120px] sm:pt-[160px] lg:pt-[200px] pb-16 sm:pb-20 lg:pb-24"
-      >
-        <div className="max-w-full sm:max-w-[600px] lg:max-w-[723px] mx-auto text-center flex flex-col gap-3 sm:gap-4 lg:gap-5">
+      {/* Section 1: Introduction */}
+      <section className="therapies-section relative z-10 min-h-screen w-full flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 pt-[120px] sm:pt-[140px] lg:pt-[160px] pb-16 sm:pb-20 lg:pb-24">
+        <div className="max-w-full sm:max-w-[600px] lg:max-w-[723px] mx-auto text-center flex flex-col gap-4 sm:gap-5 lg:gap-6">
           <h1
-            className="text-[32px] sm:text-[40px] lg:text-[48px] leading-normal text-[#645c42]"
+            className="text-[36px] sm:text-[42px] lg:text-[48px] leading-[1.0] text-[#645c42]"
             style={{ fontFamily: 'var(--font-saphira), serif' }}
           >
             Therapies
           </h1>
           <p
-            className="text-[18px] sm:text-[20px] lg:text-[24px] leading-normal text-[#645c42] uppercase tracking-[2.5px] sm:tracking-[3px] lg:tracking-[3.84px]"
+            className="text-[14px] sm:text-[15px] lg:text-[16px] leading-normal text-[#645c42] uppercase tracking-[2.5px] sm:tracking-[3px] lg:tracking-[2.56px]"
             style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
           >
             Possibilities for Change
           </p>
           <div
-            className="text-[#645c42] text-[11px] sm:text-[12px] leading-normal text-justify px-2"
+            className="text-[#645c42] text-[14px] sm:text-[15px] lg:text-[16px] leading-[24px] text-center px-2"
             style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
           >
             <p className="mb-3 sm:mb-4">
@@ -135,79 +232,70 @@ export default function TherapiesPage() {
             </p>
           </div>
         </div>
-      </Section>
+      </section>
 
-      {/* Antar Smaran Process - Featured Section */}
+      {/* Section 2: Antar Smaran Process - Featured Card */}
       {antarSmaranProcess && (
-        <Section
-          id="therapies-asp"
-          className="relative z-10 w-full px-4 sm:px-6 lg:px-8 pb-16 sm:pb-20 lg:pb-24"
-        >
-          <div className="max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1347px] mx-auto">
+        <section className="therapies-section relative z-10 min-h-screen w-full flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24">
+          <div className="max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1347px] mx-auto w-full">
             <TherapyCard therapy={antarSmaranProcess} />
           </div>
-        </Section>
+        </section>
       )}
 
-      {/* Modalities Section with GSAP Observer Card Stack */}
-      <Section id="therapies-modalities" className="relative z-10 w-full px-4 sm:px-6 lg:px-8 pb-6 sm:pb-8">
-        <div className="max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1347px] mx-auto">
-          <TherapiesCardStack cards={therapyCards} title="Our Modalities" />
+      {/* Section 3: Modalities Scroll Card */}
+      <Section id="therapies-modalities" className="therapies-section relative z-10 w-full pt-8 sm:pt-10 lg:pt-12 pb-8 sm:pb-10 lg:pb-12">
+        <div className="w-full px-4 sm:px-8 lg:px-12">
+          <ModalitiesScrollCard modalities={modalitiesContent} sectionTitle="Our Modalities" />
         </div>
       </Section>
 
-      {/* Not Sure Section */}
-      <Section
-        id="therapies-not-sure"
-        className="relative z-10 flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 pt-10 sm:pt-12 lg:pt-16 pb-16 sm:pb-20 lg:pb-24"
-      >
-        <div className="max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1347px] mx-auto flex flex-col items-center gap-6 sm:gap-8 lg:gap-10 text-center">
-          <h2
-            className="text-[28px] sm:text-[38px] lg:text-[48px] leading-normal text-[#645c42] px-4"
-            style={{ fontFamily: 'var(--font-saphira), serif' }}
-          >
-            Not sure which therapy is right for you?
-          </h2>
-
-          {/* Decorative divider */}
-          <div className="flex items-center justify-center py-3 sm:py-4 lg:py-5">
+      {/* Section 4: Not Sure + Find Your Path + CTA */}
+      <section className="therapies-section relative z-10 min-h-screen w-full flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24">
+        <div className="max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[800px] mx-auto flex flex-col items-center gap-6 sm:gap-8 lg:gap-10 text-center">
+          {/* Decorative divider at top */}
+          <div className="flex items-center justify-center">
             <img 
               src="/page_end_blob.svg" 
               alt="" 
-              className="w-[120px] sm:w-[140px] lg:w-[163px] h-auto"
+              className="w-[100px] sm:w-[120px] lg:w-[140px] h-auto"
               style={{
                 filter: 'brightness(0) saturate(100%) invert(83%) sepia(15%) saturate(630%) hue-rotate(7deg) brightness(95%) contrast(85%)'
               }}
             />
           </div>
 
+          <h2
+            className="text-[28px] sm:text-[36px] lg:text-[42px] leading-[1.0] text-[#645c42] px-4"
+            style={{ fontFamily: 'var(--font-saphira), serif' }}
+          >
+            Not sure which therapy is right for you?
+          </h2>
+
           <p
-            className="text-[18px] sm:text-[20px] lg:text-[24px] leading-normal text-[#645c42] uppercase tracking-[2.5px] sm:tracking-[3px] lg:tracking-[3.84px]"
+            className="text-[14px] sm:text-[15px] lg:text-[16px] leading-normal text-[#645c42] uppercase tracking-[2px] sm:tracking-[2.3px] lg:tracking-[2.56px]"
             style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
           >
             Find your path
           </p>
 
           <p
-            className="text-[18px] sm:text-[20px] lg:text-[24px] leading-normal text-[#645c42] max-w-full sm:max-w-[600px] lg:max-w-[687px] px-4"
-            style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
+            className="text-[14px] sm:text-[15px] lg:text-[16px] leading-[24px] text-[#645c42] max-w-full sm:max-w-[550px] lg:max-w-[640px] px-4"
+            style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
           >
             Every body speaks a different language. If you're unsure which modality will resonate
             most deeply with you, we offer a complimentary 30-minute consultation to help guide you
             to the therapy that will serve your healing journey best.
           </p>
 
-          <div className="flex flex-col gap-2 sm:gap-3">
+          <div className="flex flex-col gap-2 sm:gap-3 mt-2">
             <Button text="Schedule a Free Consultation" size="large" colors={therapiesButtonColors} />
           </div>
         </div>
-      </Section>
+      </section>
 
-      {/* Come and Find Me Section */}
-      <Section
-        id="therapies-come-find-me"
-        className="relative z-10 min-h-[100vh] flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24"
-      >
+      {/* Section 5: Come and Find Me - Big Blob */}
+      <section className="therapies-section relative z-10 min-h-screen w-full flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24">
         <div className="max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1347px] mx-auto flex flex-col items-center gap-10 sm:gap-12 lg:gap-16">
           {/* Blob with text inside */}
           <div className="relative flex items-center justify-center" ref={blobTextContainerRef}>
@@ -272,7 +360,7 @@ export default function TherapiesPage() {
             <Button text="Schedule a Free Consultation" size="small" colors={therapiesButtonColors} />
           </div>
         </div>
-      </Section>
+      </section>
     </main>
   );
 }

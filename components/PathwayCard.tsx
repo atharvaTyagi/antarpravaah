@@ -26,7 +26,9 @@ interface PathwayCardProps {
 
 export default function PathwayCard({ pathway }: PathwayCardProps) {
   return (
-    <div className="relative flex h-auto min-h-[480px] sm:min-h-[580px] lg:h-[680px] items-end overflow-hidden rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] border-[8px] sm:border-[12px] lg:border-[16px] border-[#9ac1bf]">
+    <div
+      className="relative flex items-end overflow-hidden rounded-[12px] sm:rounded-[16px] lg:rounded-[24px] border-[4px] sm:border-[8px] lg:border-[12px] border-[#9ac1bf] w-full h-full"
+    >
       {/* Background Image with blur */}
       <div className="absolute inset-0 -z-10">
         <img
@@ -37,39 +39,61 @@ export default function PathwayCard({ pathway }: PathwayCardProps) {
         />
       </div>
 
-      {/* Content Card */}
-      <div className="w-full max-w-full sm:max-w-[540px] lg:max-w-[640px] rounded-[14px] sm:rounded-[16px] lg:rounded-[20px] bg-[rgba(53,68,67,0.85)] p-4 sm:p-5 lg:p-6 m-4 sm:m-6 lg:m-8 backdrop-blur-[2px]">
+      {/* Content Card - Figma specs: backdrop blur, 80% opacity dark bg */}
+      <div
+        className="w-full max-w-full sm:max-w-[70%] lg:max-w-[50%] rounded-[8px] sm:rounded-[12px] lg:rounded-[20px] bg-[rgba(53,68,67,0.8)] p-3 sm:p-4 lg:p-5 m-2 sm:m-4 lg:m-6 backdrop-blur-[4px] overflow-y-auto"
+        style={{
+          maxHeight: 'calc(100% - 1rem)',
+        }}
+      >
+        {/* Title - 48px Safira March */}
         <h3
-          className="mb-1.5 sm:mb-2 text-[24px] sm:text-[28px] lg:text-[32px] leading-tight text-[#9ac1bf]"
+          className="mb-2 lg:mb-3 text-[clamp(1.5rem,4vw,3rem)] leading-[1.0] text-[#9ac1bf]"
           style={{ fontFamily: 'var(--font-saphira), serif' }}
         >
           {pathway.title}
         </h3>
+        
+        {/* Subtitle - 24px Graphik Medium */}
         <p
-          className="mb-2 sm:mb-3 text-[14px] sm:text-[15px] lg:text-[16px] uppercase leading-normal tracking-[2px] sm:tracking-[2.3px] lg:tracking-[2.56px] text-[#9ac1bf]"
-          style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
+          data-element="subtitle"
+          className="mb-2 lg:mb-3 text-[clamp(0.875rem,2vw,1.5rem)] leading-[1.2] text-[#9ac1bf]"
+          style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
         >
           {pathway.subtitle}
         </p>
-        <div className="mb-2 sm:mb-3 text-justify text-[10px] sm:text-[10.5px] lg:text-[11px] leading-relaxed text-[#9ac1bf]">
+        
+        {/* Description - 16px Graphik Regular, 24px line height */}
+        <div 
+          className="mb-2 lg:mb-3 text-justify text-[clamp(0.75rem,1.5vw,1rem)] leading-relaxed text-[#9ac1bf]"
+          style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
+        >
           {pathway.description.map((para, idx) => (
-            <p key={idx} className={idx < pathway.description.length - 1 ? 'mb-1.5 sm:mb-2' : ''}>
+            <p key={idx} className={idx < pathway.description.length - 1 ? 'mb-2 lg:mb-3' : ''}>
               {para}
             </p>
           ))}
         </div>
-        <div className="mb-2 sm:mb-3 text-[10px] sm:text-[10.5px] lg:text-[11px] leading-relaxed text-[#9ac1bf]">
-          <p className="mb-0.5 sm:mb-1 font-medium">What to Expect:</p>
+        
+        {/* What to Expect - 16px Graphik */}
+        <div 
+          className="mb-2 lg:mb-3 text-[clamp(0.75rem,1.5vw,1rem)] leading-relaxed text-[#9ac1bf]"
+          style={{ fontFamily: 'var(--font-graphik), sans-serif' }}
+        >
+          <p className="mb-1 font-medium">What to Expect:</p>
           <ul className="list-inside list-disc space-y-0.5">
             {pathway.whatToExpect.map((item, idx) => (
               <li key={idx}>{item}</li>
             ))}
           </ul>
         </div>
+        
+        {/* CTA Button */}
         <Button
           text={pathway.ctaText}
           href={pathway.ctaHref}
           mode="dark"
+          size="default"
           colors={pathwaysButtonColors}
         />
       </div>

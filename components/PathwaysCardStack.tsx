@@ -3,7 +3,8 @@
 import { useLayoutEffect, useRef, useState, useEffect } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Observer } from 'gsap/dist/Observer';
+
+gsap.registerPlugin(ScrollTrigger);
 
 export interface PathwaysStackCard {
   key: string;
@@ -14,221 +15,155 @@ interface PathwaysCardStackProps {
   cards: PathwaysStackCard[];
   /** Section title shown above the cards */
   title?: string;
+  /** Show pattern background (pinned with section) */
+  showPattern?: boolean;
 }
 
-export default function PathwaysCardStack({ cards, title }: PathwaysCardStackProps) {
-  const cardsSectionRef = useRef<HTMLDivElement | null>(null);
-  const stageRef = useRef<HTMLDivElement | null>(null);
-  const [stageHeight, setStageHeight] = useState(680);
+export default function PathwaysCardStack({ cards, title, showPattern = false }: PathwaysCardStackProps) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const cardContainerRef = useRef<HTMLDivElement | null>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const activeIndexRef = useRef(0);
+  const prevIndexRef = useRef(0);
+  const isAnimatingRef = useRef(false);
 
-  // Calculate stage height based on tallest card
-  useEffect(() => {
-    if (!stageRef.current) return;
-    const cardElements = stageRef.current.querySelectorAll<HTMLElement>('.pathway-card');
-    let maxHeight = 680;
-    cardElements.forEach((card) => {
-      const height = card.offsetHeight;
-      if (height > maxHeight) maxHeight = height;
-    });
-    setStageHeight(maxHeight);
-  }, [cards]);
-
+  // Setup scroll-driven card changes (similar to ModalitiesScrollCard)
   useLayoutEffect(() => {
     if (typeof window === 'undefined') return;
+    if (!containerRef.current || !cardContainerRef.current || cards.length < 2) return;
 
-    gsap.registerPlugin(ScrollTrigger, Observer);
+    const container = containerRef.current;
+    const totalItems = cards.length;
 
-    const cardsSection = cardsSectionRef.current;
-    if (!cardsSection) return;
+    // Scroll distance per card
+    const scrollPerItem = window.innerHeight * 0.5;
+    const totalScrollDistance = scrollPerItem * (totalItems - 1);
 
-    const cardElements = Array.from(cardsSection.querySelectorAll<HTMLElement>('.pathway-card'));
-    if (cardElements.length < 2) return;
-
-    const time = 0.95; // Slower animation timing for smoother feel
-    let animating = false;
-
-    // Single-card focus layout: only one card is visible at a time.
-    gsap.set(cardElements, {
-      autoAlpha: 0,
-      y: 0,
-      scale: 1,
-      transformOrigin: 'center top',
-      zIndex: 1,
-    });
-    gsap.set(cardElements[0], { autoAlpha: 1, zIndex: cardElements.length + 10 });
-
-    const tl = gsap.timeline({ paused: true });
-
-    // Get text elements for each card to animate them separately
-    const getCardTextElements = (card: HTMLElement) => {
-      return {
-        title: card.querySelector('h3'),
-        subtitle: card.querySelector('p[class*="uppercase"]'),
-        content: card.querySelectorAll('.text-justify, .list-disc'),
-        image: card.querySelector('img'),
-        button: card.querySelector('button, a'),
-        contentCard: card.querySelector('.rounded-\\[24px\\]'),
-      };
-    };
-
-    // Set initial state for first card's text elements
-    const firstCardText = getCardTextElements(cardElements[0]);
-    gsap.set([firstCardText.title, firstCardText.subtitle, firstCardText.image], { autoAlpha: 1 });
-    gsap.set(firstCardText.content, { autoAlpha: 1 });
-    gsap.set(firstCardText.button, { autoAlpha: 1 });
-    gsap.set(firstCardText.contentCard, { autoAlpha: 1 });
-
-    // Build labels: card2, card3, ...
-    for (let i = 0; i < cardElements.length - 1; i++) {
-      tl.add(`card${i + 2}`);
-      const current = cardElements[i];
-      const next = cardElements[i + 1];
-      const currentText = getCardTextElements(current);
-      const nextText = getCardTextElements(next);
-
-      // All text fades out together with slight stagger for organic feel
-      tl.to([currentText.title, currentText.subtitle, currentText.image, currentText.button], {
-        autoAlpha: 0,
-        y: -8,
-        duration: time * 0.5,
-        ease: 'power2.inOut',
-      });
-      tl.to(currentText.content, {
-        autoAlpha: 0,
-        y: -8,
-        duration: time * 0.5,
-        stagger: 0.015,
-        ease: 'power2.inOut',
-      }, '<0.02');
-
-      // Card container fades out while text is fading
-      tl.to(current, {
-        scale: 0.96,
-        autoAlpha: 0,
-        duration: time * 0.5,
-        ease: 'power2.inOut',
-      }, '<0.1');
-
-      // Next card setup and slide in - starts before current fully fades
-      tl.set(next, { zIndex: cardElements.length + i + 20, autoAlpha: 1 }, '<0.2');
-      tl.set([nextText.title, nextText.subtitle, nextText.image], { autoAlpha: 0, y: 12 }, '<');
-      tl.set(nextText.content, { autoAlpha: 0, y: 15 }, '<');
-      tl.set(nextText.button, { autoAlpha: 0, y: 10 }, '<');
-
-      tl.fromTo(
-        next,
-        { y: () => window.innerHeight * 0.15 },
-        { y: 0, duration: time * 0.55, ease: 'power2.out', immediateRender: false },
-        '<'
-      );
-
-      // Text fades in as card settles - all together for cohesion
-      tl.to([nextText.image, nextText.title], {
-        autoAlpha: 1,
-        y: 0,
-        duration: time * 0.5,
-        ease: 'power2.out',
-      }, '<0.1');
-      tl.to([nextText.subtitle], {
-        autoAlpha: 1,
-        y: 0,
-        duration: time * 0.5,
-        ease: 'power2.out',
-      }, '<0.03');
-      tl.to(nextText.content, {
-        autoAlpha: 1,
-        y: 0,
-        duration: time * 0.5,
-        stagger: 0.02,
-        ease: 'power2.out',
-      }, '<0.03');
-      tl.to([nextText.button], {
-        autoAlpha: 1,
-        y: 0,
-        duration: time * 0.5,
-        ease: 'power2.out',
-      }, '<0.05');
-    }
-    tl.add(`card${cardElements.length + 1}`);
-
-    const tweenToLabel = (direction: string | null, isScrollingDown: boolean) => {
-      const next = tl.nextLabel();
-      const prev = tl.previousLabel();
-
-      // At the end and user scrolls down -> release scroll
-      if ((!next && isScrollingDown) || (!prev && !isScrollingDown)) {
-        cardsObserver.disable();
-        return;
-      }
-      if (!direction) return;
-      if (animating) return;
-      animating = true;
-      tl.tweenTo(direction, {
-        duration: time, // Explicit duration for consistent speed in both directions
-        ease: 'power2.inOut',
-        onComplete: () => {
-          animating = false;
-        },
-      });
-    };
-
-    const cardsObserver = Observer.create({
-      type: 'wheel,touch,pointer',
-      wheelSpeed: -1,
-      tolerance: 10,
-      preventDefault: true,
-      onDown: () => tweenToLabel(tl.previousLabel(), false),
-      onUp: () => tweenToLabel(tl.nextLabel(), true),
-      onEnable(self) {
-        // Freeze native scroll position (fixes momentum scrolling)
-        const savedScroll = self.scrollY();
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (self as any)._restoreScroll = () => self.scrollY(savedScroll);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        document.addEventListener('scroll', (self as any)._restoreScroll, { passive: false });
-      },
-      onDisable(self) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        document.removeEventListener('scroll', (self as any)._restoreScroll);
-      },
-    });
-
-    cardsObserver.disable();
-
+    // Create ScrollTrigger for pinning and progress tracking
     const st = ScrollTrigger.create({
-      id: 'PATHWAYS-CARDS-LOCK',
-      trigger: cardsSection,
+      trigger: container,
+      start: 'top top+=160',
+      end: `+=${totalScrollDistance}`,
       pin: true,
-      pinSpacing: false, // Don't add extra spacing after pin ends
-      // Start when the card stack is comfortably below the fixed headers (main header 148px + subheader ~70px)
-      start: 'top top+=230',
-      // Short end – once Observer releases, native scroll continues and unpins quickly.
-      end: '+=120',
-      onEnter: () => {
-        if (!cardsObserver.isEnabled) cardsObserver.enable();
-      },
-      onEnterBack: () => {
-        if (!cardsObserver.isEnabled) cardsObserver.enable();
+      pinSpacing: true,
+      onUpdate: (self) => {
+        // Calculate which card should be active based on scroll progress
+        const progress = self.progress;
+        const newIndex = Math.min(
+          Math.floor(progress * totalItems),
+          totalItems - 1
+        );
+
+        // Update index without triggering re-render loop
+        if (newIndex !== activeIndexRef.current && !isAnimatingRef.current) {
+          prevIndexRef.current = activeIndexRef.current;
+          activeIndexRef.current = newIndex;
+          setActiveIndex(newIndex);
+        }
       },
     });
 
-    // Ensure calculations are correct after layout.
-    ScrollTrigger.refresh();
+    // Refresh after mount
+    setTimeout(() => ScrollTrigger.refresh(), 100);
 
     return () => {
       st.kill();
-      cardsObserver.kill();
-      tl.kill();
     };
-  }, [cards]);
+  }, [cards.length]);
+
+  // Animate card transitions when activeIndex changes
+  useEffect(() => {
+    if (!cardContainerRef.current) return;
+
+    const cardElements = Array.from(
+      cardContainerRef.current.querySelectorAll<HTMLElement>('.pathway-card-wrapper')
+    );
+
+    if (cardElements.length === 0) return;
+
+    isAnimatingRef.current = true;
+
+    // Hide all cards
+    cardElements.forEach((card, index) => {
+      if (index !== activeIndex) {
+        gsap.set(card, { opacity: 0, pointerEvents: 'none' });
+      }
+    });
+
+    // Animate in the active card
+    const activeCard = cardElements[activeIndex];
+    if (activeCard) {
+      const isScrollingDown = activeIndex > prevIndexRef.current;
+      const yStart = isScrollingDown ? 30 : -30;
+
+      gsap.fromTo(
+        activeCard,
+        {
+          opacity: 0,
+          y: yStart,
+          pointerEvents: 'none',
+        },
+        {
+          opacity: 1,
+          y: 0,
+          pointerEvents: 'auto',
+          duration: 0.6,
+          ease: 'power3.out',
+          onComplete: () => {
+            isAnimatingRef.current = false;
+          },
+        }
+      );
+    }
+  }, [activeIndex]);
 
   return (
-    <div ref={cardsSectionRef} className="cards-section relative w-full flex flex-col items-center">
-      {/* Section Title */}
+    <div 
+      ref={containerRef} 
+      className="pathways-scroll-container relative w-full flex flex-col items-center px-4 sm:px-6 lg:px-8"
+      style={{
+        // Account for header (160px) + padding, fit within viewport
+        minHeight: 'calc(100vh - 160px)',
+        paddingTop: 'clamp(1.5rem, 3vh, 2.5rem)',
+        paddingBottom: 'clamp(1.5rem, 3vh, 2.5rem)',
+      }}
+    >
+      {/* Pattern background - CSS Grid for precise spacing control */}
+      {showPattern && (
+        <div
+          className="absolute inset-0 z-0 pointer-events-none overflow-hidden"
+          style={{ opacity: 0.12 }}
+        >
+          <div
+            className="absolute inset-0 grid place-content-center"
+            style={{
+              gridTemplateColumns: 'repeat(auto-fill, 180px)',
+              gridTemplateRows: 'repeat(auto-fill, 180px)',
+              gap: '100px',
+              padding: '20px',
+              width: 'calc(100% + 200px)',
+              height: 'calc(100% + 200px)',
+              marginLeft: '-100px',
+              marginTop: '-100px',
+            }}
+          >
+            {Array.from({ length: 80 }).map((_, i) => (
+              <img
+                key={i}
+                src="/approach_blob.svg"
+                alt=""
+                className="w-[180px] h-[180px] object-contain"
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Section Title - inside pinned container */}
       {title && (
-        <div className="mb-6 sm:mb-8 text-center">
+        <div className="mb-4 sm:mb-6 lg:mb-8 text-center w-full flex-shrink-0">
           <h2
-            className="text-[28px] sm:text-[36px] lg:text-[40px] leading-normal text-[#9ac1bf]"
+            className="text-[clamp(2rem,5vw,3rem)] leading-[1.0] text-[#9ac1bf]"
             style={{ fontFamily: 'var(--font-saphira), serif' }}
           >
             {title}
@@ -236,19 +171,30 @@ export default function PathwaysCardStack({ cards, title }: PathwaysCardStackPro
         </div>
       )}
 
-      {/* Keep width consistent with other sections - aspect ratio 1347:763 from Figma */}
-      <div className="relative w-full max-w-[1200px] mx-auto">
-        {/* Stage: cards overlap here */}
-        <div ref={stageRef} className="relative w-full" style={{ height: `${stageHeight}px` }}>
-          {cards.map((card) => (
-            <div
-              key={card.key}
-              className="pathway-card absolute left-0 right-0 top-0 w-full"
-            >
+      {/* Card Container - flexbox to fill remaining space */}
+      <div
+        ref={cardContainerRef}
+        className="relative w-full flex-1 flex items-center justify-center"
+        style={{
+          maxWidth: 'min(1347px, 100%)',
+          // Use available height minus title area
+          maxHeight: 'calc(100vh - 160px - clamp(6rem, 12vh, 10rem))',
+        }}
+      >
+        {cards.map((card, index) => (
+          <div
+            key={card.key}
+            className="pathway-card-wrapper absolute inset-0 w-full h-full flex items-center justify-center"
+            style={{
+              opacity: index === 0 ? 1 : 0,
+              pointerEvents: index === 0 ? 'auto' : 'none',
+            }}
+          >
+            <div className="w-full h-full max-h-full">
               {card.render}
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
     </div>
   );

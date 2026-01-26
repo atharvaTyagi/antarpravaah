@@ -61,7 +61,7 @@ const Section = forwardRef<HTMLElement, SectionProps>(function Section(
         }
       }}
       id={id}
-      className={className}
+      className={`homepage-section ${className}`}
     >
       {children}
     </section>

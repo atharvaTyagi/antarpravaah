@@ -80,7 +80,7 @@ export default function TherapyCard({ therapy }: TherapyCardProps) {
     if (typeof therapy.description === 'string') {
       return (
         <p
-          className="text-[#645c42] text-[11px] sm:text-[12px] text-justify leading-normal"
+          className="text-[#645c42] text-[14px] sm:text-[15px] lg:text-[16px] text-justify leading-[24px]"
           style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
         >
           {therapy.description}
@@ -89,13 +89,13 @@ export default function TherapyCard({ therapy }: TherapyCardProps) {
     }
 
     return (
-      <div className="flex flex-col gap-3 sm:gap-4">
+      <div className="flex flex-col gap-4 sm:gap-5">
         {therapy.description.map((item, idx) => {
           if (typeof item === 'string') {
             return (
               <p
                 key={idx}
-                className="text-[#645c42] text-[11px] sm:text-[12px] text-justify leading-normal"
+                className="text-[#645c42] text-[14px] sm:text-[15px] lg:text-[16px] text-justify leading-[24px]"
                 style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
               >
                 {item}
@@ -104,15 +104,15 @@ export default function TherapyCard({ therapy }: TherapyCardProps) {
           }
           const descItem = item as DescriptionItem;
           return (
-            <div key={idx} className="flex flex-col gap-1.5 sm:gap-2">
+            <div key={idx} className="flex flex-col gap-2 sm:gap-3">
               <p
-                className="text-[#645c42] text-[11px] sm:text-[12px]"
+                className="text-[#645c42] text-[14px] sm:text-[15px] lg:text-[16px]"
                 style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
               >
                 {descItem.heading}
               </p>
               <p
-                className="text-[#645c42] text-[11px] sm:text-[12px] text-justify leading-normal"
+                className="text-[#645c42] text-[14px] sm:text-[15px] lg:text-[16px] text-justify leading-[24px]"
                 style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
               >
                 {descItem.text}
@@ -125,41 +125,34 @@ export default function TherapyCard({ therapy }: TherapyCardProps) {
   };
 
   if (isCenter) {
-    // Special layout for ASP (centered)
+    // Special layout for ASP (centered) - larger card with more padding
     return (
-      <div ref={cardRef} className="w-full bg-[#d6c68e] rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] p-6 sm:p-8 lg:p-10 flex flex-col items-center gap-6 sm:gap-8 lg:gap-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
+      <div ref={cardRef} className="w-full min-h-[600px] sm:min-h-[700px] lg:min-h-[840px] bg-[#d6c68e] rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] p-8 sm:p-12 lg:p-20 flex flex-col items-center justify-center gap-8 sm:gap-10 lg:gap-12 shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
         {/* Icon centered at top */}
         <div ref={iconRef} className="w-full flex justify-center">
           <img
             src={therapy.icon}
             alt={therapy.title}
-            className="h-[120px] sm:h-[150px] lg:h-[186px] w-auto object-contain"
+            className="h-[140px] sm:h-[160px] lg:h-[186px] w-auto object-contain"
           />
         </div>
 
         {/* Content centered */}
-        <div className="flex flex-col gap-3 sm:gap-4 items-center text-center max-w-full sm:max-w-[400px] lg:max-w-[450px] px-2">
+        <div className="flex flex-col gap-4 sm:gap-5 lg:gap-6 items-center text-center max-w-full sm:max-w-[500px] lg:max-w-[600px] px-2">
           <h3
             ref={titleRef}
-            className="text-[32px] sm:text-[40px] lg:text-[48px] leading-normal text-[#645c42]"
+            className="text-[36px] sm:text-[42px] lg:text-[48px] leading-[1.0] text-[#645c42]"
             style={{ fontFamily: 'var(--font-saphira), serif' }}
           >
             {therapy.title}
           </h3>
-          <p
-            ref={subtitleRef}
-            className="text-[18px] sm:text-[20px] lg:text-[24px] leading-normal text-[#645c42] uppercase tracking-[2.5px] sm:tracking-[3px] lg:tracking-[3.84px]"
-            style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
-          >
-            {therapy.subtitle}
-          </p>
-          <div ref={descriptionRef} className="text-[#645c42] text-[11px] sm:text-[12px] text-justify leading-normal w-full">
+          <div ref={descriptionRef} className="text-[#645c42] text-[14px] sm:text-[15px] lg:text-[16px] leading-[24px] text-justify w-full">
             {renderDescription()}
           </div>
 
           {/* CTA */}
-          <div ref={ctaRef} className="mt-2 sm:mt-4">
-            <Button text={therapy.ctaText} size="small" colors={therapiesButtonColors} />
+          <div ref={ctaRef} className="mt-4 sm:mt-6">
+            <Button text={therapy.ctaText} size="large" colors={therapiesButtonColors} />
           </div>
         </div>
       </div>
@@ -181,7 +174,7 @@ export default function TherapyCard({ therapy }: TherapyCardProps) {
           </h3>
           <p
             ref={subtitleRef}
-            className="text-[18px] sm:text-[20px] lg:text-[24px] leading-normal text-[#645c42] uppercase tracking-[2.5px] sm:tracking-[3px] lg:tracking-[3.84px]"
+            className="text-[18px] sm:text-[20px] lg:text-[24px] leading-normal text-[#645c42] tracking-[2.5px] sm:tracking-[3px] lg:tracking-[3.84px]"
             style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
           >
             {therapy.subtitle}

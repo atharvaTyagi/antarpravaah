@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useLayoutEffect } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import TheJourney from '@/components/TheJourney';
 import WeWorkTogether from '@/components/WeWorkTogether';
 import VoicesOfTransformation from '@/components/VoicesOfTransformation';
+import ReadyToBegin from '@/components/ReadyToBegin';
 import SplashScreen from '@/components/SplashScreen';
-import SectionSubheader from '@/components/SectionSubheader';
 import GuidedJourneyModal from '@/components/GuidedJourneyModal';
 import { useUiStore } from '@/lib/stores/useUiStore';
 
@@ -21,7 +21,87 @@ export default function Home() {
   const [showGuidedJourney, setShowGuidedJourney] = useState(false);
   const setGlobalSplashComplete = useUiStore((state) => state.setSplashComplete);
 
-  // Scroll to journey section after splash completes
+  // Setup GSAP fade transitions between sections after splash completes
+  useLayoutEffect(() => {
+    if (!splashComplete || typeof window === 'undefined') return;
+
+    // Wait for DOM and other ScrollTriggers to be ready
+    const setupTimeout = setTimeout(() => {
+      const sections = gsap.utils.toArray<HTMLElement>('.homepage-section');
+      if (sections.length === 0) return;
+
+      // Create fade transitions for each section (except first and pinned sections)
+      sections.forEach((section, index) => {
+        const sectionId = section.id;
+        
+        // Skip first section - it starts visible
+        if (index === 0) {
+          gsap.set(section, { opacity: 1 });
+          return;
+        }
+
+        // Skip pinned sections (voices) - they handle their own visibility
+        if (sectionId === 'voices') {
+          gsap.set(section, { opacity: 1 });
+          return;
+        }
+
+        // Set initial state - sections start completely invisible
+        gsap.set(section, { opacity: 0 });
+
+        // Fade in when section enters viewport (0 to 100%)
+        ScrollTrigger.create({
+          trigger: section,
+          start: 'top 80%',
+          end: 'top 20%',
+          scrub: 0.5,
+          onUpdate: (self) => {
+            // Smooth fade in from 0 to 1 based on scroll progress
+            gsap.set(section, { opacity: self.progress });
+          },
+        });
+
+        // Fade out the previous section as this one enters (skip if previous is pinned)
+        if (index > 0) {
+          const prevSection = sections[index - 1];
+          const prevSectionId = prevSection.id;
+          
+          // Don't fade out pinned sections
+          if (prevSectionId === 'voices') return;
+          
+          ScrollTrigger.create({
+            trigger: section,
+            start: 'top 90%',
+            end: 'top 30%',
+            scrub: 0.5,
+            onUpdate: (self) => {
+              // Fade out previous section from 1 to 0
+              const opacity = 1 - self.progress;
+              gsap.set(prevSection, { opacity });
+            },
+            onLeaveBack: () => {
+              // Restore previous section when scrolling back up
+              gsap.to(prevSection, { opacity: 1, duration: 0.3 });
+            },
+          });
+        }
+      });
+
+      ScrollTrigger.refresh(true);
+    }, 500);
+
+    return () => {
+      clearTimeout(setupTimeout);
+      // Clean up ScrollTriggers created here
+      ScrollTrigger.getAll().forEach((st) => {
+        if (st.vars.trigger && (st.vars.trigger as HTMLElement).classList?.contains('homepage-section')) {
+          st.kill();
+        }
+      });
+    };
+  }, [splashComplete]);
+
+  // Initialize scroll behavior after splash completes
   useEffect(() => {
     if (!splashComplete) return;
 
@@ -29,26 +109,10 @@ export default function Home() {
     document.body.style.overflow = '';
     document.documentElement.style.overflow = '';
 
-    // Scroll to #journey section with native smooth scroll
-    setTimeout(() => {
-      const journeyElement = document.getElementById('journey');
-      if (journeyElement) {
-        // Calculate offset for fixed header (148px main header + 40px padding)
-        const headerOffset = 188;
-        const elementPosition = journeyElement.getBoundingClientRect().top;
-        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-
-        window.scrollTo({
-          top: offsetPosition,
-          behavior: 'smooth'
-        });
-      }
-    }, 500);
-
-    // Refresh ScrollTrigger after scroll
+    // Refresh ScrollTrigger after a short delay
     setTimeout(() => {
       ScrollTrigger.refresh(true);
-    }, 2000);
+    }, 500);
   }, [splashComplete]);
 
   const handleSplashComplete = () => {
@@ -63,7 +127,7 @@ export default function Home() {
         setShowGuidedJourney(true);
       }
     }, 2000); // 2 seconds after splash completes
-  };
+  }; 
 
   const handleCloseGuidedJourney = () => {
     setShowGuidedJourney(false);
@@ -74,15 +138,12 @@ export default function Home() {
       {/* Splash Screen - Fixed overlay that fades out on scroll */}
       <SplashScreen onComplete={handleSplashComplete} />
 
-      {/* Fixed Section Subheader - shows current section title */}
-      {splashComplete && <SectionSubheader />}
-
       {/* Guided Journey Modal - Shows after splash completes */}
       <GuidedJourneyModal isOpen={showGuidedJourney} onClose={handleCloseGuidedJourney} />
 
-      {/* Main Content - Only visible after splash completes */}
+      {/* Main Content - Full viewport sections with fade transitions */}
       <div
-        className="relative z-10 w-full pt-[140px] sm:pt-[160px] lg:pt-[218px]"
+        className="relative z-10 w-full"
         style={{
           opacity: splashComplete ? 1 : 0,
           pointerEvents: splashComplete ? 'auto' : 'none',
@@ -91,6 +152,7 @@ export default function Home() {
         <TheJourney />
         <WeWorkTogether />
         <VoicesOfTransformation />
+        <ReadyToBegin />
       </div>
     </main>
   );

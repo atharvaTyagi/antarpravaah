@@ -35,16 +35,25 @@ export default function WeWorkTogether() {
     setIsClient(true);
   }, []);
 
-  // Calculate stage height based on tallest card
+  // Set responsive stage height based on viewport
   useEffect(() => {
-    if (!stageRef.current) return;
-    const cardElements = stageRef.current.querySelectorAll<HTMLElement>('.card');
-    let maxHeight = 720;
-    cardElements.forEach((card) => {
-      const height = card.offsetHeight;
-      if (height > maxHeight) maxHeight = height;
-    });
-    setStageHeight(maxHeight);
+    const updateHeight = () => {
+      const vh = window.innerHeight;
+      const sm = window.innerWidth >= 640;
+      const lg = window.innerWidth >= 1024;
+      
+      if (lg) {
+        setStageHeight(600);
+      } else if (sm) {
+        setStageHeight(550);
+      } else {
+        setStageHeight(500);
+      }
+    };
+    
+    updateHeight();
+    window.addEventListener('resize', updateHeight);
+    return () => window.removeEventListener('resize', updateHeight);
   }, [isClient]);
 
   useLayoutEffect(() => {
@@ -207,15 +216,14 @@ export default function WeWorkTogether() {
 
     cardsObserver.disable();
 
+    // ScrollTrigger to pin the section and enable card observer
     const st = ScrollTrigger.create({
       id: 'WORK-CARDS-LOCK',
       trigger: cardsSection,
       pin: true,
-      pinSpacing: false, // Don't add extra spacing after pin ends
-      // Start when the card stack is comfortably below fixed headers (main header 148px + subheader ~70px)
-      start: 'top top+=230',
-      // Short end – once Observer releases, native scroll continues and unpins quickly.
-      end: '+=120',
+      pinSpacing: false,
+      start: 'top top+=180', // Account for header
+      end: '+=100',
       onEnter: () => {
         if (!cardsObserver.isEnabled) cardsObserver.enable();
       },
@@ -224,7 +232,7 @@ export default function WeWorkTogether() {
       },
     });
 
-    // Ensure calculations are correct after layout.
+    // Refresh ScrollTrigger
     ScrollTrigger.refresh();
 
     return () => {
@@ -237,71 +245,93 @@ export default function WeWorkTogether() {
   return (
     <Section
       id="work-together"
-      className="relative w-full bg-[#f6edd0] overflow-hidden"
+      className="relative w-full bg-[#f6edd0] overflow-hidden pb-8 sm:pb-10 lg:pb-12 pt-8 sm:pt-10 lg:pt-12"
     >
-      {/* GSAP card lock + stack - includes background to keep it locked during pin */}
-      <div ref={cardsSectionRef} className="cards-section relative w-full bg-[#f6edd0] pb-8 sm:pb-10 lg:pb-12 pt-8 sm:pt-10 lg:pt-12">
-        {/* Subtle repeating spiral background - larger and well-spaced, smaller on mobile */}
-        <div className="absolute inset-0 pointer-events-none opacity-[0.06] z-0">
-          <img
-            src="/splash_vector.svg"
-            alt=""
-            className="absolute hidden sm:block w-[25%] h-auto"
-            style={{ top: '5%', left: '5%', transform: 'rotate(15deg)' }}
-          />
-          <img
-            src="/splash_vector.svg"
-            alt=""
-            className="absolute w-[15%] sm:w-[12%] h-auto"
-            style={{ top: '8%', right: '8%', transform: 'rotate(-60deg)' }}
-          />
-          <img
-            src="/splash_vector.svg"
-            alt=""
-            className="absolute hidden sm:block w-[26%] h-auto"
-            style={{ bottom: '30%', left: '10%', transform: 'rotate(85deg)' }}
-          />
-          <img
-            src="/splash_vector.svg"
-            alt=""
-            className="absolute hidden lg:block w-[24%] h-auto"
-            style={{ bottom: '25%', right: '12%', transform: 'rotate(-120deg)' }}
-          />
-          <img
-            src="/splash_vector.svg"
-            alt=""
-            className="absolute w-[17%] sm:w-[14%] h-auto"
-            style={{ bottom: '5%', left: '50%', transform: 'translate(-50%, 0) rotate(40deg)' }}
-          />
+      {/* Subtle spiral background pattern */}
+      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+        <img
+          src="/about_splash_vector.svg"
+          alt=""
+          className="absolute w-[580px] h-auto opacity-100"
+          style={{ 
+            top: '20%', 
+            left: '5%', 
+            filter: 'brightness(0) saturate(100%) invert(89%) sepia(8%) saturate(497%) hue-rotate(16deg) brightness(95%) contrast(92%)'
+          }}
+        />
+        <img
+          src="/about_splash_vector.svg"
+          alt=""
+          className="absolute w-[580px] h-auto opacity-100"
+          style={{ 
+            top: '30%', 
+            right: '5%',
+            transform: 'rotate(45deg)',
+            filter: 'brightness(0) saturate(100%) invert(89%) sepia(8%) saturate(497%) hue-rotate(16deg) brightness(95%) contrast(92%)'
+          }}
+        />
+        {/* <img
+          src="/about_splash_vector.svg"
+          alt=""
+          className="absolute w-[580px] h-auto opacity-100"
+          style={{ 
+            bottom: '15%', 
+            left: '5%', 
+            transform: 'rotate(80deg)',
+            filter: 'brightness(0) saturate(100%) invert(89%) sepia(8%) saturate(497%) hue-rotate(16deg) brightness(95%) contrast(92%)'
+          }}
+        />
+        <img
+          src="/about_splash_vector.svg"
+          alt=""
+          className="absolute w-[580px] h-auto opacity-100"
+          style={{ 
+            bottom: '10%', 
+            right: '3%', 
+            transform: 'rotate(-120deg)',
+            filter: 'brightness(0) saturate(100%) invert(89%) sepia(8%) saturate(497%) hue-rotate(16deg) brightness(95%) contrast(92%)'
+          }}
+        /> */}
+      </div>
+
+      {/* Card stack container */}
+      <div ref={cardsSectionRef} className="cards-section relative w-full bg-transparent py-8 sm:py-10 lg:py-12">
+
+        {/* Header */}
+        <div className="relative z-10 w-full text-center mb-6 lg:mb-8">
+          <h2
+            className="text-[36px] sm:text-[42px] lg:text-[48px] leading-[1.1] text-[#645c42]"
+            style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400 }}
+          >
+            We Work Together
+          </h2>
         </div>
 
-        <div className="relative z-10 mx-auto max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1177px] px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 lg:pt-10">
-          {/* Keep width consistent with other sections (same max-w wrapper as page content). */}
-          <div className="relative w-full">
-            {/* Stage: cards overlap here */}
-            <div ref={stageRef} className="relative w-full" style={{ height: `${stageHeight}px` }}>
-              {/* Card 01 */}
-              <div className="card absolute left-0 right-0 top-0 mx-auto w-full rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d6c68e] p-6 sm:p-8 lg:p-10 text-center shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
-                <div className="mb-6 sm:mb-8 lg:mb-10 flex justify-center">
+        <div className="relative z-10 w-full max-w-[95vw] lg:max-w-[1100px] px-4 mx-auto">
+          {/* Stage: cards overlap here - all cards same width */}
+          <div ref={stageRef} className="relative w-full" style={{ height: `${stageHeight}px` }}>
+              {/* Card 01 - First card with image */}
+              <div className="card absolute left-0 right-0 top-0 mx-auto w-full rounded-[20px] lg:rounded-[24px] bg-[#d6c68e] p-8 lg:p-10 text-center shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex flex-col items-center justify-center gap-8 lg:gap-10 h-[500px] sm:h-[550px] lg:h-[600px]">
+                <div className="flex justify-center items-center flex-shrink-0">
                   <Image
                     src={getCloudinaryUrl('antarpravaah/we-work/we_work_together_vector_one')}
                     alt=""
-                    width={431}
-                    height={452}
+                    width={430}
+                    height={450}
                     quality={85}
                     loading="lazy"
-                    className="block h-auto w-full max-w-[280px] sm:max-w-[350px] lg:max-w-[431px] object-contain"
+                    className="block w-[430px] h-[450px] sm:w-[430px] sm:h-[450px] lg:w-[430px] lg:h-[450px] object-contain"
                   />
                 </div>
                 <p
-                  className="text-center text-[18px] sm:text-[20px] lg:text-[24px] leading-[normal] text-[#645c42] px-2"
-                  style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
+                  className="text-center text-[14px] sm:text-[15px] lg:text-[16px] leading-[1.5] text-[#645c42] max-w-[85%] px-2"
+                  style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
                 >
                   At Antar Pravaah, healing is a shared responsibility. We both do the work.
                 </p>
               </div>
 
-              {/* Cards 02-04 */}
+              {/* Cards 02-04 - all same fixed width */}
               {workCards.map((card, index) => {
                 const isLeft = card.imagePosition === 'left';
                 const smallCardSrcs = [
@@ -313,25 +343,25 @@ export default function WeWorkTogether() {
                 return (
                   <div
                     key={index}
-                    className="card absolute left-0 right-0 top-0 mx-auto w-full rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d6c68e] p-6 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)]"
+                    className="card absolute left-0 right-0 top-0 mx-auto w-full rounded-[20px] lg:rounded-[24px] bg-[#d6c68e] p-6 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex items-center justify-center h-[500px] sm:h-[550px] lg:h-[600px]"
                   >
                     <div
-                      className={`flex flex-col items-center gap-6 sm:gap-8 lg:gap-10 md:flex-row ${
-                        isLeft ? '' : 'md:flex-row-reverse'
+                      className={`flex flex-col sm:flex-row items-center gap-6 sm:gap-8 lg:gap-10 w-full ${
+                        isLeft ? 'sm:flex-row' : 'sm:flex-row-reverse'
                       }`}
                     >
                       <Image
                         src={imageSrc}
                         alt=""
-                        width={258}
-                        height={272}
+                        width={200}
+                        height={200}
                         quality={85}
                         loading="lazy"
-                        className="block h-auto w-full max-w-[180px] sm:max-w-[220px] lg:max-w-[258px] shrink-0 object-contain"
+                        className="block w-[150px] h-[150px] sm:w-[180px] sm:h-[180px] lg:w-[200px] lg:h-[200px] flex-shrink-0 object-contain"
                       />
                       <p
-                        className="flex-1 text-justify text-[18px] sm:text-[20px] lg:text-[24px] leading-[normal] text-[#645c42]"
-                        style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
+                        className="flex-1 text-justify text-[13px] sm:text-[14px] lg:text-[16px] leading-[1.5] text-[#645c42] px-2"
+                        style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
                       >
                         {card.text}
                       </p>
@@ -340,11 +370,10 @@ export default function WeWorkTogether() {
                 );
               })}
 
-              {/* CTA Card (part of the stack; final card) */}
-              <div className="card absolute left-0 right-0 top-0 mx-auto flex w-full items-center justify-center rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#645c42] p-6 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] min-h-[240px] sm:min-h-[280px] lg:min-h-[320px]">
+              {/* CTA Card (part of the stack; final card) - same fixed width */}
+              <div className="card absolute left-0 right-0 top-0 mx-auto flex w-full items-center justify-center rounded-[20px] lg:rounded-[24px] bg-[#645c42] p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] h-[500px] sm:h-[550px] lg:h-[600px]">
                 <Button text="Explore Our Approach" size="large" mode="light" href="/approach" />
               </div>
-            </div>
           </div>
         </div>
       </div>

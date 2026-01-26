@@ -196,9 +196,21 @@ export default function TheJourney() {
   return (
     <Section
       id="journey"
-      className="relative w-full bg-[#f6edd0] pb-16 sm:pb-20 lg:pb-24 pt-[60px] sm:pt-[76px] lg:pt-[96px]"
+      className="relative w-full bg-[#f6edd0] pb-16 sm:pb-20 lg:pb-24 pt-[120px] sm:pt-[140px] lg:pt-[180px]"
       ref={sectionRef}
     >
+      {/* Section Title - Sticky within section */}
+      <div 
+        className="sticky top-[90px] sm:top-[108px] lg:top-[148px] z-20 w-full text-center py-4 lg:py-6 px-4 bg-[#f6edd0]"
+      >
+        <h2
+          className="text-[36px] sm:text-[42px] lg:text-[48px] leading-[1.1] text-[#354443]"
+          style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400 }}
+        >
+          The Journey
+        </h2>
+      </div>
+
       <div ref={stepsContainerRef} className="mx-auto max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1177px] px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 lg:pt-10">
         {/* Journey steps with animated connectors */}
         <div className="mx-auto w-full max-w-full sm:max-w-[calc(100vw-80px)] lg:max-w-[1097px] py-6 sm:py-8 lg:py-10 flex flex-col items-center justify-center">
@@ -214,17 +226,17 @@ export default function TheJourney() {
                     ref={(el) => {
                       stepRefs.current[index] = el;
                     }}
-                    className="w-full sm:w-[280px] lg:w-[320px] text-justify journey-step px-2 sm:px-0"
+                    className="w-full sm:w-[340px] lg:w-[400px] text-justify journey-step px-2 sm:px-0"
                     style={{ opacity: 0 }}
                   >
                     <p
-                      className="text-[20px] sm:text-[22px] lg:text-[24px] leading-[1.1] sm:leading-[1.05] lg:leading-[1.0] text-[#9ac1bf]"
+                      className="text-[24px] sm:text-[30px] lg:text-[36px] leading-[1.0] text-[#9ac1bf]"
                       style={{ fontFamily: 'var(--font-saphira), serif' }}
                     >
                       {step.title}
                     </p>
                     <p
-                      className="mt-1.5 sm:mt-2 text-[11px] sm:text-[11.5px] lg:text-[12px] leading-relaxed text-[#354443]"
+                      className="mt-2 sm:mt-3 text-[14px] sm:text-[15px] lg:text-[16px] leading-[24px] text-[#354443]"
                       style={{ fontFamily: 'var(--font-graphik), sans-serif' }}
                     >
                       {step.body}
@@ -256,28 +268,28 @@ export default function TheJourney() {
           <div className="mb-6 sm:mb-8 lg:mb-10">
             <p
               ref={(el) => { ctaTextRefs.current[0] = el; }}
-              className="mb-3 sm:mb-3.5 lg:mb-4 text-[28px] sm:text-[38px] lg:text-[48px] leading-[1.1] sm:leading-[1.05] lg:leading-[1.0] text-[#354443]"
+              className="mb-2 sm:mb-2.5 lg:mb-3 text-[24px] sm:text-[30px] lg:text-[36px] leading-[1.0] text-[#354443]"
               style={{ fontFamily: 'var(--font-saphira), serif' }}
             >
               If you&apos;re ready
             </p>
             <p
               ref={(el) => { ctaTextRefs.current[1] = el; }}
-              className="mb-3 sm:mb-3.5 lg:mb-4 text-[28px] sm:text-[38px] lg:text-[48px] leading-[1.1] sm:leading-[1.05] lg:leading-[1.0] text-[#354443]"
+              className="mb-2 sm:mb-2.5 lg:mb-3 text-[24px] sm:text-[30px] lg:text-[36px] leading-[1.0] text-[#354443]"
               style={{ fontFamily: 'var(--font-saphira), serif' }}
             >
               to stop searching
             </p>
             <p
               ref={(el) => { ctaTextRefs.current[2] = el; }}
-              className="mb-3 sm:mb-3.5 lg:mb-4 text-[28px] sm:text-[38px] lg:text-[48px] leading-[1.1] sm:leading-[1.05] lg:leading-[1.0] text-[#354443]"
+              className="mb-2 sm:mb-2.5 lg:mb-3 text-[24px] sm:text-[30px] lg:text-[36px] leading-[1.0] text-[#354443]"
               style={{ fontFamily: 'var(--font-saphira), serif' }}
             >
               outside yourself
             </p>
             <p
               ref={(el) => { ctaTextRefs.current[3] = el; }}
-              className="mb-3 sm:mb-3.5 lg:mb-4 text-[28px] sm:text-[38px] lg:text-[48px] leading-[1.1] sm:leading-[1.05] lg:leading-[1.0] text-[#354443]"
+              className="mb-2 sm:mb-2.5 lg:mb-3 text-[24px] sm:text-[30px] lg:text-[36px] leading-[1.0] text-[#354443]"
               style={{ fontFamily: 'var(--font-saphira), serif' }}
             >
               for answers...
@@ -285,7 +297,7 @@ export default function TheJourney() {
           </div>
           <p
             ref={(el) => { ctaTextRefs.current[4] = el; }}
-            className="mb-6 sm:mb-8 lg:mb-10 text-[28px] sm:text-[38px] lg:text-[48px] leading-[1.1] sm:leading-[1.05] lg:leading-[1.0] text-[#354443]"
+            className="mb-6 sm:mb-8 lg:mb-10 text-[24px] sm:text-[30px] lg:text-[36px] leading-[1.0] text-[#354443]"
             style={{ fontFamily: 'var(--font-saphira), serif' }}
           >
             You&apos;re in the right place.

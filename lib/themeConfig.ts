@@ -3,6 +3,7 @@ export type SectionId =
   | 'journey'
   | 'work-together'
   | 'voices'
+  | 'ready-to-begin'
   | 'therapies'
   | 'therapies-intro'
   | 'therapies-asp'
@@ -20,6 +21,10 @@ export type SectionId =
   | 'trainings-listings'
   | 'cta'
   | 'about'
+  | 'about-intro'
+  | 'about-body'
+  | 'about-cta'
+  | 'inspiration'
   | 'contact'
   | 'contact-info'
   | 'contact-cta'
@@ -61,6 +66,13 @@ export const SECTION_THEMES: Record<SectionId, Theme> = {
     accent: '#93a378', // Soft green accent
     headerBg: '#474e3a', // Dark green header inner (from Figma)
     headerOuterBg: '#f6edd0', // Light beige outer (matches section background)
+  },
+  'ready-to-begin': {
+    bg: '#f6edd0', // Light beige background
+    text: '#93a378', // Soft green text
+    accent: '#474e3a', // Dark green accent
+    headerBg: '#474e3a', // Dark green header
+    headerOuterBg: '#f6edd0', // Light beige outer
   },
   therapies: {
     bg: '#f6edd0', // Light beige
@@ -177,6 +189,35 @@ export const SECTION_THEMES: Record<SectionId, Theme> = {
     text: '#93a378', // Soft green text (from Figma)
     accent: '#93a378', // Soft green accent
     headerBg: '#474e3a', // Deep green header (from Figma)
+    headerOuterBg: '#f6edd0', // Light beige outer
+  },
+  'about-intro': {
+    bg: '#f6edd0', // Base white
+    text: '#93a378', // Soft green text
+    accent: '#93a378', // Soft green accent
+    headerBg: '#474e3a', // Deep green header
+    headerOuterBg: '#f6edd0', // Light beige outer
+  },
+  'about-body': {
+    bg: '#474e3a', // Deep green background
+    text: '#f6edd0', // Light text
+    accent: '#93a378', // Soft green accent
+    headerBg: '#93a378', // Soft green header (inverted)
+    headerOuterBg: '#474e3a', // Deep green outer
+    headerText: '#474e3a', // Dark text on light header
+  },
+  'about-cta': {
+    bg: '#f6edd0', // Base white
+    text: '#93a378', // Soft green text
+    accent: '#474e3a', // Deep green accent
+    headerBg: '#474e3a', // Deep green header
+    headerOuterBg: '#f6edd0', // Light beige outer
+  },
+  inspiration: {
+    bg: '#f6edd0', // Base white (section bg, card is green)
+    text: '#474e3a', // Deep green text
+    accent: '#93a378', // Soft green accent
+    headerBg: '#474e3a', // Deep green header
     headerOuterBg: '#f6edd0', // Light beige outer
   },
   contact: {

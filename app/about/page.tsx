@@ -1,85 +1,17 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Section from '@/components/Section';
 import Button from '@/components/Button';
 import PageEndBlob from '@/components/PageEndBlob';
 import FadeInImage from '@/components/FadeInImage';
 import { getCloudinaryUrl } from '@/lib/cloudinary';
 
-gsap.registerPlugin(ScrollTrigger);
-
 export default function AboutPage() {
-  const hiRef = useRef<HTMLParagraphElement>(null);
-  const paragraphRefs = useRef<(HTMLParagraphElement | null)[]>([]);
-  const blobTextContainerRef = useRef<HTMLDivElement>(null);
-  const greenBandRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    // Native scroll; no smooth scroll library needed
-  }, []);
-
-  // Text fade-in animation - scroll-locked sequential reveal
-  useEffect(() => {
-    if (!hiRef.current || !blobTextContainerRef.current || !greenBandRef.current) return;
-
-    const validParagraphs = paragraphRefs.current.filter((p) => p !== null);
-    if (validParagraphs.length === 0) return;
-
-    // Set initial state - everything invisible
-    gsap.set([hiRef.current, ...validParagraphs], {
-      opacity: 0,
-      y: 20,
-    });
-
-    // Create scroll-bound timeline with pinning - pin the entire green band
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: greenBandRef.current,
-        start: 'top top',
-        end: `+=${(validParagraphs.length + 1) * 100}%`, // Scroll distance: 100% per paragraph + "Hi!"
-        scrub: 1, // Smooth scrubbing effect
-        pin: true, // Lock the entire green band section in place
-        pinSpacing: true, // Add space for the pinned section
-        anticipatePin: 1,
-        // markers: true, // Uncomment for debugging
-      },
-    });
-
-    // Animate "Hi!" first
-    tl.to(hiRef.current, {
-      opacity: 1,
-      y: 0,
-      duration: 0.5,
-      ease: 'power2.out',
-    });
-
-    // Then animate each paragraph sequentially - each takes equal scroll distance
-    validParagraphs.forEach((paragraph) => {
-      tl.to(
-        paragraph,
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.5,
-          ease: 'power2.out',
-        }
-      );
-    });
-
-    return () => {
-      tl.kill();
-    };
-  }, []);
-
-
-
   return (
     <main className="relative min-h-screen">
       <div className="relative z-10 w-full pt-[90px] sm:pt-[108px] lg:pt-[148px]">
-        <Section id="about" className="w-full bg-[#f6edd0] pb-16 sm:pb-20 lg:pb-24">
+        {/* ===== SECTION 1: Introduction ===== */}
+        <Section id="about-intro" className="about-section w-full bg-[#f6edd0] pb-16 sm:pb-20 lg:pb-24">
           <div className="mx-auto max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1177px] px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 lg:pt-10">
             <div className="flex flex-col items-center gap-6 sm:gap-8 lg:gap-10 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] py-6 sm:py-8 lg:py-10">
               {/* Top mark */}
@@ -100,169 +32,187 @@ export default function AboutPage() {
 
               <p
                 className="text-center text-[16px] sm:text-[20px] lg:text-[24px] leading-[normal] text-[#474e3a] px-4 max-w-[680px]"
-                style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
+                style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
               >
                 Founder of Antar Pravaah | Healer &amp; Facilitator | Host at Aalayam, Himachal Pradesh
               </p>
+            </div>
+          </div>
+        </Section>
 
-              {/* Photo row 1 (Figma sizes) — overlaps into the green band slightly */}
-              <div className="relative z-10 -mb-[80px] sm:-mb-[100px] lg:-mb-[140px] flex flex-col items-center justify-center gap-4 sm:gap-6 md:flex-row md:items-end md:gap-8 lg:gap-10">
-                <div className="h-[200px] w-[192px] sm:h-[240px] sm:w-[230px] lg:h-[289px] lg:w-[276px] overflow-hidden rounded-full">
+        {/* ===== SECTION 2: Photos & Blob - Green Band ===== */}
+        <Section id="about-body" className="about-section w-full bg-[#474e3a]">
+          {/* Photo row 1 - overlaps from cream section */}
+          <div className="relative z-10 -mt-[60px] sm:-mt-[80px] lg:-mt-[100px] flex flex-col items-center justify-center gap-4 sm:gap-6 md:flex-row md:items-end md:gap-8 lg:gap-10 px-4">
+            <div className="h-[200px] w-[192px] sm:h-[240px] sm:w-[230px] lg:h-[289px] lg:w-[276px] overflow-hidden rounded-full">
+              <FadeInImage 
+                src={getCloudinaryUrl('antarpravaah/about/namita_one')} 
+                alt="Namita" 
+                width={276} 
+                height={289}
+                className="h-full w-full object-cover" 
+              />
+            </div>
+            <div className="h-[290px] w-[277px] sm:h-[350px] sm:w-[334px] lg:h-[419px] lg:w-[400px] overflow-hidden rounded-full">
+              <FadeInImage 
+                src={getCloudinaryUrl('antarpravaah/about/namita_two')} 
+                alt="Namita" 
+                width={400} 
+                height={419}
+                className="h-full w-full object-cover" 
+              />
+            </div>
+            <div className="h-[162px] w-[154px] sm:h-[194px] sm:w-[185px] lg:h-[233px] lg:w-[222px] overflow-hidden rounded-full">
+              <FadeInImage 
+                src={getCloudinaryUrl('antarpravaah/about/namita_three')} 
+                alt="Namita" 
+                width={222} 
+                height={233}
+                className="h-full w-full object-cover" 
+              />
+            </div>
+          </div>
+
+          {/* Background pattern */}
+          <div className="pointer-events-none absolute inset-0 overflow-hidden">
+            <img
+              src="/about_dashed_background.svg"
+              alt=""
+              className="h-full w-full object-cover"
+            />
+          </div>
+
+          {/* Blob with text */}
+          <div className="relative mx-auto max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1177px] px-4 sm:px-6 lg:px-8 py-10 sm:py-14 lg:py-20">
+            <div className="flex flex-col items-center gap-10 sm:gap-12 lg:gap-14">
+              <div className="relative flex w-full justify-center">
+                {/* Text blob shape container */}
+                <div className="relative flex items-center justify-center">
+                  {/* Background SVG shape - responsive sizing */}
+                  <img
+                    src="/about_text_blob.svg"
+                    alt=""
+                    className="w-[400px] sm:w-[520px] md:w-[580px] lg:w-[640px] h-auto"
+                  />
+                  {/* Text content overlay - absolutely positioned inside the blob */}
+                  <div className="absolute inset-0 flex items-center justify-center px-10 sm:px-14 md:px-16 lg:px-20 py-10 md:py-14 lg:py-16">
+                    <div className="w-full max-w-[240px] sm:max-w-[300px] md:max-w-[340px] lg:max-w-[380px] text-justify text-[#474e3a]">
+                      <p
+                        className="text-[10px] sm:text-[11px] md:text-[12px] leading-relaxed"
+                        style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
+                      >
+                        I have had the privilege of guiding hundreds of people across all ages and backgrounds through pain, trauma, grief, relationship struggles, fear, and more. The transformations are countless, yet the heart of the work is always the same: facilitating a remembrance back to themselves.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Photo row 2 */}
+              <div className="relative z-10 flex flex-col items-center justify-center gap-4 sm:gap-6 md:flex-row md:items-start md:gap-8 lg:gap-10">
+                <div className="h-[185px] w-[176px] sm:h-[222px] sm:w-[212px] lg:h-[266px] lg:w-[254px] overflow-hidden rounded-full">
                   <FadeInImage 
-                    src={getCloudinaryUrl('antarpravaah/about/namita_one')} 
+                    src={getCloudinaryUrl('antarpravaah/about/namita_four')} 
                     alt="Namita" 
-                    width={276} 
-                    height={289}
+                    width={254} 
+                    height={266}
                     className="h-full w-full object-cover" 
                   />
                 </div>
                 <div className="h-[290px] w-[277px] sm:h-[350px] sm:w-[334px] lg:h-[419px] lg:w-[400px] overflow-hidden rounded-full">
                   <FadeInImage 
-                    src={getCloudinaryUrl('antarpravaah/about/namita_two')} 
+                    src={getCloudinaryUrl('antarpravaah/about/namita_five')} 
                     alt="Namita" 
                     width={400} 
                     height={419}
                     className="h-full w-full object-cover" 
                   />
                 </div>
-                <div className="h-[162px] w-[154px] sm:h-[194px] sm:w-[185px] lg:h-[233px] lg:w-[222px] overflow-hidden rounded-full">
+                <div className="h-[227px] w-[217px] sm:h-[273px] sm:w-[260px] lg:h-[327px] lg:w-[312px] overflow-hidden rounded-full">
                   <FadeInImage 
-                    src={getCloudinaryUrl('antarpravaah/about/namita_three')} 
+                    src={getCloudinaryUrl('antarpravaah/about/namita_six')} 
                     alt="Namita" 
-                    width={222} 
-                    height={233}
+                    width={312} 
+                    height={327}
                     className="h-full w-full object-cover" 
                   />
                 </div>
               </div>
             </div>
           </div>
+        </Section>
 
-          {/* Deep green band with swirl + body circle */}
-          <div ref={greenBandRef} className="relative w-full bg-[#474e3a] pt-[120px] sm:pt-[150px] lg:pt-[200px] pb-16 sm:pb-20 lg:pb-24">
-            {}
-            <div className="pointer-events-none absolute inset-0 overflow-hidden">
-              <img
-                src="/about_dashed_background.svg"
-                alt=""
-                className="h-full w-full object-cover"
-              />
-            </div>
-
-            <div className="relative mx-auto max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1177px] px-4 sm:px-6 lg:px-8">
-              <div className="flex flex-col items-center gap-10 sm:gap-12 lg:gap-14">
-                <div className="relative flex w-full justify-center">
-                  {/* Text blob shape container */}
-                  <div className="relative flex items-center justify-center" ref={blobTextContainerRef}>
-                    {/* Background SVG shape - responsive sizing */}
-                    <img
-                      src="/about_text_blob.svg"
-                      alt=""
-                      className="w-[500px] sm:w-[600px] md:w-[700px] lg:w-[800px] h-auto"
-                    />
-                    {/* Text content overlay - absolutely positioned inside the blob */}
-                    <div className="absolute inset-0 flex items-center justify-center px-12 sm:px-16 md:px-20 lg:px-24 py-12 md:py-16 lg:py-20">
-                      <div className="w-full max-w-[280px] sm:max-w-[320px] md:max-w-[380px] lg:max-w-[440px] text-justify text-[#474e3a]">
-                        <p
-                          ref={hiRef}
-                          className="mb-2 text-[18px] sm:text-[20px] md:text-[22px] lg:text-[24px] leading-normal"
-                          style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400 }}
-                        >
-                          Hi !
-                        </p>
-                        <div
-                          className="space-y-2 sm:space-y-2.5 md:space-y-3 text-[10px] sm:text-[11px] md:text-[12px] leading-relaxed"
-                          style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
-                        >
-                          <p ref={(el) => { paragraphRefs.current[0] = el; }}>
-                            I'm Namita, a healer and facilitator with decades of experience guiding people through
-                            life's physical, emotional, and energetic challenges. My journey began over twenty years ago
-                            in Public Relations, but a quiet inner calling led me to explore paths far beyond the
-                            ordinary—editing books, creating events, building ventures, and even running a home bakery.
-                            Each experience deepened my understanding of people, life, and the subtle energies that
-                            connect us all.
-                          </p>
-                          <p ref={(el) => { paragraphRefs.current[1] = el; }}>
-                            The turning point came when I discovered Foot Reflexology. Following my intuition led me
-                            into a world of healing I hadn't anticipated, and over time, new modalities found
-                            me—each one expanding my understanding of energy, the body, and transformation. Today, I
-                            bring experience in Sujok, Acupuncture and Auricular Therapy, Access Bars &amp; Body
-                            Processes, Access Energetic Facelift, Systemic Family Constellation Therapy, Shamanism,
-                            Transpersonal Regression Therapy, Transcendental Healing, and more.
-                          </p>
-                          <p ref={(el) => { paragraphRefs.current[2] = el; }}>
-                            I have had the privilege of guiding hundreds of people across all ages and backgrounds
-                            through pain, trauma, grief, relationship struggles, fear, and more. The transformations are
-                            countless, yet the heart of the work is always the same: facilitating a remembrance back to
-                            themselves.
-                          </p>
-                          <p ref={(el) => { paragraphRefs.current[3] = el; }}>
-                            My work transcends any single technique. It is rooted in presence, intuition, and decades of
-                            inner practice. When we work together, you are not just learning a modality—you are
-                            reconnecting with yourself. You'll leave with clarity, presence, and the possibility that
-                            comes from remembering the wholeness you've always carried.
-                          </p>
-                          <p ref={(el) => { paragraphRefs.current[4] = el; }}>
-                            Healing, to me, is not fixing—it's remembering. Not escaping—it's embracing. Whatever you
-                            carry, you are not alone, and I welcome you to this space of transformation.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Photo row 2 (Figma sizes) — slightly spills out of the green band */}
-                <div className="relative z-10 -mb-[90px] sm:-mb-[120px] lg:-mb-[160px] flex flex-col items-center justify-center gap-4 sm:gap-6 md:flex-row md:items-start md:gap-8 lg:gap-10">
-                  <div className="h-[185px] w-[176px] sm:h-[222px] sm:w-[212px] lg:h-[266px] lg:w-[254px] overflow-hidden rounded-full">
-                    <FadeInImage 
-                      src={getCloudinaryUrl('antarpravaah/about/namita_four')} 
-                      alt="Namita" 
-                      width={254} 
-                      height={266}
-                      className="h-full w-full object-cover" 
-                    />
-                  </div>
-                  <div className="h-[290px] w-[277px] sm:h-[350px] sm:w-[334px] lg:h-[419px] lg:w-[400px] overflow-hidden rounded-full">
-                    <FadeInImage 
-                      src={getCloudinaryUrl('antarpravaah/about/namita_five')} 
-                      alt="Namita" 
-                      width={400} 
-                      height={419}
-                      className="h-full w-full object-cover" 
-                    />
-                  </div>
-                  <div className="h-[227px] w-[217px] sm:h-[273px] sm:w-[260px] lg:h-[327px] lg:w-[312px] overflow-hidden rounded-full">
-                    <FadeInImage 
-                      src={getCloudinaryUrl('antarpravaah/about/namita_six')} 
-                      alt="Namita" 
-                      width={312} 
-                      height={327}
-                      className="h-full w-full object-cover" 
-                    />
-                  </div>
-                </div>
+        {/* ===== SECTION 3: My Inspiration ===== */}
+        <Section 
+          id="inspiration" 
+          className="about-section w-full min-h-screen bg-[#f6edd0] flex items-center justify-center px-4 sm:px-8 lg:px-12 py-12 sm:py-16 lg:py-20"
+        >
+          <div 
+            className="w-full max-w-[1097px] bg-[#93a378] rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] px-6 sm:px-10 lg:px-16 py-10 sm:py-14 lg:py-16"
+          >
+            <div className="flex flex-col gap-6 sm:gap-8 lg:gap-10 items-center justify-center text-[#474e3a] text-center">
+              <h2
+                className="text-[32px] sm:text-[40px] lg:text-[48px] leading-[1.0]"
+                style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400 }}
+              >
+                My inspiration
+              </h2>
+              
+              <div 
+                className="text-[14px] sm:text-[15px] lg:text-[16px] leading-[24px] space-y-4 sm:space-y-5"
+                style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
+              >
+                <p>
+                  This work is not mine alone. I would not be here were it not for the Grace, guidance and support of my Guru and the lineage of the tradition of which I am a part.
+                </p>
+                <p>
+                  <a 
+                    href="http://www.rikhiapeeth.in" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="underline font-medium hover:opacity-80 transition-opacity"
+                  >
+                    http://www.rikhiapeeth.in
+                  </a>
+                  <br />
+                  <a 
+                    href="https://www.biharyoga.net/index.php" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="underline font-medium hover:opacity-80 transition-opacity"
+                  >
+                    https://www.biharyoga.net/index.php
+                  </a>
+                </p>
+                <p>
+                  With stalwarts like Swami Sivananda Saraswati, Swami Satyananda Saraswati, Swami Niranjananda Saraswati and Swami Satyasangananda Saraswati lighting the path, I am left only to walk in their footsteps. It changed my life. The work is theirs, I am merely the face of it.
+                </p>
+                <p>
+                  My teachers whose enlightened minds, passion, zeal and spirit of seva drive me every single day to show up. Namita Unnikrishnan, Dr. BN Jha, Dr. H Bhojraj, Urmimala Deb, Ritu Kabra, Marina Toledo, Dain Heer, Gary Douglas and the countless people who walked through my door trusting me with their body, mind and soul. I am grateful. So grateful.
+                </p>
               </div>
             </div>
           </div>
+        </Section>
 
-          {/* CTA */}
-          <div className="mx-auto max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1177px] px-4 sm:px-6 lg:px-8 pt-[140px] sm:pt-[180px] lg:pt-[220px]">
+        {/* ===== SECTION 4: CTA ===== */}
+        <Section id="about-cta" className="about-section w-full bg-[#f6edd0] py-10 sm:py-14 lg:py-20">
+          <div className="mx-auto max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1177px] px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col items-center gap-4 sm:gap-5 lg:gap-6 py-6 sm:py-8 lg:py-10">
               <div className="flex items-center justify-center py-3 sm:py-4 lg:py-5">
                 <PageEndBlob color="#474e3a" className="h-8 sm:h-9 lg:h-10 w-auto opacity-60" />
               </div>
               <p
-                className="max-w-full sm:max-w-[680px] lg:max-w-[799px] text-center text-[28px] sm:text-[38px] lg:text-[48px] leading-[normal] text-[#93a378] px-4"
+                className="max-w-full sm:max-w-[680px] lg:max-w-[799px] text-center text-[28px] sm:text-[32px] lg:text-[36px] leading-[normal] text-[#93a378] px-4"
                 style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400 }}
               >
-                If you feel called, I welcome you. Whatever you carry, you&apos;re not alone.
+                Whatever you carry, you&apos;re not alone.
               </p>
               <Button
                 text="Begin Your Journey"
-                size="small"
-                colors={{ fg: '#93a378', fgHover: '#474e3a', bgHover: '#93a378' }}
-                href="/#journey"
+                size="large"
+                colors={{ fg: '#474e3a', fgHover: '#93a378', bgHover: '#474e3a' }}
+                href="/contact"
               />
             </div>
           </div>
@@ -271,4 +221,3 @@ export default function AboutPage() {
     </main>
   );
 }
-

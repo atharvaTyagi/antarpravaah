@@ -151,6 +151,23 @@ body {
   display: none; /* Chrome/Safari */
 }
 
+/* Full viewport sections for GSAP scroll */
+.homepage-section {
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+}
+
+/* Hide scrollbar but keep functionality */
+.hide-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
 /* Next.js portal positioning */
 nextjs-portal {
   left: 1px;
