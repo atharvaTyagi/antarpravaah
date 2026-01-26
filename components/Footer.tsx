@@ -17,7 +17,7 @@ function QuickLink({ href, label, accentColor, bgColor }: { href: string; label:
         fgHover: bgColor,
         bgHover: accentColor,
       }}
-      className="justify-self-center"
+      className="justify-self-center [&_span]:text-[14px] [&_span]:sm:text-[16px] [&_span]:lg:text-[18px] [&_span]:tracking-[2.4px] [&_span]:sm:tracking-[2.88px]"
     />
   );
 }
@@ -41,8 +41,8 @@ export default function Footer() {
         : '#f6edd0';
 
   return (
-    <footer className="relative z-20 w-full px-4 py-8 sm:px-6 sm:py-10 lg:px-6 lg:py-14" style={{ backgroundColor: footerBg }}>
-      <div className="mx-auto flex max-w-full sm:max-w-[calc(100vw-48px)] lg:max-w-[1282px] flex-col items-center gap-6 sm:gap-8 lg:gap-10">
+    <footer className="relative z-20 w-full px-4 py-12 sm:px-6 sm:py-16 lg:px-20 lg:py-20" style={{ backgroundColor: footerBg }}>
+      <div className="mx-auto flex max-w-full sm:max-w-[calc(100vw-48px)] lg:max-w-[1282px] flex-col items-center gap-8 sm:gap-10 lg:gap-10">
         {/* Quick Links */}
         <div className="flex flex-col items-center gap-3 sm:gap-4 w-full">
           <p
@@ -51,7 +51,7 @@ export default function Footer() {
           >
             Quick Links
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-2.5 lg:gap-3 max-w-full">
+          <div className="flex flex-wrap items-center justify-center gap-1 sm:gap-2 lg:gap-3 max-w-full">
             <QuickLink href="/about" label="About Namita" accentColor={footerAccent} bgColor={footerBg} />
             <QuickLink href="/approach" label="Approach" accentColor={footerAccent} bgColor={footerBg} />
             <QuickLink href="/therapies" label="Therapies" accentColor={footerAccent} bgColor={footerBg} />
@@ -61,33 +61,31 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Logo */}
+        {/* Logo - smaller size */}
         <div className="w-full overflow-hidden px-2 sm:px-4">
           <img
             src="/logo_full.svg"
             alt="Antar Pravaah"
-            className="mx-auto block h-auto w-full max-w-full sm:max-w-[800px] lg:max-w-[1282px]"
+            className="mx-auto block h-auto w-full max-w-[320px] sm:max-w-[480px] lg:max-w-[641px]"
           />
         </div>
 
-        {/* Bottom meta row */}
-        <div className="w-full px-2 sm:px-4">
-          <div className="mx-auto flex w-full max-w-full sm:max-w-[800px] lg:max-w-[1282px] flex-col sm:flex-row items-center justify-between gap-2 pt-4">
-            <div className="flex items-center gap-3 text-[12px] sm:text-[13px] leading-normal">
-              <button
-                onClick={() => setIsPrivacyModalOpen(true)}
-                className="underline-offset-2 hover:underline tracking-[1.5px] sm:tracking-[1.92px] cursor-pointer"
-                style={{ color: footerAccent, fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
-              >
-                PRIVACY POLICY
-              </button>
-            </div>
+        {/* Bottom meta - vertically stacked */}
+        <div className="w-full pt-6 sm:pt-8 lg:pt-10">
+          <div className="mx-auto flex flex-col items-center gap-3 sm:gap-4">
             <div
-              className="text-[12px] sm:text-[13px] leading-normal text-center sm:text-right tracking-[1.5px] sm:tracking-[1.92px]"
-              style={{ color: footerAccent, fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
+              className="text-[11px] sm:text-[12px] leading-normal text-center tracking-[1.5px] sm:tracking-[1.92px] uppercase"
+              style={{ color: footerAccent, fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
             >
-              © 2022 PRAKRITEE & {new Date().getFullYear()} ANTAR PRAVAAH. ALL RIGHTS RESERVED.
+              ©2022 Prakritee & ©Antar Pravaah. All Rights Reserved.
             </div>
+            <button
+              onClick={() => setIsPrivacyModalOpen(true)}
+              className="text-[11px] sm:text-[12px] leading-normal tracking-[1.5px] sm:tracking-[1.92px] uppercase hover:opacity-70 transition-opacity cursor-pointer"
+              style={{ color: footerAccent, fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
+            >
+              Privacy Policy
+            </button>
           </div>
         </div>
       </div>

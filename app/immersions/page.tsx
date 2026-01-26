@@ -623,7 +623,7 @@ export default function ImmersionsPage() {
           {/* Full-width carousel container */}
           <div className="no-scrollbar flex gap-4 sm:gap-6 overflow-x-auto pb-4 px-4 sm:px-6 lg:px-16 flex-1 items-stretch">
             {/* Training Card 1: Foundations of Shamanic Practice */}
-            <div className="flex w-[340px] sm:w-[480px] lg:w-[560px] min-h-[calc(100vh-220px)] sm:min-h-[calc(100vh-200px)] lg:min-h-[calc(100vh-180px)] flex-shrink-0 flex-col justify-between gap-4 sm:gap-5 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d58761] p-4 sm:p-5 lg:p-6">
+            <div className="flex w-[340px] sm:w-[480px] lg:w-[560px] min-h-[calc(100vh-280px)] sm:min-h-[calc(100vh-260px)] lg:min-h-[calc(100vh-240px)] flex-shrink-0 flex-col justify-between gap-4 sm:gap-5 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d58761] p-4 sm:p-5 lg:p-6">
               <div className="flex flex-col gap-4 flex-1">
                 <div className="flex flex-col gap-4 rounded-lg border border-[#6a3f33] p-4">
                   <h4
@@ -690,7 +690,7 @@ export default function ImmersionsPage() {
             </div>
 
             {/* Training Card 2: AP Energy Healing Level 1 */}
-            <div className="flex w-[340px] sm:w-[480px] lg:w-[560px] min-h-[calc(100vh-220px)] sm:min-h-[calc(100vh-200px)] lg:min-h-[calc(100vh-180px)] flex-shrink-0 flex-col justify-between gap-4 sm:gap-5 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d58761] p-4 sm:p-5 lg:p-6">
+            <div className="flex w-[340px] sm:w-[480px] lg:w-[560px] min-h-[calc(100vh-280px)] sm:min-h-[calc(100vh-260px)] lg:min-h-[calc(100vh-240px)] flex-shrink-0 flex-col justify-between gap-4 sm:gap-5 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d58761] p-4 sm:p-5 lg:p-6">
               <div className="flex flex-col gap-4 flex-1">
                 <div className="flex flex-col gap-4 rounded-lg border border-[#6a3f33] p-4">
                   <h4
@@ -753,7 +753,7 @@ export default function ImmersionsPage() {
             </div>
 
             {/* Training Card 3: Chakra Energy System */}
-            <div className="flex w-[340px] sm:w-[480px] lg:w-[560px] min-h-[calc(100vh-220px)] sm:min-h-[calc(100vh-200px)] lg:min-h-[calc(100vh-180px)] flex-shrink-0 flex-col justify-between gap-4 sm:gap-5 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d58761] p-4 sm:p-5 lg:p-6">
+            <div className="flex w-[340px] sm:w-[480px] lg:w-[560px] min-h-[calc(100vh-280px)] sm:min-h-[calc(100vh-260px)] lg:min-h-[calc(100vh-240px)] flex-shrink-0 flex-col justify-between gap-4 sm:gap-5 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d58761] p-4 sm:p-5 lg:p-6">
               <div className="flex flex-col gap-4 flex-1">
                 <div className="flex flex-col gap-4 rounded-lg border border-[#6a3f33] p-4">
                   <h4

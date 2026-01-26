@@ -4,6 +4,7 @@ import Section from '@/components/Section';
 import Button from '@/components/Button';
 import PageEndBlob from '@/components/PageEndBlob';
 import FadeInImage from '@/components/FadeInImage';
+import AboutBlobScroll from '@/components/AboutBlobScroll';
 import { getCloudinaryUrl } from '@/lib/cloudinary';
 
 export default function AboutPage() {
@@ -82,32 +83,12 @@ export default function AboutPage() {
             />
           </div>
 
-          {/* Blob with text */}
+          {/* Scroll-locked Blob with paragraphs */}
+          <AboutBlobScroll />
+
+          {/* Photo row 2 wrapper */}
           <div className="relative mx-auto max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1177px] px-4 sm:px-6 lg:px-8 py-10 sm:py-14 lg:py-20">
             <div className="flex flex-col items-center gap-10 sm:gap-12 lg:gap-14">
-              <div className="relative flex w-full justify-center">
-                {/* Text blob shape container */}
-                <div className="relative flex items-center justify-center">
-                  {/* Background SVG shape - responsive sizing */}
-                  <img
-                    src="/about_text_blob.svg"
-                    alt=""
-                    className="w-[400px] sm:w-[520px] md:w-[580px] lg:w-[640px] h-auto"
-                  />
-                  {/* Text content overlay - absolutely positioned inside the blob */}
-                  <div className="absolute inset-0 flex items-center justify-center px-10 sm:px-14 md:px-16 lg:px-20 py-10 md:py-14 lg:py-16">
-                    <div className="w-full max-w-[240px] sm:max-w-[300px] md:max-w-[340px] lg:max-w-[380px] text-justify text-[#474e3a]">
-                      <p
-                        className="text-[10px] sm:text-[11px] md:text-[12px] leading-relaxed"
-                        style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
-                      >
-                        I have had the privilege of guiding hundreds of people across all ages and backgrounds through pain, trauma, grief, relationship struggles, fear, and more. The transformations are countless, yet the heart of the work is always the same: facilitating a remembrance back to themselves.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
               {/* Photo row 2 */}
               <div className="relative z-10 flex flex-col items-center justify-center gap-4 sm:gap-6 md:flex-row md:items-start md:gap-8 lg:gap-10">
                 <div className="h-[185px] w-[176px] sm:h-[222px] sm:w-[212px] lg:h-[266px] lg:w-[254px] overflow-hidden rounded-full">
