@@ -93,7 +93,7 @@ export default function PathwayCard({ pathway }: PathwayCardProps) {
           text={pathway.ctaText}
           href={pathway.ctaHref}
           mode="dark"
-          size="default"
+          size="small"
           colors={pathwaysButtonColors}
         />
       </div>
