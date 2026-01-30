@@ -25,53 +25,63 @@ const workCards = [
 ];
 
 export default function WeWorkTogether() {
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const cardsSectionRef = useRef<HTMLDivElement | null>(null);
   const stageRef = useRef<HTMLDivElement | null>(null);
-  const [stageHeight, setStageHeight] = useState(720);
-  const [isClient, setIsClient] = useState(false);
+  const [stageHeight, setStageHeight] = useState(600);
+  const [isReady, setIsReady] = useState(false);
 
-  // Track when we're on the client
+  // Calculate stage height on mount and window resize
   useEffect(() => {
-    setIsClient(true);
-  }, []);
+    if (typeof window === 'undefined') return;
 
-  // Set responsive stage height based on viewport
-  // Use visualViewport for Safari compatibility (handles dynamic address bar)
-  useEffect(() => {
-    const updateHeight = () => {
-      // Use visualViewport height on mobile for Safari compatibility
-      // Falls back to innerHeight if visualViewport not available
+    const calculateHeight = () => {
       const vh = window.visualViewport?.height ?? window.innerHeight;
       const sm = window.innerWidth >= 640;
       const lg = window.innerWidth >= 1024;
-      
+
       if (lg) {
-        // Desktop: fixed height
-        setStageHeight(600);
+        return 600;
       } else if (sm) {
-        // Tablet: use most of viewport
-        setStageHeight(Math.min(vh - 200, 550));
+        return Math.min(vh - 250, 550);
       } else {
-        // Mobile: viewport minus header (80px) and title area (70px)
-        // Cap at reasonable max to prevent overflow
-        const mobileHeight = vh - 150;
-        setStageHeight(Math.min(Math.max(mobileHeight, 450), 650));
+        // Mobile: leave more space for header
+        const mobileHeight = vh - 200;
+        return Math.min(Math.max(mobileHeight, 400), 600);
       }
     };
-    
-    updateHeight();
-    window.addEventListener('resize', updateHeight);
-    // Also listen to visualViewport resize for Safari address bar changes
-    window.visualViewport?.addEventListener('resize', updateHeight);
-    
-    return () => {
-      window.removeEventListener('resize', updateHeight);
-      window.visualViewport?.removeEventListener('resize', updateHeight);
+
+    // Set initial height
+    setStageHeight(calculateHeight());
+
+    // Small delay to ensure DOM is ready before marking as ready
+    const readyTimeout = setTimeout(() => {
+      setIsReady(true);
+    }, 100);
+
+    const handleResize = () => {
+      const newHeight = calculateHeight();
+      setStageHeight(newHeight);
+      // Trigger ScrollTrigger refresh after height changes
+      if (isReady) {
+        ScrollTrigger.refresh();
+      }
     };
-  }, [isClient]);
+
+    window.addEventListener('resize', handleResize);
+    window.visualViewport?.addEventListener('resize', handleResize);
+
+    return () => {
+      clearTimeout(readyTimeout);
+      window.removeEventListener('resize', handleResize);
+      window.visualViewport?.removeEventListener('resize', handleResize);
+    };
+  }, [isReady]);
 
   useLayoutEffect(() => {
     if (typeof window === 'undefined') return;
+    // Wait until component is ready (height calculated, DOM rendered)
+    if (!isReady) return;
 
     gsap.registerPlugin(ScrollTrigger, Observer);
 
@@ -208,11 +218,15 @@ export default function WeWorkTogether() {
     };
 
     // Improved Observer with better mobile handling
+    const isMobileDevice = window.innerWidth < 640;
+
     const cardsObserver = Observer.create({
-      type: 'wheel,touch',
+      target: cardsSection,
+      type: 'wheel,touch,pointer',
       wheelSpeed: -1,
-      tolerance: 15, // Slightly higher tolerance for mobile
+      tolerance: isMobileDevice ? 25 : 15,
       preventDefault: true,
+      dragMinimum: isMobileDevice ? 30 : 20,
       onDown: () => tweenToLabel(tl.previousLabel(), false),
       onUp: () => tweenToLabel(tl.nextLabel(), true),
       onEnable() {
@@ -232,30 +246,32 @@ export default function WeWorkTogether() {
     // ScrollTrigger to pin the section and enable card observer
     const isMobile = window.innerWidth < 640;
     const isTablet = window.innerWidth >= 640 && window.innerWidth < 1024;
-    
-    // Calculate start offset based on device (accounting for header)
-    const startOffset = isMobile ? 100 : isTablet ? 140 : 160;
-    
+
+    // Calculate end value based on number of cards and viewport
+    // We have 5 total cards, so 4 transitions between them
+    // Keep the scroll distance reasonable - just enough for smooth transitions
+    const scrollDistancePerCard = isMobile ? 150 : isTablet ? 200 : 250;
+    const totalScrollDistance = cards.length * scrollDistancePerCard;
+
     const st = ScrollTrigger.create({
       id: 'WORK-CARDS-LOCK',
-      trigger: cardsSection,
-      pin: true,
-      pinSpacing: false,
-      anticipatePin: 1, // Helps prevent flickering on pin
-      start: `top top+=${startOffset}`,
-      end: '+=50', // Short end - Observer takes over scrolling
+      trigger: containerRef.current,
+      pin: cardsSection,
+      pinSpacing: true,
+      anticipatePin: 1,
+      scrub: false,
+      // Start pinning when the section header reaches near top
+      start: isMobile ? 'top 10%' : 'top 12%',
+      // End after all cards have been shown
+      end: `+=${totalScrollDistance}`,
+      invalidateOnRefresh: true,
       onEnter: () => {
-        if (!cardsObserver.isEnabled) {
-          cardsObserver.enable();
-        }
+        cardsObserver.enable();
       },
       onEnterBack: () => {
-        if (!cardsObserver.isEnabled) {
-          cardsObserver.enable();
-        }
+        cardsObserver.enable();
       },
       onLeave: () => {
-        // Only disable if we've gone through all cards
         cardsObserver.disable();
       },
       onLeaveBack: () => {
@@ -263,10 +279,13 @@ export default function WeWorkTogether() {
       },
     });
 
-    // Refresh after initial setup
-    ScrollTrigger.refresh();
+    // Refresh after DOM has updated with new heights
+    const refreshTimeout = setTimeout(() => {
+      ScrollTrigger.refresh(true);
+    }, 150);
 
     return () => {
+      clearTimeout(refreshTimeout);
       st.kill();
       cardsObserver.kill();
       tl.kill();
@@ -274,79 +293,58 @@ export default function WeWorkTogether() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (window as any).__lenis?.start?.();
     };
-  }, []);
+  }, [isReady]);
 
   return (
     <Section
       id="work-together"
-      className="relative w-full bg-[#f6edd0] overflow-hidden pb-4 sm:pb-10 lg:pb-12 pt-6 sm:pt-10 lg:pt-12"
+      className="relative w-full bg-[#f6edd0]"
     >
-      {/* Subtle spiral background pattern */}
-      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
-        <img
-          src="/about_splash_vector.svg"
-          alt=""
-          className="absolute w-[580px] h-auto opacity-100"
-          style={{ 
-            top: '20%', 
-            left: '5%', 
-            filter: 'brightness(0) saturate(100%) invert(89%) sepia(8%) saturate(497%) hue-rotate(16deg) brightness(95%) contrast(92%)'
-          }}
-        />
-        <img
-          src="/about_splash_vector.svg"
-          alt=""
-          className="absolute w-[580px] h-auto opacity-100"
-          style={{ 
-            top: '30%', 
-            right: '5%',
-            transform: 'rotate(45 deg)',
-            filter: 'brightness(0) saturate(100%) invert(89%) sepia(8%) saturate(497%) hue-rotate(16deg) brightness(95%) contrast(92%)'
-          }}
-        />
-        {/* <img
-          src="/about_splash_vector.svg"
-          alt=""
-          className="absolute w-[580px] h-auto opacity-100"
-          style={{ 
-            bottom: '15%', 
-            left: '5%', 
-            transform: 'rotate(80deg)',
-            filter: 'brightness(0) saturate(100%) invert(89%) sepia(8%) saturate(497%) hue-rotate(16deg) brightness(95%) contrast(92%)'
-          }}
-        />
-        <img
-          src="/about_splash_vector.svg"
-          alt=""
-          className="absolute w-[580px] h-auto opacity-100"
-          style={{ 
-            bottom: '10%', 
-            right: '3%', 
-            transform: 'rotate(-120deg)',
-            filter: 'brightness(0) saturate(100%) invert(89%) sepia(8%) saturate(497%) hue-rotate(16deg) brightness(95%) contrast(92%)'
-          }}
-        /> */}
-      </div>
+      {/* Trigger container - ScrollTrigger watches this */}
+      <div ref={containerRef} className="relative w-full pt-6 sm:pt-10 lg:pt-12 pb-4 sm:pb-10 lg:pb-12">
+        {/* Card stack container - this gets pinned */}
+        <div ref={cardsSectionRef} className="cards-section relative w-full bg-[#f6edd0]">
+          {/* Subtle spiral background pattern - now inside pinned section */}
+          <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+            <img
+              src="/about_splash_vector.svg"
+              alt=""
+              className="absolute w-[580px] h-auto opacity-100"
+              style={{
+                top: '20%',
+                left: '5%',
+                filter: 'brightness(0) saturate(100%) invert(89%) sepia(8%) saturate(497%) hue-rotate(16deg) brightness(95%) contrast(92%)'
+              }}
+            />
+            <img
+              src="/about_splash_vector.svg"
+              alt=""
+              className="absolute w-[580px] h-auto opacity-100"
+              style={{
+                top: '30%',
+                right: '5%',
+                transform: 'rotate(45 deg)',
+                filter: 'brightness(0) saturate(100%) invert(89%) sepia(8%) saturate(497%) hue-rotate(16deg) brightness(95%) contrast(92%)'
+              }}
+            />
+          </div>
 
-      {/* Card stack container */}
-      <div ref={cardsSectionRef} className="cards-section relative w-full bg-[#f6edd0] py-2 sm:py-10 lg:py-12">
+          {/* Header - included in pinned section */}
+          <div className="relative z-10 w-full text-center mb-6 sm:mb-8 lg:mb-10 pt-2">
+            <h2
+              className="text-[36px] sm:text-[42px] lg:text-[48px] leading-[1.1] text-[#645c42]"
+              style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400 }}
+            >
+              We Work Together
+            </h2>
+          </div>
 
-        {/* Header */}
-        <div className="relative z-10 w-full text-center mb-4 sm:mb-6 lg:mb-8">
-          <h2
-            className="text-[36px] sm:text-[42px] lg:text-[48px] leading-[1.1] text-[#645c42]"
-            style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400 }}
-          >
-            We Work Together
-          </h2>
-        </div>
-
-        <div className="relative z-10 w-full max-w-[100vw] sm:max-w-[95vw] lg:max-w-[1100px] px-3 sm:px-4 mx-auto">
+          <div className="relative z-10 w-full max-w-[100vw] sm:max-w-[95vw] lg:max-w-[1100px] px-3 sm:px-4 mx-auto">
           {/* Stage: cards overlap here - all cards same width */}
           <div ref={stageRef} className="relative w-full" style={{ height: `${stageHeight}px` }}>
               {/* Card 01 - First card with image */}
-              <div className="card absolute left-0 right-0 top-0 mx-auto w-full rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d6c68e] p-5 sm:p-8 lg:p-10 text-center shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex flex-col items-center justify-center gap-4 sm:gap-8 lg:gap-10" style={{ height: `${stageHeight}px` }}>
-                <div className="flex justify-center items-center flex-shrink-0 flex-1 max-h-[65%] sm:max-h-[70%]">
+              <div className="card absolute left-0 right-0 top-0 mx-auto w-full rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d6c68e] p-4 sm:p-8 lg:p-10 text-center shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex flex-col items-center justify-center gap-3 sm:gap-8 lg:gap-10" style={{ height: `${stageHeight}px` }}>
+                <div className="flex justify-center items-center flex-shrink-0 flex-1 max-h-[60%] sm:max-h-[70%]">
                   <Image
                     src={getCloudinaryUrl('antarpravaah/we-work/we_work_together_vector_one')}
                     alt=""
@@ -354,11 +352,11 @@ export default function WeWorkTogether() {
                     height={450}
                     quality={85}
                     loading="lazy"
-                    className="block w-auto h-full max-w-[300px] sm:max-w-[380px] lg:max-w-[430px] object-contain"
+                    className="block w-auto h-full max-w-[260px] sm:max-w-[380px] lg:max-w-[430px] object-contain"
                   />
                 </div>
                 <p
-                  className="text-center text-[15px] sm:text-[15px] lg:text-[16px] leading-[1.5] text-[#645c42] max-w-[95%] sm:max-w-[85%] px-1 sm:px-2 flex-shrink-0"
+                  className="text-center text-[14px] sm:text-[15px] lg:text-[16px] leading-[1.5] text-[#645c42] max-w-[95%] sm:max-w-[85%] px-2 sm:px-2 flex-shrink-0"
                   style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
                 >
                   At Antar Pravaah, healing is a shared responsibility. We both do the work.
@@ -377,11 +375,11 @@ export default function WeWorkTogether() {
                 return (
                   <div
                     key={index}
-                    className="card absolute left-0 right-0 top-0 mx-auto w-full rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d6c68e] p-5 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex items-center justify-center"
+                    className="card absolute left-0 right-0 top-0 mx-auto w-full rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d6c68e] p-4 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex items-center justify-center"
                     style={{ height: `${stageHeight}px` }}
                   >
                     <div
-                      className={`flex flex-col items-center gap-4 sm:gap-8 lg:gap-10 w-full h-full justify-center ${
+                      className={`flex flex-col items-center gap-3 sm:gap-6 lg:gap-10 w-full h-full justify-center ${
                         isLeft ? 'sm:flex-row' : 'sm:flex-row-reverse'
                       }`}
                     >
@@ -393,11 +391,11 @@ export default function WeWorkTogether() {
                           height={200}
                           quality={85}
                           loading="lazy"
-                          className="block w-[140px] h-[140px] sm:w-[180px] sm:h-[180px] lg:w-[200px] lg:h-[200px] object-contain"
+                          className="block w-[120px] h-[120px] sm:w-[180px] sm:h-[180px] lg:w-[200px] lg:h-[200px] object-contain"
                         />
                       </div>
                       <p
-                        className="flex-1 text-justify text-[14px] sm:text-[14px] lg:text-[16px] leading-[1.6] text-[#645c42] px-1 sm:px-2"
+                        className="flex-1 text-justify text-[13px] sm:text-[14px] lg:text-[16px] leading-[1.5] sm:leading-[1.6] text-[#645c42] px-2 sm:px-2"
                         style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
                       >
                         {card.text}
@@ -408,9 +406,10 @@ export default function WeWorkTogether() {
               })}
 
               {/* CTA Card (part of the stack; final card) - same fixed width */}
-              <div className="card absolute left-0 right-0 top-0 mx-auto flex w-full items-center justify-center rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#645c42] p-5 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)]" style={{ height: `${stageHeight}px` }}>
+              <div className="card absolute left-0 right-0 top-0 mx-auto flex w-full items-center justify-center rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#645c42] p-4 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)]" style={{ height: `${stageHeight}px` }}>
                 <Button text="Explore Our Approach" size="large" mode="light" href="/approach" />
               </div>
+            </div>
           </div>
         </div>
       </div>
