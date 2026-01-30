@@ -43,11 +43,14 @@ export default function WeWorkTogether() {
       const lg = window.innerWidth >= 1024;
       
       if (lg) {
+        // Desktop: fixed height
         setStageHeight(600);
       } else if (sm) {
-        setStageHeight(550);
+        // Tablet: use most of viewport
+        setStageHeight(vh - 220);
       } else {
-        setStageHeight(500);
+        // Mobile: full viewport minus header and title space
+        setStageHeight(vh - 180);
       }
     };
     
@@ -217,12 +220,15 @@ export default function WeWorkTogether() {
     cardsObserver.disable();
 
     // ScrollTrigger to pin the section and enable card observer
+    const isMobile = window.innerWidth < 640;
+    const startOffset = isMobile ? 80 : 180; // Smaller offset on mobile
+    
     const st = ScrollTrigger.create({
       id: 'WORK-CARDS-LOCK',
       trigger: cardsSection,
       pin: true,
       pinSpacing: false,
-      start: 'top top+=180', // Account for header
+      start: `top top+=${startOffset}`, // Adjusted for mobile
       end: '+=100',
       onEnter: () => {
         if (!cardsObserver.isEnabled) cardsObserver.enable();
@@ -245,7 +251,7 @@ export default function WeWorkTogether() {
   return (
     <Section
       id="work-together"
-      className="relative w-full bg-[#f6edd0] overflow-hidden pb-8 sm:pb-10 lg:pb-12 pt-8 sm:pt-10 lg:pt-12"
+      className="relative w-full bg-[#f6edd0] overflow-hidden pb-4 sm:pb-10 lg:pb-12 pt-4 sm:pt-10 lg:pt-12"
     >
       {/* Subtle spiral background pattern */}
       <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
@@ -266,7 +272,7 @@ export default function WeWorkTogether() {
           style={{ 
             top: '30%', 
             right: '5%',
-            transform: 'rotate(45deg)',
+            transform: 'rotate(45 deg)',
             filter: 'brightness(0) saturate(100%) invert(89%) sepia(8%) saturate(497%) hue-rotate(16deg) brightness(95%) contrast(92%)'
           }}
         />
@@ -295,10 +301,10 @@ export default function WeWorkTogether() {
       </div>
 
       {/* Card stack container */}
-      <div ref={cardsSectionRef} className="cards-section relative w-full bg-transparent py-8 sm:py-10 lg:py-12">
+      <div ref={cardsSectionRef} className="cards-section relative w-full bg-transparent py-2 sm:py-10 lg:py-12">
 
         {/* Header */}
-        <div className="relative z-10 w-full text-center mb-6 lg:mb-8">
+        <div className="relative z-10 w-full text-center mb-4 sm:mb-6 lg:mb-8">
           <h2
             className="text-[36px] sm:text-[42px] lg:text-[48px] leading-[1.1] text-[#645c42]"
             style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400 }}
@@ -307,11 +313,11 @@ export default function WeWorkTogether() {
           </h2>
         </div>
 
-        <div className="relative z-10 w-full max-w-[95vw] lg:max-w-[1100px] px-4 mx-auto">
+        <div className="relative z-10 w-full max-w-[100vw] sm:max-w-[95vw] lg:max-w-[1100px] px-3 sm:px-4 mx-auto">
           {/* Stage: cards overlap here - all cards same width */}
           <div ref={stageRef} className="relative w-full" style={{ height: `${stageHeight}px` }}>
               {/* Card 01 - First card with image */}
-              <div className="card absolute left-0 right-0 top-0 mx-auto w-full rounded-[20px] lg:rounded-[24px] bg-[#d6c68e] p-8 lg:p-10 text-center shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex flex-col items-center justify-center gap-8 lg:gap-10 h-[500px] sm:h-[550px] lg:h-[600px]">
+              <div className="card absolute left-0 right-0 top-0 mx-auto w-full rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d6c68e] p-6 sm:p-8 lg:p-10 text-center shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex flex-col items-center justify-center gap-5 sm:gap-8 lg:gap-10" style={{ height: `${stageHeight}px` }}>
                 <div className="flex justify-center items-center flex-shrink-0">
                   <Image
                     src={getCloudinaryUrl('antarpravaah/we-work/we_work_together_vector_one')}
@@ -320,11 +326,11 @@ export default function WeWorkTogether() {
                     height={450}
                     quality={85}
                     loading="lazy"
-                    className="block w-[430px] h-[450px] sm:w-[430px] sm:h-[450px] lg:w-[430px] lg:h-[450px] object-contain"
+                    className="block w-[340px] h-[360px] sm:w-[380px] sm:h-[400px] lg:w-[430px] lg:h-[450px] object-contain"
                   />
                 </div>
                 <p
-                  className="text-center text-[14px] sm:text-[15px] lg:text-[16px] leading-[1.5] text-[#645c42] max-w-[85%] px-2"
+                  className="text-center text-[16px] sm:text-[15px] lg:text-[16px] leading-[1.5] text-[#645c42] max-w-[90%] sm:max-w-[85%] px-2"
                   style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
                 >
                   At Antar Pravaah, healing is a shared responsibility. We both do the work.
@@ -343,10 +349,11 @@ export default function WeWorkTogether() {
                 return (
                   <div
                     key={index}
-                    className="card absolute left-0 right-0 top-0 mx-auto w-full rounded-[20px] lg:rounded-[24px] bg-[#d6c68e] p-6 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex items-center justify-center h-[500px] sm:h-[550px] lg:h-[600px]"
+                    className="card absolute left-0 right-0 top-0 mx-auto w-full rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d6c68e] p-6 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex items-center justify-center"
+                    style={{ height: `${stageHeight}px` }}
                   >
                     <div
-                      className={`flex flex-col sm:flex-row items-center gap-6 sm:gap-8 lg:gap-10 w-full ${
+                      className={`flex flex-col sm:flex-row items-center gap-5 sm:gap-8 lg:gap-10 w-full ${
                         isLeft ? 'sm:flex-row' : 'sm:flex-row-reverse'
                       }`}
                     >
@@ -357,10 +364,10 @@ export default function WeWorkTogether() {
                         height={200}
                         quality={85}
                         loading="lazy"
-                        className="block w-[150px] h-[150px] sm:w-[180px] sm:h-[180px] lg:w-[200px] lg:h-[200px] flex-shrink-0 object-contain"
+                        className="block w-[180px] h-[180px] sm:w-[180px] sm:h-[180px] lg:w-[200px] lg:h-[200px] flex-shrink-0 object-contain"
                       />
                       <p
-                        className="flex-1 text-justify text-[13px] sm:text-[14px] lg:text-[16px] leading-[1.5] text-[#645c42] px-2"
+                        className="flex-1 text-justify text-[15px] sm:text-[14px] lg:text-[16px] leading-[1.6] text-[#645c42] px-2"
                         style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
                       >
                         {card.text}
@@ -371,7 +378,7 @@ export default function WeWorkTogether() {
               })}
 
               {/* CTA Card (part of the stack; final card) - same fixed width */}
-              <div className="card absolute left-0 right-0 top-0 mx-auto flex w-full items-center justify-center rounded-[20px] lg:rounded-[24px] bg-[#645c42] p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] h-[500px] sm:h-[550px] lg:h-[600px]">
+              <div className="card absolute left-0 right-0 top-0 mx-auto flex w-full items-center justify-center rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#645c42] p-6 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)]" style={{ height: `${stageHeight}px` }}>
                 <Button text="Explore Our Approach" size="large" mode="light" href="/approach" />
               </div>
           </div>
