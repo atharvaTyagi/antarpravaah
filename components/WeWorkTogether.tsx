@@ -92,7 +92,7 @@ export default function WeWorkTogether() {
     if (cards.length < 2) return;
 
     const time = 0.95; // Slower animation timing for smoother feel (matching therapies)
-    let animating = false;
+    const isMobileDevice = window.innerWidth < 640;
 
     // Single-card focus layout: only one card is visible at a time.
     gsap.set(cards, {
@@ -104,7 +104,7 @@ export default function WeWorkTogether() {
     });
     gsap.set(cards[0], { autoAlpha: 1, zIndex: cards.length + 10 });
 
-    const tl = gsap.timeline({ paused: true });
+    const tl = gsap.timeline();
 
     // Get text elements for each card to animate them separately
     const getCardTextElements = (card: HTMLElement) => {
@@ -196,61 +196,12 @@ export default function WeWorkTogether() {
     }
     tl.add(`card${cards.length + 1}`);
 
-    const tweenToLabel = (direction: string | null, isScrollingDown: boolean) => {
-      const next = tl.nextLabel();
-      const prev = tl.previousLabel();
-
-      // At the end and user scrolls down -> release scroll
-      if ((!next && isScrollingDown) || (!prev && !isScrollingDown)) {
-        cardsObserver.disable();
-        return;
-      }
-      if (!direction) return;
-      if (animating) return;
-      animating = true;
-      tl.tweenTo(direction, {
-        duration: time, // Explicit duration for consistent speed in both directions
-        ease: 'power2.inOut',
-        onComplete: () => {
-          animating = false;
-        },
-      });
-    };
-
-    // Improved Observer with better mobile handling
-    const isMobileDevice = window.innerWidth < 640;
-
-    const cardsObserver = Observer.create({
-      target: cardsSection,
-      type: 'wheel,touch,pointer',
-      wheelSpeed: -1,
-      tolerance: isMobileDevice ? 25 : 15,
-      preventDefault: true,
-      dragMinimum: isMobileDevice ? 30 : 20,
-      onDown: () => tweenToLabel(tl.previousLabel(), false),
-      onUp: () => tweenToLabel(tl.nextLabel(), true),
-      onEnable() {
-        // Pause Lenis smooth scroll when Observer takes control
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (window as any).__lenis?.stop?.();
-      },
-      onDisable() {
-        // Resume Lenis when done
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (window as any).__lenis?.start?.();
-      },
-    });
-
-    cardsObserver.disable();
-
-    // ScrollTrigger to pin the section and enable card observer
-    const isMobile = window.innerWidth < 640;
+    // ScrollTrigger to pin the section and link timeline to scroll
     const isTablet = window.innerWidth >= 640 && window.innerWidth < 1024;
 
     // Calculate end value based on number of cards and viewport
-    // We have 5 total cards, so 4 transitions between them
     // Keep the scroll distance reasonable - just enough for smooth transitions
-    const scrollDistancePerCard = isMobile ? 150 : isTablet ? 200 : 250;
+    const scrollDistancePerCard = isMobileDevice ? 200 : isTablet ? 250 : 300;
     const totalScrollDistance = cards.length * scrollDistancePerCard;
 
     const st = ScrollTrigger.create({
@@ -259,23 +210,30 @@ export default function WeWorkTogether() {
       pin: cardsSection,
       pinSpacing: true,
       anticipatePin: 1,
-      scrub: false,
+      scrub: 1, // Smooth scrubbing on mobile
+      animation: tl,
       // Start pinning when the section header reaches near top
-      start: isMobile ? 'top 10%' : 'top 12%',
+      start: isMobileDevice ? 'top 10%' : 'top 12%',
       // End after all cards have been shown
       end: `+=${totalScrollDistance}`,
       invalidateOnRefresh: true,
       onEnter: () => {
-        cardsObserver.enable();
+        // Pause Lenis smooth scroll when in card section
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (window as any).__lenis?.stop?.();
       },
       onEnterBack: () => {
-        cardsObserver.enable();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (window as any).__lenis?.stop?.();
       },
       onLeave: () => {
-        cardsObserver.disable();
+        // Resume Lenis when done
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (window as any).__lenis?.start?.();
       },
       onLeaveBack: () => {
-        cardsObserver.disable();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (window as any).__lenis?.start?.();
       },
     });
 
@@ -287,7 +245,6 @@ export default function WeWorkTogether() {
     return () => {
       clearTimeout(refreshTimeout);
       st.kill();
-      cardsObserver.kill();
       tl.kill();
       // Ensure Lenis is resumed on cleanup
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
