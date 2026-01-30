@@ -40,8 +40,9 @@ export default function Home() {
           return;
         }
 
-        // Skip pinned sections (voices) - they handle their own visibility
-        if (sectionId === 'voices') {
+        // Skip pinned sections - they handle their own visibility
+        // work-together and voices both use scroll-locking/pinning
+        if (sectionId === 'voices' || sectionId === 'work-together') {
           gsap.set(section, { opacity: 1 });
           return;
         }
@@ -67,7 +68,7 @@ export default function Home() {
           const prevSectionId = prevSection.id;
           
           // Don't fade out pinned sections
-          if (prevSectionId === 'voices') return;
+          if (prevSectionId === 'voices' || prevSectionId === 'work-together') return;
           
           ScrollTrigger.create({
             trigger: section,
@@ -92,8 +93,13 @@ export default function Home() {
 
     return () => {
       clearTimeout(setupTimeout);
-      // Clean up ScrollTriggers created here
+      // Clean up only the fade transition ScrollTriggers created here
+      // Don't kill component-owned ScrollTriggers (like WORK-CARDS-LOCK)
       ScrollTrigger.getAll().forEach((st) => {
+        // Skip ScrollTriggers with specific IDs - they belong to components
+        if (st.vars.id === 'WORK-CARDS-LOCK') {
+          return;
+        }
         if (st.vars.trigger && (st.vars.trigger as HTMLElement).classList?.contains('homepage-section')) {
           st.kill();
         }

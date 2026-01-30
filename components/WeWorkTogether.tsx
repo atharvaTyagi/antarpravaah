@@ -233,32 +233,40 @@ export default function WeWorkTogether() {
     const isMobile = window.innerWidth < 640;
     const isTablet = window.innerWidth >= 640 && window.innerWidth < 1024;
     
-    // Calculate start offset based on device
-    // Mobile needs less offset as header is smaller
-    const startOffset = isMobile ? 100 : isTablet ? 140 : 180;
+    // Calculate start offset based on device (accounting for header)
+    const startOffset = isMobile ? 100 : isTablet ? 140 : 160;
     
     const st = ScrollTrigger.create({
       id: 'WORK-CARDS-LOCK',
       trigger: cardsSection,
       pin: true,
-      pinSpacing: false, // Keep false - Observer handles the scroll lock
+      pinSpacing: false,
+      anticipatePin: 1, // Helps prevent flickering on pin
       start: `top top+=${startOffset}`,
-      end: '+=100',
+      end: '+=50', // Short end - Observer takes over scrolling
       onEnter: () => {
-        if (!cardsObserver.isEnabled) cardsObserver.enable();
+        if (!cardsObserver.isEnabled) {
+          cardsObserver.enable();
+        }
       },
       onEnterBack: () => {
-        if (!cardsObserver.isEnabled) cardsObserver.enable();
+        if (!cardsObserver.isEnabled) {
+          cardsObserver.enable();
+        }
+      },
+      onLeave: () => {
+        // Only disable if we've gone through all cards
+        cardsObserver.disable();
+      },
+      onLeaveBack: () => {
+        cardsObserver.disable();
       },
     });
 
-    // Delayed refresh for Safari
-    const refreshTimeout = setTimeout(() => {
-      ScrollTrigger.refresh();
-    }, 100);
+    // Refresh after initial setup
+    ScrollTrigger.refresh();
 
     return () => {
-      clearTimeout(refreshTimeout);
       st.kill();
       cardsObserver.kill();
       tl.kill();
