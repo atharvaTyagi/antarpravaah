@@ -158,6 +158,29 @@ body {
   position: relative;
 }
 
+/* Snap scroll wrapper */
+.snap-scroll-wrapper {
+  scroll-snap-type: y proximity;
+}
+
+/* Snap sections */
+.snap-section {
+  scroll-snap-align: start;
+  scroll-snap-stop: normal;
+}
+
+/* Smooth scrolling with iOS momentum */
+@supports (-webkit-overflow-scrolling: touch) {
+  .snap-scroll-wrapper {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Ensure pinned sections work correctly */
+.pin-spacer {
+  scroll-snap-align: none !important;
+}
+
 /* Hide scrollbar but keep functionality */
 .hide-scrollbar {
   scrollbar-width: none; /* Firefox */

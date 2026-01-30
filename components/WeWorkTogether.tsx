@@ -4,14 +4,23 @@ import { useLayoutEffect, useRef, useState, useEffect } from 'react';
 import Image from 'next/image';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Observer } from 'gsap/dist/Observer';
 import Section from './Section';
 import Button from './Button';
 import { getCloudinaryUrl } from '@/lib/cloudinary';
 
+// Register GSAP plugins
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger);
+}
+
 const workCards = [
   {
-    text: "Transformation demands commitment and persistence. It’s not force, it’s flow, but even in that, the commitment to follow the flow is integral to the work.",
+    text: "At Antar Pravaah, healing is a shared responsibility. We both do the work.",
+    imagePosition: 'center' as const,
+    isIntro: true,
+  },
+  {
+    text: "Transformation demands commitment and persistence. It's not force, it's flow, but even in that, the commitment to follow the flow is integral to the work.",
     imagePosition: 'right' as const,
   },
   {
@@ -25,318 +34,224 @@ const workCards = [
 ];
 
 export default function WeWorkTogether() {
+  const sectionRef = useRef<HTMLElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const cardsSectionRef = useRef<HTMLDivElement | null>(null);
-  const stageRef = useRef<HTMLDivElement | null>(null);
-  const [stageHeight, setStageHeight] = useState(600);
+  const cardsContainerRef = useRef<HTMLDivElement | null>(null);
   const [isReady, setIsReady] = useState(false);
 
-  // Calculate stage height on mount and window resize
+  // Calculate viewport-based dimensions
   useEffect(() => {
     if (typeof window === 'undefined') return;
-
-    const calculateHeight = () => {
-      const vh = window.visualViewport?.height ?? window.innerHeight;
-      const sm = window.innerWidth >= 640;
-      const lg = window.innerWidth >= 1024;
-
-      if (lg) {
-        return 600;
-      } else if (sm) {
-        return Math.min(vh - 250, 550);
-      } else {
-        // Mobile: leave more space for header
-        const mobileHeight = vh - 200;
-        return Math.min(Math.max(mobileHeight, 400), 600);
-      }
-    };
-
-    // Set initial height
-    setStageHeight(calculateHeight());
-
-    // Small delay to ensure DOM is ready before marking as ready
+    
     const readyTimeout = setTimeout(() => {
       setIsReady(true);
     }, 100);
 
-    const handleResize = () => {
-      const newHeight = calculateHeight();
-      setStageHeight(newHeight);
-      // Trigger ScrollTrigger refresh after height changes
-      if (isReady) {
-        ScrollTrigger.refresh();
-      }
-    };
-
-    window.addEventListener('resize', handleResize);
-    window.visualViewport?.addEventListener('resize', handleResize);
-
     return () => {
       clearTimeout(readyTimeout);
-      window.removeEventListener('resize', handleResize);
-      window.visualViewport?.removeEventListener('resize', handleResize);
     };
-  }, [isReady]);
+  }, []);
 
   useLayoutEffect(() => {
     if (typeof window === 'undefined') return;
-    // Wait until component is ready (height calculated, DOM rendered)
     if (!isReady) return;
 
-    gsap.registerPlugin(ScrollTrigger, Observer);
+    const container = containerRef.current;
+    const cardsContainer = cardsContainerRef.current;
+    if (!container || !cardsContainer) return;
 
-    const cardsSection = cardsSectionRef.current;
-    if (!cardsSection) return;
-
-    const cards = Array.from(cardsSection.querySelectorAll<HTMLElement>('.card'));
+    const cards = Array.from(cardsContainer.querySelectorAll<HTMLElement>('.work-card'));
     if (cards.length < 2) return;
 
-    const time = 0.95; // Slower animation timing for smoother feel (matching therapies)
-    const isMobileDevice = window.innerWidth < 640;
-
-    // Single-card focus layout: only one card is visible at a time.
+    // Set initial states - all cards hidden except first
     gsap.set(cards, {
       autoAlpha: 0,
-      y: 0,
-      scale: 1,
-      transformOrigin: 'center top',
-      zIndex: 1,
+      scale: 0.95,
+      y: 30,
     });
-    gsap.set(cards[0], { autoAlpha: 1, zIndex: cards.length + 10 });
+    gsap.set(cards[0], { autoAlpha: 1, scale: 1, y: 0 });
 
+    // Create timeline for card transitions
     const tl = gsap.timeline();
 
-    // Get text elements for each card to animate them separately
-    const getCardTextElements = (card: HTMLElement) => {
-      return {
-        image: card.querySelector('img'),
-        text: card.querySelector('p'),
-        button: card.querySelector('button, a'),
-      };
-    };
-
-    // Set initial state for first card's text elements
-    const firstCardText = getCardTextElements(cards[0]);
-    const firstCardElements = [firstCardText.image, firstCardText.text, firstCardText.button].filter(Boolean);
-    if (firstCardElements.length > 0) {
-      gsap.set(firstCardElements, { autoAlpha: 1 });
-    }
-
-    // Build labels: card2, card3, ...
-    for (let i = 0; i < cards.length - 1; i++) {
-      tl.add(`card${i + 2}`);
-      const current = cards[i];
-      const next = cards[i + 1];
-      const currentText = getCardTextElements(current);
-      const nextText = getCardTextElements(next);
-
-      // Filter out null elements
-      const currentElements = [currentText.image, currentText.text, currentText.button].filter(Boolean);
-      const nextImageText = [nextText.image, nextText.text].filter(Boolean);
-
-      // All text fades out together with slight stagger for organic feel
-      if (currentElements.length > 0) {
-        tl.to(currentElements, {
-          autoAlpha: 0,
-          y: -8,
-          duration: time * 0.5,
-          ease: 'power2.inOut',
-        });
-      }
-
-      // Card container fades out while text is fading
-      tl.to(current, {
-        scale: 0.96,
+    // Build card transition animations
+    cards.forEach((card, index) => {
+      if (index === 0) return; // Skip first card (already visible)
+      
+      const prevCard = cards[index - 1];
+      
+      // Add label for this card
+      tl.addLabel(`card${index}`);
+      
+      // Fade out previous card
+      tl.to(prevCard, {
         autoAlpha: 0,
-        duration: time * 0.5,
+        scale: 0.95,
+        y: -20,
+        duration: 0.5,
         ease: 'power2.inOut',
-      }, '<0.1');
-
-      // Next card setup and slide in - starts before current fully fades
-      tl.set(next, { zIndex: cards.length + i + 20, autoAlpha: 1 }, '<0.2');
-      if (nextImageText.length > 0) {
-        tl.set(nextImageText, { autoAlpha: 0, y: 12 }, '<');
-      }
-      if (nextText.button) {
-        tl.set(nextText.button, { autoAlpha: 0, y: 10 }, '<');
-      }
-
-      tl.fromTo(
-        next,
-        { y: () => window.innerHeight * 0.15 },
-        { y: 0, duration: time * 0.55, ease: 'power2.out', immediateRender: false },
-        '<'
-      );
-
-      // Text fades in as card settles - all together for cohesion
-      if (nextText.image) {
-        tl.to([nextText.image], {
-          autoAlpha: 1,
-          y: 0,
-          duration: time * 0.5,
-          ease: 'power2.out',
-        }, '<0.1');
-      }
-      if (nextText.text) {
-        tl.to([nextText.text], {
-          autoAlpha: 1,
-          y: 0,
-          duration: time * 0.5,
-          ease: 'power2.out',
-        }, '<0.03');
-      }
-      if (nextText.button) {
-        tl.to([nextText.button], {
-          autoAlpha: 1,
-          y: 0,
-          duration: time * 0.5,
-          ease: 'power2.out',
-        }, '<0.05');
-      }
-    }
-    tl.add(`card${cards.length + 1}`);
-
-    // ScrollTrigger to pin the section and link timeline to scroll
-    const isTablet = window.innerWidth >= 640 && window.innerWidth < 1024;
-
-    // Calculate end value based on number of cards and viewport
-    // Keep the scroll distance reasonable - just enough for smooth transitions
-    const scrollDistancePerCard = isMobileDevice ? 200 : isTablet ? 250 : 300;
-    const totalScrollDistance = cards.length * scrollDistancePerCard;
-
-    const st = ScrollTrigger.create({
-      id: 'WORK-CARDS-LOCK',
-      trigger: containerRef.current,
-      pin: cardsSection,
-      pinSpacing: true,
-      anticipatePin: 1,
-      scrub: 1, // Smooth scrubbing on mobile
-      animation: tl,
-      // Start pinning when the section header reaches near top
-      start: isMobileDevice ? 'top 10%' : 'top 12%',
-      // End after all cards have been shown
-      end: `+=${totalScrollDistance}`,
-      invalidateOnRefresh: true,
-      onEnter: () => {
-        // Pause Lenis smooth scroll when in card section
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (window as any).__lenis?.stop?.();
-      },
-      onEnterBack: () => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (window as any).__lenis?.stop?.();
-      },
-      onLeave: () => {
-        // Resume Lenis when done
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (window as any).__lenis?.start?.();
-      },
-      onLeaveBack: () => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (window as any).__lenis?.start?.();
-      },
+      });
+      
+      // Fade in current card
+      tl.to(card, {
+        autoAlpha: 1,
+        scale: 1,
+        y: 0,
+        duration: 0.5,
+        ease: 'power2.out',
+      }, '<0.2');
     });
 
-    // Refresh after DOM has updated with new heights
+    // Add final label
+    tl.addLabel(`card${cards.length}`);
+
+    // Calculate scroll distance (more distance = more scroll needed per card)
+    const isMobile = window.innerWidth < 640;
+    const scrollPerCard = isMobile ? 150 : 200;
+    const totalScrollDistance = (cards.length - 1) * scrollPerCard;
+
+    // Get header height for proper positioning
+    const headerHeight = window.innerWidth >= 1024 ? 148 : window.innerWidth >= 640 ? 108 : 90;
+    
+    // Create ScrollTrigger with snap
+    const st = ScrollTrigger.create({
+      id: 'WORK-CARDS-SNAP',
+      trigger: container,
+      pin: true,
+      pinSpacing: true,
+      anticipatePin: 1,
+      // Start pinning when section top reaches just below the header
+      start: `top top+=${headerHeight}`,
+      end: `+=${totalScrollDistance}`,
+      scrub: 0.5,
+      animation: tl,
+      snap: {
+        snapTo: 'labelsDirectional',
+        duration: { min: 0.2, max: 0.5 },
+        delay: 0.1,
+        ease: 'power2.inOut',
+      },
+      invalidateOnRefresh: true,
+    });
+
+    // Refresh after setup
     const refreshTimeout = setTimeout(() => {
       ScrollTrigger.refresh(true);
-    }, 150);
+    }, 200);
 
     return () => {
       clearTimeout(refreshTimeout);
       st.kill();
       tl.kill();
-      // Ensure Lenis is resumed on cleanup
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (window as any).__lenis?.start?.();
     };
   }, [isReady]);
+
+  // Get image sources
+  const imageSrcs = [
+    getCloudinaryUrl('antarpravaah/we-work/we_work_together_vector_one'),
+    getCloudinaryUrl('antarpravaah/we-work/we_work_together_vector_two'),
+    getCloudinaryUrl('antarpravaah/we-work/we_work_together_vector_three'),
+    getCloudinaryUrl('antarpravaah/we-work/we_work_together_vector_four'),
+  ];
 
   return (
     <Section
       id="work-together"
       className="relative w-full bg-[#f6edd0]"
+      ref={sectionRef}
     >
-      {/* Trigger container - ScrollTrigger watches this */}
-      <div ref={containerRef} className="relative w-full pt-6 sm:pt-10 lg:pt-12 pb-4 sm:pb-10 lg:pb-12">
-        {/* Card stack container - this gets pinned */}
-        <div ref={cardsSectionRef} className="cards-section relative w-full bg-[#f6edd0]">
-          {/* Subtle spiral background pattern - now inside pinned section */}
-          <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
-            <img
-              src="/about_splash_vector.svg"
-              alt=""
-              className="absolute w-[580px] h-auto opacity-100"
-              style={{
-                top: '20%',
-                left: '5%',
-                filter: 'brightness(0) saturate(100%) invert(89%) sepia(8%) saturate(497%) hue-rotate(16deg) brightness(95%) contrast(92%)'
-              }}
-            />
-            <img
-              src="/about_splash_vector.svg"
-              alt=""
-              className="absolute w-[580px] h-auto opacity-100"
-              style={{
-                top: '30%',
-                right: '5%',
-                transform: 'rotate(45 deg)',
-                filter: 'brightness(0) saturate(100%) invert(89%) sepia(8%) saturate(497%) hue-rotate(16deg) brightness(95%) contrast(92%)'
-              }}
-            />
-          </div>
+      {/* Full viewport container - height accounts for header */}
+      <div 
+        ref={containerRef} 
+        className="relative w-full flex flex-col bg-[#f6edd0]"
+        style={{ 
+          minHeight: 'calc(100vh - var(--header-height, 90px))',
+          height: 'calc(100vh - var(--header-height, 90px))',
+        }}
+      >
+        {/* Background pattern */}
+        <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+          <img
+            src="/about_splash_vector.svg"
+            alt=""
+            className="absolute w-[400px] sm:w-[500px] lg:w-[580px] h-auto opacity-100"
+            style={{
+              top: '15%',
+              left: '3%',
+              filter: 'brightness(0) saturate(100%) invert(89%) sepia(8%) saturate(497%) hue-rotate(16deg) brightness(95%) contrast(92%)'
+            }}
+          />
+          <img
+            src="/about_splash_vector.svg"
+            alt=""
+            className="absolute w-[400px] sm:w-[500px] lg:w-[580px] h-auto opacity-100"
+            style={{
+              top: '25%',
+              right: '3%',
+              transform: 'rotate(45deg)',
+              filter: 'brightness(0) saturate(100%) invert(89%) sepia(8%) saturate(497%) hue-rotate(16deg) brightness(95%) contrast(92%)'
+            }}
+          />
+        </div>
 
-          {/* Header - included in pinned section */}
-          <div className="relative z-10 w-full text-center mb-6 sm:mb-8 lg:mb-10 pt-2">
-            <h2
-              className="text-[36px] sm:text-[42px] lg:text-[48px] leading-[1.1] text-[#645c42]"
-              style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400 }}
+        {/* Section Title */}
+        <div className="relative z-10 w-full text-center pt-8 sm:pt-12 lg:pt-16 pb-4 sm:pb-6 lg:pb-8">
+          <h2
+            className="text-[32px] sm:text-[42px] lg:text-[48px] leading-[1.1] text-[#645c42]"
+            style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400 }}
+          >
+            We Work Together
+          </h2>
+        </div>
+
+        {/* Cards Container - Centered in remaining viewport */}
+        <div 
+          ref={cardsContainerRef}
+          className="relative z-10 flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 pb-8 sm:pb-12 lg:pb-16"
+        >
+          <div className="relative w-full max-w-[95vw] sm:max-w-[90vw] lg:max-w-[1000px]">
+            {/* Card Stack - All cards positioned absolutely */}
+            <div 
+              className="relative w-full"
+              style={{ 
+                height: 'clamp(400px, 60vh, 600px)',
+              }}
             >
-              We Work Together
-            </h2>
-          </div>
-
-          <div className="relative z-10 w-full max-w-[100vw] sm:max-w-[95vw] lg:max-w-[1100px] px-3 sm:px-4 mx-auto">
-          {/* Stage: cards overlap here - all cards same width */}
-          <div ref={stageRef} className="relative w-full" style={{ height: `${stageHeight}px` }}>
-              {/* Card 01 - First card with image */}
-              <div className="card absolute left-0 right-0 top-0 mx-auto w-full rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d6c68e] p-4 sm:p-8 lg:p-10 text-center shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex flex-col items-center justify-center gap-3 sm:gap-8 lg:gap-10" style={{ height: `${stageHeight}px` }}>
-                <div className="flex justify-center items-center flex-shrink-0 flex-1 max-h-[60%] sm:max-h-[70%]">
+              {/* Intro Card */}
+              <div 
+                className="work-card absolute inset-0 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d6c68e] p-5 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex flex-col items-center justify-center"
+              >
+                <div className="flex-1 flex items-center justify-center max-h-[60%] sm:max-h-[65%]">
                   <Image
-                    src={getCloudinaryUrl('antarpravaah/we-work/we_work_together_vector_one')}
+                    src={imageSrcs[0]}
                     alt=""
                     width={430}
                     height={450}
                     quality={85}
                     loading="lazy"
-                    className="block w-auto h-full max-w-[260px] sm:max-w-[380px] lg:max-w-[430px] object-contain"
+                    className="w-auto h-full max-w-[280px] sm:max-w-[360px] lg:max-w-[420px] object-contain"
                   />
                 </div>
                 <p
-                  className="text-center text-[14px] sm:text-[15px] lg:text-[16px] leading-[1.5] text-[#645c42] max-w-[95%] sm:max-w-[85%] px-2 sm:px-2 flex-shrink-0"
+                  className="text-center text-[14px] sm:text-[15px] lg:text-[16px] leading-[1.5] text-[#645c42] max-w-[90%] mt-4 sm:mt-6"
                   style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
                 >
-                  At Antar Pravaah, healing is a shared responsibility. We both do the work.
+                  {workCards[0].text}
                 </p>
               </div>
 
-              {/* Cards 02-04 - all same fixed width */}
-              {workCards.map((card, index) => {
+              {/* Content Cards */}
+              {workCards.slice(1).map((card, index) => {
                 const isLeft = card.imagePosition === 'left';
-                const smallCardSrcs = [
-                  getCloudinaryUrl('antarpravaah/we-work/we_work_together_vector_two'),
-                  getCloudinaryUrl('antarpravaah/we-work/we_work_together_vector_three'),
-                  getCloudinaryUrl('antarpravaah/we-work/we_work_together_vector_four')
-                ];
-                const imageSrc = smallCardSrcs[index] ?? smallCardSrcs[0];
+                const imageSrc = imageSrcs[index + 1] || imageSrcs[1];
+                
                 return (
                   <div
                     key={index}
-                    className="card absolute left-0 right-0 top-0 mx-auto w-full rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d6c68e] p-4 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex items-center justify-center"
-                    style={{ height: `${stageHeight}px` }}
+                    className="work-card absolute inset-0 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d6c68e] p-5 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex items-center justify-center"
                   >
                     <div
-                      className={`flex flex-col items-center gap-3 sm:gap-6 lg:gap-10 w-full h-full justify-center ${
+                      className={`flex flex-col items-center gap-4 sm:gap-6 lg:gap-8 w-full h-full justify-center ${
                         isLeft ? 'sm:flex-row' : 'sm:flex-row-reverse'
                       }`}
                     >
@@ -348,11 +263,11 @@ export default function WeWorkTogether() {
                           height={200}
                           quality={85}
                           loading="lazy"
-                          className="block w-[120px] h-[120px] sm:w-[180px] sm:h-[180px] lg:w-[200px] lg:h-[200px] object-contain"
+                          className="w-[120px] h-[120px] sm:w-[160px] sm:h-[160px] lg:w-[200px] lg:h-[200px] object-contain"
                         />
                       </div>
                       <p
-                        className="flex-1 text-justify text-[13px] sm:text-[14px] lg:text-[16px] leading-[1.5] sm:leading-[1.6] text-[#645c42] px-2 sm:px-2"
+                        className="flex-1 text-justify text-[13px] sm:text-[14px] lg:text-[16px] leading-[1.5] sm:leading-[1.6] text-[#645c42] px-1 sm:px-2"
                         style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
                       >
                         {card.text}
@@ -362,8 +277,10 @@ export default function WeWorkTogether() {
                 );
               })}
 
-              {/* CTA Card (part of the stack; final card) - same fixed width */}
-              <div className="card absolute left-0 right-0 top-0 mx-auto flex w-full items-center justify-center rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#645c42] p-4 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)]" style={{ height: `${stageHeight}px` }}>
+              {/* CTA Card */}
+              <div 
+                className="work-card absolute inset-0 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#645c42] p-5 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex items-center justify-center"
+              >
                 <Button text="Explore Our Approach" size="large" mode="light" href="/approach" />
               </div>
             </div>
@@ -373,4 +290,3 @@ export default function WeWorkTogether() {
     </Section>
   );
 }
-
