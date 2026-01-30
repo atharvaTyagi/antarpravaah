@@ -36,9 +36,12 @@ export default function WeWorkTogether() {
   }, []);
 
   // Set responsive stage height based on viewport
+  // Use visualViewport for Safari compatibility (handles dynamic address bar)
   useEffect(() => {
     const updateHeight = () => {
-      const vh = window.innerHeight;
+      // Use visualViewport height on mobile for Safari compatibility
+      // Falls back to innerHeight if visualViewport not available
+      const vh = window.visualViewport?.height ?? window.innerHeight;
       const sm = window.innerWidth >= 640;
       const lg = window.innerWidth >= 1024;
       
@@ -47,16 +50,24 @@ export default function WeWorkTogether() {
         setStageHeight(600);
       } else if (sm) {
         // Tablet: use most of viewport
-        setStageHeight(vh - 220);
+        setStageHeight(Math.min(vh - 200, 550));
       } else {
-        // Mobile: full viewport minus header and title space
-        setStageHeight(vh - 180);
+        // Mobile: viewport minus header (80px) and title area (70px)
+        // Cap at reasonable max to prevent overflow
+        const mobileHeight = vh - 150;
+        setStageHeight(Math.min(Math.max(mobileHeight, 450), 650));
       }
     };
     
     updateHeight();
     window.addEventListener('resize', updateHeight);
-    return () => window.removeEventListener('resize', updateHeight);
+    // Also listen to visualViewport resize for Safari address bar changes
+    window.visualViewport?.addEventListener('resize', updateHeight);
+    
+    return () => {
+      window.removeEventListener('resize', updateHeight);
+      window.visualViewport?.removeEventListener('resize', updateHeight);
+    };
   }, [isClient]);
 
   useLayoutEffect(() => {
@@ -196,24 +207,23 @@ export default function WeWorkTogether() {
       });
     };
 
+    // Improved Observer with better mobile handling
     const cardsObserver = Observer.create({
-      type: 'wheel,touch,pointer',
+      type: 'wheel,touch',
       wheelSpeed: -1,
-      tolerance: 10,
+      tolerance: 15, // Slightly higher tolerance for mobile
       preventDefault: true,
       onDown: () => tweenToLabel(tl.previousLabel(), false),
       onUp: () => tweenToLabel(tl.nextLabel(), true),
-      onEnable(self) {
-        // Freeze native scroll position (fixes momentum scrolling)
-        const savedScroll = self.scrollY();
+      onEnable() {
+        // Pause Lenis smooth scroll when Observer takes control
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (self as any)._restoreScroll = () => self.scrollY(savedScroll);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        document.addEventListener('scroll', (self as any)._restoreScroll, { passive: false });
+        (window as any).__lenis?.stop?.();
       },
-      onDisable(self) {
+      onDisable() {
+        // Resume Lenis when done
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        document.removeEventListener('scroll', (self as any)._restoreScroll);
+        (window as any).__lenis?.start?.();
       },
     });
 
@@ -221,14 +231,18 @@ export default function WeWorkTogether() {
 
     // ScrollTrigger to pin the section and enable card observer
     const isMobile = window.innerWidth < 640;
-    const startOffset = isMobile ? 80 : 180; // Smaller offset on mobile
+    const isTablet = window.innerWidth >= 640 && window.innerWidth < 1024;
+    
+    // Calculate start offset based on device
+    // Mobile needs less offset as header is smaller
+    const startOffset = isMobile ? 100 : isTablet ? 140 : 180;
     
     const st = ScrollTrigger.create({
       id: 'WORK-CARDS-LOCK',
       trigger: cardsSection,
       pin: true,
-      pinSpacing: false,
-      start: `top top+=${startOffset}`, // Adjusted for mobile
+      pinSpacing: false, // Keep false - Observer handles the scroll lock
+      start: `top top+=${startOffset}`,
       end: '+=100',
       onEnter: () => {
         if (!cardsObserver.isEnabled) cardsObserver.enable();
@@ -238,20 +252,26 @@ export default function WeWorkTogether() {
       },
     });
 
-    // Refresh ScrollTrigger
-    ScrollTrigger.refresh();
+    // Delayed refresh for Safari
+    const refreshTimeout = setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 100);
 
     return () => {
+      clearTimeout(refreshTimeout);
       st.kill();
       cardsObserver.kill();
       tl.kill();
+      // Ensure Lenis is resumed on cleanup
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (window as any).__lenis?.start?.();
     };
   }, []);
 
   return (
     <Section
       id="work-together"
-      className="relative w-full bg-[#f6edd0] overflow-hidden pb-4 sm:pb-10 lg:pb-12 pt-4 sm:pt-10 lg:pt-12"
+      className="relative w-full bg-[#f6edd0] overflow-hidden pb-4 sm:pb-10 lg:pb-12 pt-6 sm:pt-10 lg:pt-12"
     >
       {/* Subtle spiral background pattern */}
       <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
@@ -301,7 +321,7 @@ export default function WeWorkTogether() {
       </div>
 
       {/* Card stack container */}
-      <div ref={cardsSectionRef} className="cards-section relative w-full bg-transparent py-2 sm:py-10 lg:py-12">
+      <div ref={cardsSectionRef} className="cards-section relative w-full bg-[#f6edd0] py-2 sm:py-10 lg:py-12">
 
         {/* Header */}
         <div className="relative z-10 w-full text-center mb-4 sm:mb-6 lg:mb-8">
@@ -317,8 +337,8 @@ export default function WeWorkTogether() {
           {/* Stage: cards overlap here - all cards same width */}
           <div ref={stageRef} className="relative w-full" style={{ height: `${stageHeight}px` }}>
               {/* Card 01 - First card with image */}
-              <div className="card absolute left-0 right-0 top-0 mx-auto w-full rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d6c68e] p-6 sm:p-8 lg:p-10 text-center shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex flex-col items-center justify-center gap-5 sm:gap-8 lg:gap-10" style={{ height: `${stageHeight}px` }}>
-                <div className="flex justify-center items-center flex-shrink-0">
+              <div className="card absolute left-0 right-0 top-0 mx-auto w-full rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d6c68e] p-5 sm:p-8 lg:p-10 text-center shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex flex-col items-center justify-center gap-4 sm:gap-8 lg:gap-10" style={{ height: `${stageHeight}px` }}>
+                <div className="flex justify-center items-center flex-shrink-0 flex-1 max-h-[65%] sm:max-h-[70%]">
                   <Image
                     src={getCloudinaryUrl('antarpravaah/we-work/we_work_together_vector_one')}
                     alt=""
@@ -326,11 +346,11 @@ export default function WeWorkTogether() {
                     height={450}
                     quality={85}
                     loading="lazy"
-                    className="block w-[340px] h-[360px] sm:w-[380px] sm:h-[400px] lg:w-[430px] lg:h-[450px] object-contain"
+                    className="block w-auto h-full max-w-[300px] sm:max-w-[380px] lg:max-w-[430px] object-contain"
                   />
                 </div>
                 <p
-                  className="text-center text-[16px] sm:text-[15px] lg:text-[16px] leading-[1.5] text-[#645c42] max-w-[90%] sm:max-w-[85%] px-2"
+                  className="text-center text-[15px] sm:text-[15px] lg:text-[16px] leading-[1.5] text-[#645c42] max-w-[95%] sm:max-w-[85%] px-1 sm:px-2 flex-shrink-0"
                   style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
                 >
                   At Antar Pravaah, healing is a shared responsibility. We both do the work.
@@ -349,25 +369,27 @@ export default function WeWorkTogether() {
                 return (
                   <div
                     key={index}
-                    className="card absolute left-0 right-0 top-0 mx-auto w-full rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d6c68e] p-6 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex items-center justify-center"
+                    className="card absolute left-0 right-0 top-0 mx-auto w-full rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d6c68e] p-5 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex items-center justify-center"
                     style={{ height: `${stageHeight}px` }}
                   >
                     <div
-                      className={`flex flex-col sm:flex-row items-center gap-5 sm:gap-8 lg:gap-10 w-full ${
+                      className={`flex flex-col items-center gap-4 sm:gap-8 lg:gap-10 w-full h-full justify-center ${
                         isLeft ? 'sm:flex-row' : 'sm:flex-row-reverse'
                       }`}
                     >
-                      <Image
-                        src={imageSrc}
-                        alt=""
-                        width={200}
-                        height={200}
-                        quality={85}
-                        loading="lazy"
-                        className="block w-[180px] h-[180px] sm:w-[180px] sm:h-[180px] lg:w-[200px] lg:h-[200px] flex-shrink-0 object-contain"
-                      />
+                      <div className="flex-shrink-0 flex items-center justify-center">
+                        <Image
+                          src={imageSrc}
+                          alt=""
+                          width={200}
+                          height={200}
+                          quality={85}
+                          loading="lazy"
+                          className="block w-[140px] h-[140px] sm:w-[180px] sm:h-[180px] lg:w-[200px] lg:h-[200px] object-contain"
+                        />
+                      </div>
                       <p
-                        className="flex-1 text-justify text-[15px] sm:text-[14px] lg:text-[16px] leading-[1.6] text-[#645c42] px-2"
+                        className="flex-1 text-justify text-[14px] sm:text-[14px] lg:text-[16px] leading-[1.6] text-[#645c42] px-1 sm:px-2"
                         style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
                       >
                         {card.text}
@@ -378,7 +400,7 @@ export default function WeWorkTogether() {
               })}
 
               {/* CTA Card (part of the stack; final card) - same fixed width */}
-              <div className="card absolute left-0 right-0 top-0 mx-auto flex w-full items-center justify-center rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#645c42] p-6 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)]" style={{ height: `${stageHeight}px` }}>
+              <div className="card absolute left-0 right-0 top-0 mx-auto flex w-full items-center justify-center rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#645c42] p-5 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)]" style={{ height: `${stageHeight}px` }}>
                 <Button text="Explore Our Approach" size="large" mode="light" href="/approach" />
               </div>
           </div>
