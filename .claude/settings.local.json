@@ -27,7 +27,13 @@
       "Bash(node scripts/upload-to-cloudinary.js:*)",
       "Bash(set FORCE_UPLOAD=true)",
       "Bash($env:FORCE_UPLOAD=\"true\")",
-      "Bash(git reset:*)"
+      "Bash(git reset:*)",
+      "Bash(node scripts/convert-updated-images.js:*)",
+      "Bash(npm run upload-to-cloudinary:*)",
+      "Bash(npm run upload:images:*)",
+      "Bash(node scripts/upload-updated-images.js:*)",
+      "Bash(node -e:*)",
+      "Bash(node scripts/invalidate-cloudinary-cache.js:*)"
     ]
   }
 }

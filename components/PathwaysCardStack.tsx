@@ -1,8 +1,9 @@
 'use client';
 
-import { useLayoutEffect, useRef, useState, useEffect } from 'react';
+import { useLayoutEffect, useRef, useState, useEffect, useCallback } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import PathwayCard, { Pathway } from './PathwayCard';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -17,17 +18,62 @@ interface PathwaysCardStackProps {
   title?: string;
   /** Show pattern background (pinned with section) */
   showPattern?: boolean;
+  /** Pathways data for mobile layout */
+  pathways?: Pathway[];
 }
 
-export default function PathwaysCardStack({ cards, title, showPattern = false }: PathwaysCardStackProps) {
+export default function PathwaysCardStack({ cards, title, showPattern = false, pathways }: PathwaysCardStackProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const cardContainerRef = useRef<HTMLDivElement | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const activeIndexRef = useRef(0);
   const prevIndexRef = useRef(0);
   const isAnimatingRef = useRef(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isCardExpanded, setIsCardExpanded] = useState(false);
+  const scrollTriggerRef = useRef<ScrollTrigger | null>(null);
 
-  // Setup scroll-driven card changes (similar to ModalitiesScrollCard)
+  // Detect mobile breakpoint
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Handle card expansion state changes - lock scroll when expanded
+  const handleCardExpandedChange = useCallback((expanded: boolean) => {
+    setIsCardExpanded(expanded);
+    
+    if (expanded) {
+      // Pause Lenis smooth scroll when card is expanded
+      if (typeof window !== 'undefined' && (window as Window & { __lenis?: { stop?: () => void } }).__lenis?.stop) {
+        (window as Window & { __lenis?: { stop?: () => void } }).__lenis?.stop?.();
+      }
+    } else {
+      // Resume Lenis smooth scroll when card is collapsed
+      if (typeof window !== 'undefined' && (window as Window & { __lenis?: { start?: () => void } }).__lenis?.start) {
+        (window as Window & { __lenis?: { start?: () => void } }).__lenis?.start?.();
+      }
+    }
+  }, []);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      // Ensure Lenis is restored on unmount
+      if (typeof window !== 'undefined' && (window as Window & { __lenis?: { start?: () => void } }).__lenis?.start) {
+        (window as Window & { __lenis?: { start?: () => void } }).__lenis?.start?.();
+      }
+    };
+  }, []);
+
+  // Setup scroll-driven card changes - BOTH desktop AND mobile (pinned behavior)
   useLayoutEffect(() => {
     if (typeof window === 'undefined') return;
     if (!containerRef.current || !cardContainerRef.current || cards.length < 2) return;
@@ -35,18 +81,21 @@ export default function PathwaysCardStack({ cards, title, showPattern = false }:
     const container = containerRef.current;
     const totalItems = cards.length;
 
-    // Scroll distance per card
-    const scrollPerItem = window.innerHeight * 0.5;
+    // Scroll distance per card - slightly less on mobile for faster transitions
+    const scrollPerItem = isMobile ? window.innerHeight * 0.4 : window.innerHeight * 0.5;
     const totalScrollDistance = scrollPerItem * (totalItems - 1);
 
     // Create ScrollTrigger for pinning and progress tracking
     const st = ScrollTrigger.create({
       trigger: container,
-      start: 'top top+=160',
+      start: isMobile ? 'top top+=100' : 'top top+=160',
       end: `+=${totalScrollDistance}`,
       pin: true,
       pinSpacing: true,
       onUpdate: (self) => {
+        // Don't update if card is expanded (prevents scroll while reading)
+        if (isCardExpanded) return;
+        
         // Calculate which card should be active based on scroll progress
         const progress = self.progress;
         const newIndex = Math.min(
@@ -63,13 +112,16 @@ export default function PathwaysCardStack({ cards, title, showPattern = false }:
       },
     });
 
+    scrollTriggerRef.current = st;
+
     // Refresh after mount
     setTimeout(() => ScrollTrigger.refresh(), 100);
 
     return () => {
       st.kill();
+      scrollTriggerRef.current = null;
     };
-  }, [cards.length]);
+  }, [cards.length, isMobile, isCardExpanded]);
 
   // Animate card transitions when activeIndex changes
   useEffect(() => {
@@ -117,26 +169,73 @@ export default function PathwaysCardStack({ cards, title, showPattern = false }:
     }
   }, [activeIndex]);
 
+  // Render cards with mobile-aware PathwayCard
+  const renderCards = () => {
+    if (isMobile && pathways) {
+      // On mobile, render PathwayCard directly with mobile props
+      return pathways.map((pathway, index) => (
+        <div
+          key={pathway.id}
+          className="pathway-card-wrapper absolute inset-0 w-full h-full flex items-center justify-center"
+          style={{
+            opacity: index === 0 ? 1 : 0,
+            pointerEvents: index === 0 ? 'auto' : 'none',
+          }}
+        >
+          <div className="w-full h-full max-h-full">
+            <PathwayCard
+              pathway={pathway}
+              isMobile={true}
+              onExpandedChange={handleCardExpandedChange}
+            />
+          </div>
+        </div>
+      ));
+    }
+
+    // Desktop: render pre-built cards
+    return cards.map((card, index) => (
+      <div
+        key={card.key}
+        className="pathway-card-wrapper absolute inset-0 w-full h-full flex items-center justify-center"
+        style={{
+          opacity: index === 0 ? 1 : 0,
+          pointerEvents: index === 0 ? 'auto' : 'none',
+        }}
+      >
+        <div className="w-full h-full max-h-full">
+          {card.render}
+        </div>
+      </div>
+    ));
+  };
+
   return (
     <div 
       ref={containerRef} 
       className="pathways-scroll-container relative w-full flex flex-col items-center px-4 sm:px-6 lg:px-8"
       style={{
-        // Account for header (160px) + padding, fit within viewport
-        minHeight: 'calc(100vh - 160px)',
-        paddingTop: 'clamp(1.5rem, 3vh, 2.5rem)',
-        paddingBottom: 'clamp(1.5rem, 3vh, 2.5rem)',
+        // Account for header + padding, fit within viewport
+        minHeight: isMobile ? 'calc(100vh - 100px)' : 'calc(100vh - 160px)',
+        paddingTop: isMobile ? '1rem' : 'clamp(1.5rem, 3vh, 2.5rem)',
+        paddingBottom: isMobile ? '1rem' : 'clamp(1.5rem, 3vh, 2.5rem)',
       }}
     >
       {/* Pattern background - CSS Grid for precise spacing control */}
       {showPattern && (
         <div
           className="absolute inset-0 z-0 pointer-events-none overflow-hidden"
-          style={{ opacity: 0.12 }}
+          style={{ opacity: isMobile ? 0.15 : 0.12 }}
         >
           <div
-            className="absolute inset-0 grid place-content-center"
-            style={{
+            className="absolute inset-0"
+            style={isMobile ? {
+              backgroundImage: 'url(/approach_blob.svg)',
+              backgroundSize: '100px 100px',
+              backgroundRepeat: 'repeat',
+            } : {
+              display: 'grid',
+              placeContent: 'center',
               gridTemplateColumns: 'repeat(auto-fill, 180px)',
               gridTemplateRows: 'repeat(auto-fill, 180px)',
               gap: '100px',
@@ -147,7 +246,7 @@ export default function PathwaysCardStack({ cards, title, showPattern = false }:
               marginTop: '-100px',
             }}
           >
-            {Array.from({ length: 80 }).map((_, i) => (
+            {!isMobile && Array.from({ length: 80 }).map((_, i) => (
               <img
                 key={i}
                 src="/approach_blob.svg"
@@ -163,10 +262,10 @@ export default function PathwaysCardStack({ cards, title, showPattern = false }:
       {title && (
         <div className="mb-4 sm:mb-6 lg:mb-8 text-center w-full flex-shrink-0">
           <h2
-            className="text-[clamp(2rem,5vw,3rem)] leading-[1.0] text-[#9ac1bf]"
+            className="text-[36px] md:text-[clamp(2rem,5vw,3rem)] leading-[1.0] text-[#9ac1bf] whitespace-pre-line md:whitespace-normal"
             style={{ fontFamily: 'var(--font-saphira), serif' }}
           >
-            {title}
+            {isMobile ? title.replace(' for ', '\nfor ') : title}
           </h2>
         </div>
       )}
@@ -176,25 +275,12 @@ export default function PathwaysCardStack({ cards, title, showPattern = false }:
         ref={cardContainerRef}
         className="relative w-full flex-1 flex items-center justify-center"
         style={{
-          maxWidth: 'min(1347px, 100%)',
+          maxWidth: isMobile ? '100%' : 'min(1347px, 100%)',
           // Use available height minus title area
-          maxHeight: 'calc(100vh - 160px - clamp(6rem, 12vh, 10rem))',
+          maxHeight: isMobile ? 'calc(100vh - 100px - 5rem)' : 'calc(100vh - 160px - clamp(6rem, 12vh, 10rem))',
         }}
       >
-        {cards.map((card, index) => (
-          <div
-            key={card.key}
-            className="pathway-card-wrapper absolute inset-0 w-full h-full flex items-center justify-center"
-            style={{
-              opacity: index === 0 ? 1 : 0,
-              pointerEvents: index === 0 ? 'auto' : 'none',
-            }}
-          >
-            <div className="w-full h-full max-h-full">
-              {card.render}
-            </div>
-          </div>
-        ))}
+        {renderCards()}
       </div>
     </div>
   );

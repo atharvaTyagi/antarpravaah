@@ -9,12 +9,21 @@
 
 const CLOUDINARY_CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
 
+// Temporary cache-bust versions for recently updated images (Jan 31, 2026)
+// Remove this after CDN cache clears (24-48 hours)
+const CACHE_BUST_VERSIONS: Record<string, string> = {
+  'antarpravaah/immersions/immersion_2': '1769872658',
+  'antarpravaah/immersions/workshops/immersion_workshop_3': '1769872661',
+  'antarpravaah/general/Private Sessions': '1769872663',
+};
+
 export interface CloudinaryOptions {
   width?: number;
   height?: number;
   quality?: number | 'auto' | 'auto:good' | 'auto:best';
   format?: 'auto' | 'webp' | 'avif';
   crop?: 'fill' | 'fit' | 'scale' | 'crop';
+  version?: string | number; // Optional version for cache busting
 }
 
 /**
@@ -38,6 +47,7 @@ export function getCloudinaryUrl(
     quality = 'auto:good',
     format = 'auto',
     crop = 'fit',
+    version,
   } = options;
 
   // Build transformation string
@@ -51,7 +61,11 @@ export function getCloudinaryUrl(
 
   const transformString = transformations.join(',');
 
-  return `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/${transformString}/${publicId}`;
+  // Add version if provided for cache busting, or use auto cache-bust for recently updated images
+  const cacheBustVersion = version || CACHE_BUST_VERSIONS[publicId];
+  const versionStr = cacheBustVersion ? `v${cacheBustVersion}/` : '';
+
+  return `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/${transformString}/${versionStr}${publicId}`;
 }
 
 /**
@@ -102,13 +116,13 @@ export const imageDimensions: Record<string, { width: number; height: number }> 
   
   // Immersions page - Decorative images
   'immersion_1': { width: 200, height: 200 },
-  'immersion_2': { width: 280, height: 280 },
+  'immersion_2': { width: 560, height: 560 }, // Updated: 2x for crisp display
   'immersion_3': { width: 180, height: 180 },
-  
+
   // Immersions page - Workshop images
   'immersion_workshop_1': { width: 400, height: 206 },
   'immersion_workshop_2': { width: 400, height: 206 },
-  'immersion_workshop_3': { width: 400, height: 206 },
+  'immersion_workshop_3': { width: 800, height: 412 }, // Updated: 2x for crisp display
   
   // Trainings section images
   'training_1': { width: 200, height: 200 },
@@ -123,7 +137,7 @@ export const imageDimensions: Record<string, { width: number; height: number }> 
   
   // General images
   'AP Immersions': { width: 400, height: 300 },
-  'Private Sessions': { width: 400, height: 300 },
+  'Private Sessions': { width: 800, height: 600 }, // Updated: 2x for crisp display
   'Trainings': { width: 400, height: 300 },
 };
 

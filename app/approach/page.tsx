@@ -8,6 +8,7 @@ import Button from '@/components/Button';
 import PageEndBlob from '@/components/PageEndBlob';
 import PathwaysCardStack from '@/components/PathwaysCardStack';
 import PathwayCard from '@/components/PathwayCard';
+import ThoughtsAndPonderings from '@/components/ThoughtsAndPonderings';
 import { pathways } from '@/data/pathwaysContent';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -156,6 +157,7 @@ export default function ApproachPage() {
           cards={pathwayCards}
           title="Three Pathways for You"
           showPattern
+          pathways={pathways}
         />
       </Section>
 
@@ -164,78 +166,7 @@ export default function ApproachPage() {
         id="thoughts"
         className="approach-section relative z-10 min-h-screen w-full flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 py-16 sm:py-20 bg-[#f6edd0]"
       >
-        <div className="mx-auto flex max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1177px] flex-col items-center gap-8 sm:gap-10 lg:gap-12">
-          {/* Title */}
-          <h2
-            className="text-center text-[36px] sm:text-[42px] lg:text-[48px] leading-[1.0] text-[#354443]"
-            style={{ fontFamily: 'var(--font-saphira), serif' }}
-          >
-            Thoughts & Ponderings
-          </h2>
-
-          {/* Grid of thought cards */}
-          <div className="grid w-full grid-cols-1 gap-4 sm:gap-5 lg:gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {/* Row 1 - Card 1 */}
-            <div className="flex min-h-[180px] sm:min-h-[200px] items-center justify-center rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#9ac1bf] p-6 sm:p-8 lg:p-10">
-              <p
-                className="text-center text-[20px] sm:text-[22px] lg:text-[24px] leading-normal text-[#354443]"
-                style={{ fontFamily: 'var(--font-saphira), serif' }}
-              >
-                This is a thought card with some text
-              </p>
-            </div>
-
-            {/* Row 1 - Card 2 */}
-            <div className="flex min-h-[180px] sm:min-h-[200px] items-center justify-center rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#9ac1bf] p-6 sm:p-8 lg:p-10">
-              <p
-                className="text-center text-[20px] sm:text-[22px] lg:text-[24px] leading-normal text-[#354443]"
-                style={{ fontFamily: 'var(--font-saphira), serif' }}
-              >
-                This is a thought card with some text
-              </p>
-            </div>
-
-            {/* Row 1 - Card 3 (spans 2 rows on desktop) */}
-            <div className="lg:row-span-2 flex min-h-[180px] sm:min-h-[200px] lg:min-h-[416px] items-center justify-center rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#9ac1bf] p-6 sm:p-8 lg:p-10">
-              <p
-                className="text-center text-[20px] sm:text-[22px] lg:text-[24px] leading-normal text-[#354443]"
-                style={{ fontFamily: 'var(--font-saphira), serif' }}
-              >
-                This is a thought card with some text
-              </p>
-            </div>
-
-            {/* Row 2 - Card 4 */}
-            <div className="flex min-h-[180px] sm:min-h-[200px] items-center justify-center rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#9ac1bf] p-6 sm:p-8 lg:p-10">
-              <p
-                className="text-center text-[20px] sm:text-[22px] lg:text-[24px] leading-normal text-[#354443]"
-                style={{ fontFamily: 'var(--font-saphira), serif' }}
-              >
-                This is a thought card with some text
-              </p>
-            </div>
-
-            {/* Row 2 - Card 5 */}
-            <div className="flex min-h-[180px] sm:min-h-[200px] items-center justify-center rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#9ac1bf] p-6 sm:p-8 lg:p-10">
-              <p
-                className="text-center text-[20px] sm:text-[22px] lg:text-[24px] leading-normal text-[#354443]"
-                style={{ fontFamily: 'var(--font-saphira), serif' }}
-              >
-                This is a thought card with some text
-              </p>
-            </div>
-
-            {/* Row 3 - Card 6 (only visible on mobile/tablet) */}
-            <div className="flex min-h-[180px] sm:min-h-[200px] items-center justify-center rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#9ac1bf] p-6 sm:p-8 lg:p-10 lg:hidden">
-              <p
-                className="text-center text-[20px] sm:text-[22px] lg:text-[24px] leading-normal text-[#354443]"
-                style={{ fontFamily: 'var(--font-saphira), serif' }}
-              >
-                This is a thought card with some text
-              </p>
-            </div>
-          </div>
-        </div>
+        <ThoughtsAndPonderings />
       </Section>
 
       {/* ===== SECTION 4: CTA ===== */}
