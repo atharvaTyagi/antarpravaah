@@ -2,8 +2,12 @@
 
 import { useLayoutEffect, useRef, useEffect, useState } from 'react';
 import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Observer } from 'gsap/dist/Observer';
+
+// Register GSAP plugins
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(Observer);
+}
 
 const aboutParagraphs = [
   "I'm Namita, a healer and facilitator with decades of experience guiding people through life's physical, emotional, and energetic challenges. My journey began over twenty years ago in Public Relations, but a quiet inner calling led me to explore paths far beyond the ordinary—editing books, creating events, building ventures, and even running a home bakery. Each experience deepened my understanding of people, life, and the subtle energies that connect us all.",
@@ -17,51 +21,113 @@ const aboutParagraphs = [
   "Healing, to me, is not fixing—it's remembering. Not escaping—it's embracing. Whatever you carry, you are not alone, and I welcome you to this space of transformation."
 ];
 
-export default function AboutBlobScroll() {
+interface AboutBlobScrollProps {
+  isActive?: boolean;
+  onEdgeReached?: (edge: 'start' | 'end') => void;
+  resetToStart?: boolean;
+  resetToEnd?: boolean;
+}
+
+export default function AboutBlobScroll({ isActive = false, onEdgeReached, resetToStart, resetToEnd }: AboutBlobScrollProps) {
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const blobContainerRef = useRef<HTMLDivElement | null>(null);
   const activeIndexRef = useRef(0);
+  const animatingRef = useRef(false);
+  const observerRef = useRef<Observer | null>(null);
+  const lastScrollTimeRef = useRef(0);
   const [isClient, setIsClient] = useState(false);
+
+  // Cooldown between paragraph changes (prevents residual scroll)
+  const scrollCooldown = 400;
 
   useEffect(() => {
     setIsClient(true);
   }, []);
 
+  // Handle reset to start
+  useEffect(() => {
+    if (!resetToStart || !isClient) return;
+    
+    const blobContainer = blobContainerRef.current;
+    if (!blobContainer) return;
+    
+    const paragraphs = Array.from(blobContainer.querySelectorAll<HTMLElement>('.paragraph-item'));
+    if (paragraphs.length === 0) return;
+    
+    // Immediately reset to first paragraph
+    gsap.set(paragraphs, { autoAlpha: 0, y: 20 });
+    gsap.set(paragraphs[0], { autoAlpha: 1, y: 0 });
+    activeIndexRef.current = 0;
+    lastScrollTimeRef.current = Date.now();
+  }, [resetToStart, isClient]);
+
+  // Handle reset to end
+  useEffect(() => {
+    if (!resetToEnd || !isClient) return;
+    
+    const blobContainer = blobContainerRef.current;
+    if (!blobContainer) return;
+    
+    const paragraphs = Array.from(blobContainer.querySelectorAll<HTMLElement>('.paragraph-item'));
+    if (paragraphs.length === 0) return;
+    
+    // Immediately reset to last paragraph
+    const lastIndex = paragraphs.length - 1;
+    gsap.set(paragraphs, { autoAlpha: 0, y: -20 });
+    gsap.set(paragraphs[lastIndex], { autoAlpha: 1, y: 0 });
+    activeIndexRef.current = lastIndex;
+    lastScrollTimeRef.current = Date.now();
+  }, [resetToEnd, isClient]);
+
+  // Enable/disable observer based on isActive prop
+  useEffect(() => {
+    if (!observerRef.current) return;
+    
+    if (isActive) {
+      // Add delay before enabling to prevent residual scroll from triggering
+      const timeout = setTimeout(() => {
+        observerRef.current?.enable();
+        lastScrollTimeRef.current = Date.now();
+      }, 300);
+      return () => clearTimeout(timeout);
+    } else {
+      observerRef.current.disable();
+    }
+  }, [isActive]);
+
   useLayoutEffect(() => {
     if (typeof window === 'undefined' || !isClient) return;
 
-    gsap.registerPlugin(ScrollTrigger, Observer);
-
-    const section = sectionRef.current;
     const blobContainer = blobContainerRef.current;
-    if (!section || !blobContainer) return;
+    if (!blobContainer) return;
 
     const paragraphs = Array.from(blobContainer.querySelectorAll<HTMLElement>('.paragraph-item'));
     if (paragraphs.length === 0) return;
 
     const time = 0.6;
-    let animating = false;
 
     // Initialize: show first paragraph, hide others
     gsap.set(paragraphs, { autoAlpha: 0, y: 20 });
     gsap.set(paragraphs[0], { autoAlpha: 1, y: 0 });
 
-    const animateToIndex = (newIndex: number) => {
+    const animateToIndex = (newIndex: number, callback?: () => void) => {
       if (newIndex < 0 || newIndex >= paragraphs.length) return;
-      if (animating) return;
+      if (animatingRef.current) return;
       
       const currentIndex = activeIndexRef.current;
       if (newIndex === currentIndex) return;
 
-      animating = true;
+      animatingRef.current = true;
       const isForward = newIndex > currentIndex;
       const currentPara = paragraphs[currentIndex];
       const nextPara = paragraphs[newIndex];
 
       const tl = gsap.timeline({
         onComplete: () => {
-          animating = false;
+          animatingRef.current = false;
           activeIndexRef.current = newIndex;
+          lastScrollTimeRef.current = Date.now();
+          callback?.();
         }
       });
 
@@ -83,103 +149,95 @@ export default function AboutBlobScroll() {
     };
 
     const handleScroll = (direction: 'up' | 'down') => {
+      // Check cooldown to prevent residual scroll
+      const now = Date.now();
+      if (now - lastScrollTimeRef.current < scrollCooldown) return;
+      if (animatingRef.current) return;
+      
       const currentIndex = activeIndexRef.current;
       
       if (direction === 'down') {
         if (currentIndex < paragraphs.length - 1) {
           animateToIndex(currentIndex + 1);
         } else {
-          // At the end, release scroll
-          blobObserver.disable();
+          // At the end - notify parent to move to next section
+          lastScrollTimeRef.current = now;
+          onEdgeReached?.('end');
         }
       } else {
         if (currentIndex > 0) {
           animateToIndex(currentIndex - 1);
         } else {
-          // At the start, release scroll
-          blobObserver.disable();
+          // At the start - notify parent to move to previous section
+          lastScrollTimeRef.current = now;
+          onEdgeReached?.('start');
         }
       }
     };
 
+    // Create Observer for scroll handling - starts disabled
+    // Higher tolerance and wheelSpeed adjustment to prevent oversensitivity
     const blobObserver = Observer.create({
       type: 'wheel,touch,pointer',
       wheelSpeed: -1,
-      tolerance: 10,
+      tolerance: 50, // Higher tolerance to prevent accidental triggers
       preventDefault: true,
       onDown: () => handleScroll('up'),
       onUp: () => handleScroll('down'),
-      onEnable(self) {
-        const savedScroll = self.scrollY();
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (self as any)._restoreScroll = () => self.scrollY(savedScroll);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        document.addEventListener('scroll', (self as any)._restoreScroll, { passive: false });
-      },
-      onDisable(self) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        document.removeEventListener('scroll', (self as any)._restoreScroll);
-      },
     });
 
+    // Start disabled, will be enabled when isActive becomes true
     blobObserver.disable();
-
-    // ScrollTrigger to pin the section
-    const st = ScrollTrigger.create({
-      id: 'ABOUT-BLOB-LOCK',
-      trigger: section,
-      pin: true,
-      pinSpacing: false,
-      start: 'top top+=100',
-      end: '+=100',
-      onEnter: () => {
-        if (!blobObserver.isEnabled) blobObserver.enable();
-      },
-      onEnterBack: () => {
-        if (!blobObserver.isEnabled) blobObserver.enable();
-      },
-    });
-
-    ScrollTrigger.refresh();
+    observerRef.current = blobObserver;
 
     return () => {
-      st.kill();
       blobObserver.kill();
+      observerRef.current = null;
     };
-  }, [isClient]);
+  }, [isClient, onEdgeReached]);
 
   return (
     <div 
       ref={sectionRef} 
-      className="about-blob-scroll relative w-full flex flex-col items-center justify-center py-10 sm:py-14 lg:py-20"
+      className="about-blob-scroll relative w-full h-full flex items-center justify-center overflow-visible"
     >
       {/* Blob with text */}
-      <div ref={blobContainerRef} className="relative flex w-full justify-center">
-        {/* Text blob shape container */}
+      <div ref={blobContainerRef} className="relative flex items-center justify-center">
+        {/* Text blob shape container - on mobile, blob extends beyond screen edges */}
         <div className="relative flex items-center justify-center">
-          {/* Background SVG shape - responsive sizing */}
+          {/* Background SVG shape - mobile: wider than viewport, desktop: contained */}
           <img
             src="/about_text_blob.svg"
             alt=""
-            className="w-[400px] sm:w-[520px] md:w-[580px] lg:w-[640px] h-auto"
+            className="w-[485px] sm:w-[400px] md:w-[480px] lg:w-[560px] h-auto max-w-none"
           />
           {/* Text content overlay - absolutely positioned inside the blob */}
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="relative w-full max-w-[240px] sm:max-w-[300px] md:max-w-[340px] lg:max-w-[380px] h-[220px] sm:h-[280px] md:h-[320px] lg:h-[360px] text-[#474e3a]">
+            {/* Mobile: "Hi!" title above paragraph */}
+            <div className="relative w-full max-w-[320px] sm:max-w-[250px] md:max-w-[300px] lg:max-w-[350px] h-[320px] sm:h-[250px] md:h-[300px] lg:h-[350px] text-[#474e3a] flex flex-col items-center justify-center">
+              {/* Hi! title - only visible on mobile */}
+              <h3
+                className="block sm:hidden text-[36px] leading-[1.0] text-center mb-2"
+                style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400 }}
+              >
+                Hi !
+              </h3>
               {/* All paragraphs stacked, only one visible at a time */}
-              {aboutParagraphs.map((text, index) => (
-                <div
-                  key={index}
-                  className="paragraph-item absolute inset-0 flex items-center justify-center"
-                >
-                  <p
-                    className="text-justify text-[14px] sm:text-[15px] lg:text-[16px] leading-[24px]"
-                    style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
+              <div className="relative w-full flex-1 sm:h-full">
+                {aboutParagraphs.map((text, index) => (
+                  <div
+                    key={index}
+                    className="paragraph-item absolute inset-0 flex items-center justify-center"
                   >
-                    {text}
-                  </p>
-                </div>
-              ))}
+                    <p
+                      className="text-justify text-[16px] sm:text-[13px] md:text-[14px] lg:text-[15px] leading-[24px] sm:leading-[22px] md:leading-[24px] lg:leading-[26px]"
+                      style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
+                    >
+                      {text}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
