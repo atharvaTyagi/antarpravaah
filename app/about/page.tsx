@@ -181,13 +181,30 @@ export default function AboutPage() {
     }
   }, [isAnimating, currentSection, SECTIONS, isBlobScrollActive, isInspirationScrollActive, goToSection]);
 
+  // Handle mobile viewport height (accounts for browser toolbar)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const setViewportHeight = () => {
+      // Get the actual viewport height accounting for mobile browser toolbars
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    };
+
+    setViewportHeight();
+    window.addEventListener('resize', setViewportHeight);
+    window.addEventListener('orientationchange', setViewportHeight);
+
+    return () => {
+      window.removeEventListener('resize', setViewportHeight);
+      window.removeEventListener('orientationchange', setViewportHeight);
+    };
+  }, []);
+
   // Setup wheel/touch event handlers
   useLayoutEffect(() => {
     if (typeof window === 'undefined') return;
     if (!isReady) return;
-
-    const lenis = (window as Window & { __lenis?: { stop?: () => void; start?: () => void } }).__lenis;
-    lenis?.stop?.();
 
     document.body.style.overflow = 'hidden';
 
@@ -227,20 +244,18 @@ export default function AboutPage() {
       window.removeEventListener('wheel', handleWheel);
       window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchmove', handleTouchMove);
-      lenis?.start?.();
     };
   }, [isReady, currentSection, SECTIONS, isBlobScrollActive, isInspirationScrollActive, handleScroll]);
 
-  const sectionStyle = {
-    height: 'calc(100vh - var(--header-height, 90px))',
-    minHeight: 'calc(100vh - var(--header-height, 90px))',
-  };
+  // Section height class name - uses CSS with proper fallbacks
+  const sectionClass = "section-height";
 
   return (
     <>
       <style jsx global>{`
         :root {
           --header-height: 90px;
+          --vh: 1vh; /* Fallback, will be set by JS */
         }
         @media (min-width: 640px) {
           :root {
@@ -252,9 +267,45 @@ export default function AboutPage() {
             --header-height: 148px;
           }
         }
+        
+        /* Section height classes that work across all mobile browsers */
+        .section-height {
+          /* Fallback for older browsers */
+          height: calc(100vh - var(--header-height, 90px));
+          min-height: calc(100vh - var(--header-height, 90px));
+          /* JS-calculated height (most reliable for mobile) */
+          height: calc(var(--vh, 1vh) * 100 - var(--header-height, 90px));
+          min-height: calc(var(--vh, 1vh) * 100 - var(--header-height, 90px));
+        }
+        
+        /* Use dvh where supported (modern browsers) */
+        @supports (height: 100dvh) {
+          .section-height {
+            height: calc(100dvh - var(--header-height, 90px));
+            min-height: calc(100dvh - var(--header-height, 90px));
+          }
+        }
+        
+        /* Main container positioning */
+        .main-container {
+          position: fixed;
+          top: var(--header-height, 90px);
+          left: 0;
+          right: 0;
+          bottom: 0;
+          /* Fallback */
+          height: calc(100vh - var(--header-height, 90px));
+          height: calc(var(--vh, 1vh) * 100 - var(--header-height, 90px));
+        }
+        
+        @supports (height: 100dvh) {
+          .main-container {
+            height: calc(100dvh - var(--header-height, 90px));
+          }
+        }
       `}</style>
 
-      <main className="fixed inset-0 top-[var(--header-height)] overflow-hidden bg-[#f6edd0] z-[30]">
+      <main className="main-container overflow-hidden bg-[#f6edd0] z-[30]">
         <div ref={containerRef} className="will-change-transform">
           
           {/* ===== MOBILE LAYOUT ===== */}
@@ -263,8 +314,7 @@ export default function AboutPage() {
               {/* Section 1: Introduction */}
               <div
                 ref={(el) => { if (el) sectionsRef.current[0] = el; }}
-                className="relative flex flex-col items-center justify-center px-5 bg-[#f6edd0]"
-                style={sectionStyle}
+                className={`relative flex flex-col items-center justify-center px-5 bg-[#f6edd0] ${sectionClass}`}
               >
                 <div className="flex flex-col items-center gap-10">
                   <div className="w-[127px] h-[107px]">
@@ -290,8 +340,7 @@ export default function AboutPage() {
               {/* Section 2: Photo Cluster 1 */}
               <div
                 ref={(el) => { if (el) sectionsRef.current[1] = el; }}
-                className="relative flex items-center justify-center px-5 bg-[#f6edd0]"
-                style={sectionStyle}
+                className={`relative flex items-center justify-center px-5 bg-[#f6edd0] ${sectionClass}`}
               >
                 <div className="relative w-[353px] h-[320px]">
                   {/* Bottom left */}
@@ -327,8 +376,7 @@ export default function AboutPage() {
               {/* Section 3: Blob with paragraphs */}
               <div
                 ref={(el) => { if (el) sectionsRef.current[2] = el; }}
-                className="relative flex items-center justify-center bg-[#474e3a] overflow-hidden"
-                style={sectionStyle}
+                className={`relative flex items-center justify-center bg-[#474e3a] overflow-hidden ${sectionClass}`}
               >
                 <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-10">
                   <img src="/about_dashed_background.svg" alt="" className="h-full w-full object-cover" />
@@ -344,8 +392,7 @@ export default function AboutPage() {
               {/* Section 4: Photo Cluster 2 */}
               <div
                 ref={(el) => { if (el) sectionsRef.current[3] = el; }}
-                className="relative flex items-center justify-center px-5 bg-[#474e3a]"
-                style={sectionStyle}
+                className={`relative flex items-center justify-center px-5 bg-[#474e3a] ${sectionClass}`}
               >
                 <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-10">
                   <img src="/about_dashed_background.svg" alt="" className="h-full w-full object-cover" />
@@ -384,8 +431,7 @@ export default function AboutPage() {
               {/* Section 5: My Inspiration (scrollable) */}
               <div
                 ref={(el) => { if (el) sectionsRef.current[4] = el; }}
-                className="relative flex items-center justify-center px-5 py-10 bg-[#f6edd0]"
-                style={sectionStyle}
+                className={`relative flex items-center justify-center px-5 py-10 bg-[#f6edd0] ${sectionClass}`}
               >
                 <div className="w-full h-[560px]">
                   <InspirationScroll
@@ -400,8 +446,7 @@ export default function AboutPage() {
               {/* Section 6: CTA */}
               <div
                 ref={(el) => { if (el) sectionsRef.current[5] = el; }}
-                className="relative flex flex-col items-center justify-center px-5 bg-[#f6edd0]"
-                style={sectionStyle}
+                className={`relative flex flex-col items-center justify-center px-5 bg-[#f6edd0] ${sectionClass}`}
               >
                 <div className="flex flex-col items-center gap-6">
                   <div className="py-5">
@@ -425,8 +470,7 @@ export default function AboutPage() {
               {/* Section 7: Footer */}
               <div
                 ref={(el) => { if (el) sectionsRef.current[6] = el; }}
-                className="relative flex items-center bg-[#474e3a]"
-                style={sectionStyle}
+                className={`relative flex items-center bg-[#474e3a] ${sectionClass}`}
               >
                 <Footer />
               </div>
@@ -437,8 +481,7 @@ export default function AboutPage() {
               {/* Section 1: Introduction */}
               <div
                 ref={(el) => { if (el) sectionsRef.current[0] = el; }}
-                className="relative flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 bg-[#f6edd0]"
-                style={sectionStyle}
+                className={`relative flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 bg-[#f6edd0] ${sectionClass}`}
               >
                 <div className="mx-auto max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1177px]">
                   <div className="flex flex-col items-center gap-6 sm:gap-8 lg:gap-10 py-6 sm:py-8 lg:py-10">
@@ -464,8 +507,7 @@ export default function AboutPage() {
               {/* Section 2: Photos & Blob */}
               <div
                 ref={(el) => { if (el) sectionsRef.current[1] = el; }}
-                className="relative flex items-center justify-center bg-[#474e3a] overflow-hidden"
-                style={sectionStyle}
+                className={`relative flex items-center justify-center bg-[#474e3a] overflow-hidden ${sectionClass}`}
               >
                 <div className="pointer-events-none absolute inset-0 overflow-hidden">
                   <img src="/about_dashed_background.svg" alt="" className="h-full w-full object-cover" />
@@ -526,8 +568,7 @@ export default function AboutPage() {
               {/* Section 3: My Inspiration */}
               <div
                 ref={(el) => { if (el) sectionsRef.current[2] = el; }}
-                className="relative flex items-center justify-center px-4 sm:px-6 lg:px-8 bg-[#f6edd0]"
-                style={sectionStyle}
+                className={`relative flex items-center justify-center px-4 sm:px-6 lg:px-8 bg-[#f6edd0] ${sectionClass}`}
               >
                 <div className="w-full h-[85%] sm:h-[80%] lg:h-[85%] max-w-[calc(100vw-32px)] sm:max-w-[calc(100vw-48px)] lg:max-w-[calc(100vw-64px)] bg-[#93a378] rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] px-6 sm:px-12 lg:px-20 py-8 sm:py-12 lg:py-16 flex items-center justify-center">
                   <div className="flex flex-col gap-6 sm:gap-8 lg:gap-10 items-center justify-center text-[#474e3a] text-center max-w-[900px]">
@@ -567,8 +608,7 @@ export default function AboutPage() {
               {/* Section 4: CTA */}
               <div
                 ref={(el) => { if (el) sectionsRef.current[3] = el; }}
-                className="relative flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 bg-[#f6edd0]"
-                style={sectionStyle}
+                className={`relative flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 bg-[#f6edd0] ${sectionClass}`}
               >
                 <div className="mx-auto max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1177px]">
                   <div className="flex flex-col items-center gap-4 sm:gap-5 lg:gap-6 py-6 sm:py-8 lg:py-10">
@@ -594,8 +634,7 @@ export default function AboutPage() {
               {/* Section 5: Footer */}
               <div
                 ref={(el) => { if (el) sectionsRef.current[4] = el; }}
-                className="relative flex items-center bg-[#474e3a]"
-                style={sectionStyle}
+                className={`relative flex items-center bg-[#474e3a] ${sectionClass}`}
               >
                 <Footer />
               </div>

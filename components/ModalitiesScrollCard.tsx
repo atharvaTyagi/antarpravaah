@@ -2,10 +2,13 @@
 
 import { useLayoutEffect, useRef, useState, useEffect } from 'react';
 import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { Observer } from 'gsap/dist/Observer';
 import Button from './Button';
 
-gsap.registerPlugin(ScrollTrigger);
+// Register GSAP plugins
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(Observer);
+}
 
 export interface ModalityContent {
   id: string;
@@ -24,6 +27,11 @@ export interface ModalityContent {
 interface ModalitiesScrollCardProps {
   modalities: ModalityContent[];
   sectionTitle?: string;
+  // New props for page-level coordination (like AboutBlobScroll)
+  isActive?: boolean;
+  onEdgeReached?: (edge: 'start' | 'end') => void;
+  resetToStart?: boolean;
+  resetToEnd?: boolean;
 }
 
 // Button colors for therapies page
@@ -33,7 +41,14 @@ const therapiesButtonColors = {
   bgHover: '#645c42',
 };
 
-export default function ModalitiesScrollCard({ modalities, sectionTitle }: ModalitiesScrollCardProps) {
+export default function ModalitiesScrollCard({ 
+  modalities, 
+  sectionTitle,
+  isActive = false,
+  onEdgeReached,
+  resetToStart,
+  resetToEnd,
+}: ModalitiesScrollCardProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const cardRef = useRef<HTMLDivElement | null>(null);
   const contentRef = useRef<HTMLDivElement | null>(null);
@@ -41,50 +56,130 @@ export default function ModalitiesScrollCard({ modalities, sectionTitle }: Modal
   const activeIndexRef = useRef(0);
   const prevIndexRef = useRef(0);
   const isAnimatingRef = useRef(false);
+  const observerRef = useRef<Observer | null>(null);
+  const lastScrollTimeRef = useRef(0);
+  const [isClient, setIsClient] = useState(false);
 
-  // Setup scroll-driven content changes
-  useLayoutEffect(() => {
-    if (typeof window === 'undefined') return;
-    if (!containerRef.current || !cardRef.current || modalities.length < 2) return;
+  // Cooldown between modality changes (prevents residual scroll)
+  const scrollCooldown = 400;
 
-    const container = containerRef.current;
-    const totalItems = modalities.length;
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Handle reset to start (when entering from above)
+  useEffect(() => {
+    if (!resetToStart || !isClient) return;
     
-    // Reduced scroll distance for lighter feel
-    const scrollPerItem = window.innerHeight * 0.4;
-    const totalScrollDistance = scrollPerItem * (totalItems - 1);
+    // Reset to first modality
+    activeIndexRef.current = 0;
+    prevIndexRef.current = 0;
+    setActiveIndex(0);
+    lastScrollTimeRef.current = Date.now();
+  }, [resetToStart, isClient]);
 
-    // Create ScrollTrigger for pinning and progress tracking
-    const st = ScrollTrigger.create({
-      trigger: container,
-      start: 'top top+=160',
-      end: `+=${totalScrollDistance}`,
-      pin: true,
-      pinSpacing: true,
-      onUpdate: (self) => {
-        // Calculate which item should be active based on scroll progress
-        const progress = self.progress;
-        const newIndex = Math.min(
-          Math.floor(progress * totalItems),
-          totalItems - 1
-        );
-        
-        // Use ref to compare without triggering re-render loop
-        if (newIndex !== activeIndexRef.current && !isAnimatingRef.current) {
-          prevIndexRef.current = activeIndexRef.current;
-          activeIndexRef.current = newIndex;
-          setActiveIndex(newIndex);
+  // Handle reset to end (when entering from below)
+  useEffect(() => {
+    if (!resetToEnd || !isClient) return;
+    
+    // Reset to last modality
+    const lastIndex = modalities.length - 1;
+    activeIndexRef.current = lastIndex;
+    prevIndexRef.current = lastIndex;
+    setActiveIndex(lastIndex);
+    lastScrollTimeRef.current = Date.now();
+  }, [resetToEnd, isClient, modalities.length]);
+
+  // Enable/disable observer based on isActive prop
+  useEffect(() => {
+    if (!observerRef.current) return;
+    
+    if (isActive) {
+      // Add delay before enabling to prevent residual scroll from triggering
+      const timeout = setTimeout(() => {
+        observerRef.current?.enable();
+        lastScrollTimeRef.current = Date.now();
+      }, 300);
+      return () => clearTimeout(timeout);
+    } else {
+      observerRef.current.disable();
+    }
+  }, [isActive]);
+
+  // Setup Observer-based scroll handling
+  useLayoutEffect(() => {
+    if (typeof window === 'undefined' || !isClient) return;
+    if (!containerRef.current || modalities.length < 2) return;
+
+    const totalItems = modalities.length;
+
+    const animateToIndex = (newIndex: number, callback?: () => void) => {
+      if (newIndex < 0 || newIndex >= totalItems) return;
+      if (isAnimatingRef.current) return;
+      
+      const currentIndex = activeIndexRef.current;
+      if (newIndex === currentIndex) return;
+
+      isAnimatingRef.current = true;
+      prevIndexRef.current = currentIndex;
+      activeIndexRef.current = newIndex;
+      setActiveIndex(newIndex);
+      
+      // Animation happens in the useEffect below
+      // Set timeout to match animation duration
+      setTimeout(() => {
+        isAnimatingRef.current = false;
+        lastScrollTimeRef.current = Date.now();
+        callback?.();
+      }, 600);
+    };
+
+    const handleScroll = (direction: 'up' | 'down') => {
+      // Check cooldown to prevent residual scroll
+      const now = Date.now();
+      if (now - lastScrollTimeRef.current < scrollCooldown) return;
+      if (isAnimatingRef.current) return;
+      
+      const currentIndex = activeIndexRef.current;
+      
+      if (direction === 'down') {
+        if (currentIndex < totalItems - 1) {
+          animateToIndex(currentIndex + 1);
+        } else {
+          // At the end - notify parent to move to next section
+          lastScrollTimeRef.current = now;
+          onEdgeReached?.('end');
         }
-      },
+      } else {
+        if (currentIndex > 0) {
+          animateToIndex(currentIndex - 1);
+        } else {
+          // At the start - notify parent to move to previous section
+          lastScrollTimeRef.current = now;
+          onEdgeReached?.('start');
+        }
+      }
+    };
+
+    // Create Observer for scroll handling - starts disabled
+    const modalityObserver = Observer.create({
+      type: 'wheel,touch,pointer',
+      wheelSpeed: -1,
+      tolerance: 50,
+      preventDefault: true,
+      onDown: () => handleScroll('up'),
+      onUp: () => handleScroll('down'),
     });
 
-    // Small delay then refresh to ensure proper measurements
-    setTimeout(() => ScrollTrigger.refresh(), 100);
+    // Start disabled, will be enabled when isActive becomes true
+    modalityObserver.disable();
+    observerRef.current = modalityObserver;
 
     return () => {
-      st.kill();
+      modalityObserver.kill();
+      observerRef.current = null;
     };
-  }, [modalities.length]); // Only depend on modalities.length, not activeIndex
+  }, [isClient, modalities.length, onEdgeReached]);
 
   // Animate content when activeIndex changes - smooth parallax effect
   useEffect(() => {
@@ -98,18 +193,12 @@ export default function ModalitiesScrollCard({ modalities, sectionTitle }: Modal
     const isScrollingDown = activeIndex > prevIndexRef.current;
     const yStart = isScrollingDown ? 30 : -30;
     
-    isAnimatingRef.current = true;
-    
     // Kill any existing animations
     gsap.killTweensOf(elements);
     if (icon) gsap.killTweensOf(icon);
     
     // Smooth parallax fade-in with staggered elements
-    const tl = gsap.timeline({
-      onComplete: () => {
-        isAnimatingRef.current = false;
-      }
-    });
+    const tl = gsap.timeline();
     
     // Text content animates with parallax Y movement
     tl.fromTo(
@@ -157,10 +246,10 @@ export default function ModalitiesScrollCard({ modalities, sectionTitle }: Modal
   if (!currentModality) return null;
 
   return (
-    <div ref={containerRef} className="modalities-scroll-container relative w-full flex flex-col items-center">
+    <div ref={containerRef} className="modalities-scroll-container relative w-full h-full flex flex-col items-center justify-center">
       {/* Section Title */}
       {sectionTitle && (
-        <div className="mb-6 sm:mb-8 lg:mb-10 text-center w-full">
+        <div className="mb-6 sm:mb-8 lg:mb-10 text-center w-full shrink-0">
           <h2
             className="text-[36px] sm:text-[42px] lg:text-[48px] leading-[1.0] text-[#645c42]"
             style={{ fontFamily: 'var(--font-saphira), serif' }}
@@ -170,10 +259,10 @@ export default function ModalitiesScrollCard({ modalities, sectionTitle }: Modal
         </div>
       )}
 
-      {/* Static Card Container - centered with max width and fixed height */}
+      {/* Static Card Container - centered with max width */}
       <div
         ref={cardRef}
-        className="relative w-full max-w-[1200px] h-[calc(100vh-220px)] max-h-[700px] bg-[#d6c68e] rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] overflow-hidden"
+        className="relative w-full max-w-[1200px] flex-1 max-h-[700px] bg-[#d6c68e] rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] overflow-hidden"
       >
         <div 
           ref={contentRef}
@@ -273,6 +362,7 @@ export default function ModalitiesScrollCard({ modalities, sectionTitle }: Modal
           </div>
         </div>
       </div>
+
     </div>
   );
 }

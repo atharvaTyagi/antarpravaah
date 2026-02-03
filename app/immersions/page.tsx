@@ -203,15 +203,7 @@ export default function ImmersionsPage() {
   // Handle card expanded change - lock/unlock scrolling
   const handleCardExpandedChange = useCallback((expanded: boolean) => {
     setIsCardExpanded(expanded);
-    
-    if (typeof window !== 'undefined') {
-      const lenis = (window as Window & { __lenis?: { stop?: () => void; start?: () => void } }).__lenis;
-      if (expanded) {
-        lenis?.stop?.();
-      } else {
-        lenis?.start?.();
-      }
-    }
+    // Scroll is already locked via body.style.overflow = 'hidden' for this page
   }, []);
 
   // Navigate to a specific section
@@ -329,10 +321,7 @@ export default function ImmersionsPage() {
     if (typeof window === 'undefined') return;
     if (!isReady) return;
 
-    // Stop Lenis for this page
-    const lenis = (window as Window & { __lenis?: { stop?: () => void; start?: () => void } }).__lenis;
-    lenis?.stop?.();
-
+    // Lock scroll for this page (GSAP takes over)
     document.body.style.overflow = 'hidden';
 
     // Wheel event handler for continuous scrolling
@@ -367,7 +356,6 @@ export default function ImmersionsPage() {
       window.removeEventListener('wheel', handleWheel);
       window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchmove', handleTouchMove);
-      lenis?.start?.();
     };
   }, [isReady, isCardExpanded, handleScroll]);
 

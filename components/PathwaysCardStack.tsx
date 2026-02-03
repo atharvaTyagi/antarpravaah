@@ -2,10 +2,13 @@
 
 import { useLayoutEffect, useRef, useState, useEffect, useCallback } from 'react';
 import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { Observer } from 'gsap/dist/Observer';
 import PathwayCard, { Pathway } from './PathwayCard';
 
-gsap.registerPlugin(ScrollTrigger);
+// Register GSAP plugins
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(Observer);
+}
 
 export interface PathwaysStackCard {
   key: string;
@@ -20,18 +23,41 @@ interface PathwaysCardStackProps {
   showPattern?: boolean;
   /** Pathways data for mobile layout */
   pathways?: Pathway[];
+  // New scroll control props (following ModalitiesScrollCard pattern)
+  isActive?: boolean;
+  onEdgeReached?: (edge: 'start' | 'end') => void;
+  resetToStart?: boolean;
+  resetToEnd?: boolean;
 }
 
-export default function PathwaysCardStack({ cards, title, showPattern = false, pathways }: PathwaysCardStackProps) {
+export default function PathwaysCardStack({ 
+  cards, 
+  title, 
+  showPattern = false, 
+  pathways,
+  isActive = false,
+  onEdgeReached,
+  resetToStart,
+  resetToEnd,
+}: PathwaysCardStackProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const cardContainerRef = useRef<HTMLDivElement | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const activeIndexRef = useRef(0);
   const prevIndexRef = useRef(0);
   const isAnimatingRef = useRef(false);
+  const observerRef = useRef<Observer | null>(null);
+  const lastScrollTimeRef = useRef(0);
   const [isMobile, setIsMobile] = useState(false);
   const [isCardExpanded, setIsCardExpanded] = useState(false);
-  const scrollTriggerRef = useRef<ScrollTrigger | null>(null);
+  const [isClient, setIsClient] = useState(false);
+
+  // Cooldown between card changes (prevents residual scroll)
+  const scrollCooldown = 400;
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Detect mobile breakpoint
   useEffect(() => {
@@ -51,77 +77,144 @@ export default function PathwaysCardStack({ cards, title, showPattern = false, p
     setIsCardExpanded(expanded);
     
     if (expanded) {
-      // Pause Lenis smooth scroll when card is expanded
-      if (typeof window !== 'undefined' && (window as Window & { __lenis?: { stop?: () => void } }).__lenis?.stop) {
-        (window as Window & { __lenis?: { stop?: () => void } }).__lenis?.stop?.();
-      }
+      // Lock scroll when card is expanded
+      document.body.style.overflow = 'hidden';
+      // Disable observer while card is expanded
+      observerRef.current?.disable();
     } else {
-      // Resume Lenis smooth scroll when card is collapsed
-      if (typeof window !== 'undefined' && (window as Window & { __lenis?: { start?: () => void } }).__lenis?.start) {
-        (window as Window & { __lenis?: { start?: () => void } }).__lenis?.start?.();
+      // Restore scroll when card is collapsed
+      document.body.style.overflow = '';
+      // Re-enable observer if section is active
+      if (isActive) {
+        setTimeout(() => observerRef.current?.enable(), 100);
       }
     }
-  }, []);
+  }, [isActive]);
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      // Ensure Lenis is restored on unmount
-      if (typeof window !== 'undefined' && (window as Window & { __lenis?: { start?: () => void } }).__lenis?.start) {
-        (window as Window & { __lenis?: { start?: () => void } }).__lenis?.start?.();
-      }
+      // Ensure scroll is restored on unmount
+      document.body.style.overflow = '';
     };
   }, []);
 
-  // Setup scroll-driven card changes - BOTH desktop AND mobile (pinned behavior)
-  useLayoutEffect(() => {
-    if (typeof window === 'undefined') return;
-    if (!containerRef.current || !cardContainerRef.current || cards.length < 2) return;
+  // Handle reset to start (when entering from above)
+  useEffect(() => {
+    if (!resetToStart || !isClient) return;
+    
+    // Reset to first card
+    activeIndexRef.current = 0;
+    prevIndexRef.current = 0;
+    setActiveIndex(0);
+    lastScrollTimeRef.current = Date.now();
+  }, [resetToStart, isClient]);
 
-    const container = containerRef.current;
+  // Handle reset to end (when entering from below)
+  useEffect(() => {
+    if (!resetToEnd || !isClient) return;
+    
+    // Reset to last card
+    const lastIndex = cards.length - 1;
+    activeIndexRef.current = lastIndex;
+    prevIndexRef.current = lastIndex;
+    setActiveIndex(lastIndex);
+    lastScrollTimeRef.current = Date.now();
+  }, [resetToEnd, isClient, cards.length]);
+
+  // Enable/disable observer based on isActive prop
+  useEffect(() => {
+    if (!observerRef.current) return;
+    
+    if (isActive && !isCardExpanded) {
+      // Add delay before enabling to prevent residual scroll from triggering
+      const timeout = setTimeout(() => {
+        observerRef.current?.enable();
+        lastScrollTimeRef.current = Date.now();
+      }, 300);
+      return () => clearTimeout(timeout);
+    } else {
+      observerRef.current.disable();
+    }
+  }, [isActive, isCardExpanded]);
+
+  // Setup Observer-based scroll handling
+  useLayoutEffect(() => {
+    if (typeof window === 'undefined' || !isClient) return;
+    if (!containerRef.current || cards.length < 2) return;
+
     const totalItems = cards.length;
 
-    // Scroll distance per card - slightly less on mobile for faster transitions
-    const scrollPerItem = isMobile ? window.innerHeight * 0.4 : window.innerHeight * 0.5;
-    const totalScrollDistance = scrollPerItem * (totalItems - 1);
+    const animateToIndex = (newIndex: number, callback?: () => void) => {
+      if (newIndex < 0 || newIndex >= totalItems) return;
+      if (isAnimatingRef.current) return;
+      
+      const currentIndex = activeIndexRef.current;
+      if (newIndex === currentIndex) return;
 
-    // Create ScrollTrigger for pinning and progress tracking
-    const st = ScrollTrigger.create({
-      trigger: container,
-      start: isMobile ? 'top top+=100' : 'top top+=160',
-      end: `+=${totalScrollDistance}`,
-      pin: true,
-      pinSpacing: true,
-      onUpdate: (self) => {
-        // Don't update if card is expanded (prevents scroll while reading)
-        if (isCardExpanded) return;
-        
-        // Calculate which card should be active based on scroll progress
-        const progress = self.progress;
-        const newIndex = Math.min(
-          Math.floor(progress * totalItems),
-          totalItems - 1
-        );
+      isAnimatingRef.current = true;
+      prevIndexRef.current = currentIndex;
+      activeIndexRef.current = newIndex;
+      setActiveIndex(newIndex);
+      
+      // Animation happens in the useEffect below
+      // Set timeout to match animation duration
+      setTimeout(() => {
+        isAnimatingRef.current = false;
+        lastScrollTimeRef.current = Date.now();
+        callback?.();
+      }, 600);
+    };
 
-        // Update index without triggering re-render loop
-        if (newIndex !== activeIndexRef.current && !isAnimatingRef.current) {
-          prevIndexRef.current = activeIndexRef.current;
-          activeIndexRef.current = newIndex;
-          setActiveIndex(newIndex);
+    const handleScroll = (direction: 'up' | 'down') => {
+      // Skip if card is expanded
+      if (isCardExpanded) return;
+      
+      // Check cooldown to prevent residual scroll
+      const now = Date.now();
+      if (now - lastScrollTimeRef.current < scrollCooldown) return;
+      if (isAnimatingRef.current) return;
+      
+      const currentIndex = activeIndexRef.current;
+      
+      if (direction === 'down') {
+        if (currentIndex < totalItems - 1) {
+          animateToIndex(currentIndex + 1);
+        } else {
+          // At the end - notify parent to move to next section
+          lastScrollTimeRef.current = now;
+          onEdgeReached?.('end');
         }
-      },
+      } else {
+        if (currentIndex > 0) {
+          animateToIndex(currentIndex - 1);
+        } else {
+          // At the start - notify parent to move to previous section
+          lastScrollTimeRef.current = now;
+          onEdgeReached?.('start');
+        }
+      }
+    };
+
+    // Create Observer for scroll handling - starts disabled
+    const pathwaysObserver = Observer.create({
+      type: 'wheel,touch,pointer',
+      wheelSpeed: -1,
+      tolerance: 50,
+      preventDefault: true,
+      onDown: () => handleScroll('up'),
+      onUp: () => handleScroll('down'),
     });
 
-    scrollTriggerRef.current = st;
-
-    // Refresh after mount
-    setTimeout(() => ScrollTrigger.refresh(), 100);
+    // Start disabled, will be enabled when isActive becomes true
+    pathwaysObserver.disable();
+    observerRef.current = pathwaysObserver;
 
     return () => {
-      st.kill();
-      scrollTriggerRef.current = null;
+      pathwaysObserver.kill();
+      observerRef.current = null;
     };
-  }, [cards.length, isMobile, isCardExpanded]);
+  }, [isClient, cards.length, onEdgeReached, isCardExpanded]);
 
   // Animate card transitions when activeIndex changes
   useEffect(() => {
@@ -135,19 +228,25 @@ export default function PathwaysCardStack({ cards, title, showPattern = false, p
 
     isAnimatingRef.current = true;
 
-    // Hide all cards
+    // Determine scroll direction
+    const isScrollingDown = activeIndex > prevIndexRef.current;
+    const yStart = isScrollingDown ? 30 : -30;
+
+    // Kill any existing animations
+    cardElements.forEach((card) => {
+      gsap.killTweensOf(card);
+    });
+
+    // Hide all cards except active
     cardElements.forEach((card, index) => {
       if (index !== activeIndex) {
         gsap.set(card, { opacity: 0, pointerEvents: 'none' });
       }
     });
 
-    // Animate in the active card
+    // Animate in the active card with parallax effect
     const activeCard = cardElements[activeIndex];
     if (activeCard) {
-      const isScrollingDown = activeIndex > prevIndexRef.current;
-      const yStart = isScrollingDown ? 30 : -30;
-
       gsap.fromTo(
         activeCard,
         {
@@ -166,6 +265,8 @@ export default function PathwaysCardStack({ cards, title, showPattern = false, p
           },
         }
       );
+    } else {
+      isAnimatingRef.current = false;
     }
   }, [activeIndex]);
 
@@ -213,10 +314,8 @@ export default function PathwaysCardStack({ cards, title, showPattern = false, p
   return (
     <div 
       ref={containerRef} 
-      className="pathways-scroll-container relative w-full flex flex-col items-center px-4 sm:px-6 lg:px-8"
+      className="pathways-scroll-container relative w-full h-full flex flex-col items-center px-4 sm:px-6 lg:px-8"
       style={{
-        // Account for header + padding, fit within viewport
-        minHeight: isMobile ? 'calc(100vh - 100px)' : 'calc(100vh - 160px)',
         paddingTop: isMobile ? '1rem' : 'clamp(1.5rem, 3vh, 2.5rem)',
         paddingBottom: isMobile ? '1rem' : 'clamp(1.5rem, 3vh, 2.5rem)',
       }}
@@ -258,9 +357,9 @@ export default function PathwaysCardStack({ cards, title, showPattern = false, p
         </div>
       )}
 
-      {/* Section Title - inside pinned container */}
+      {/* Section Title - inside container */}
       {title && (
-        <div className="mb-4 sm:mb-6 lg:mb-8 text-center w-full flex-shrink-0">
+        <div className="mb-4 sm:mb-6 lg:mb-8 text-center w-full flex-shrink-0 z-10">
           <h2
             className="text-[36px] md:text-[clamp(2rem,5vw,3rem)] leading-[1.0] text-[#9ac1bf] whitespace-pre-line md:whitespace-normal"
             style={{ fontFamily: 'var(--font-saphira), serif' }}
@@ -273,11 +372,11 @@ export default function PathwaysCardStack({ cards, title, showPattern = false, p
       {/* Card Container - flexbox to fill remaining space */}
       <div
         ref={cardContainerRef}
-        className="relative w-full flex-1 flex items-center justify-center"
+        className="relative w-full flex-1 flex items-center justify-center z-10"
         style={{
           maxWidth: isMobile ? '100%' : 'min(1347px, 100%)',
           // Use available height minus title area
-          maxHeight: isMobile ? 'calc(100vh - 100px - 5rem)' : 'calc(100vh - 160px - clamp(6rem, 12vh, 10rem))',
+          maxHeight: isMobile ? 'calc(100% - 5rem)' : 'calc(100% - clamp(6rem, 12vh, 10rem))',
         }}
       >
         {renderCards()}

@@ -15,7 +15,6 @@ npm run lint     # Run ESLint
 
 - **Next.js 16** (App Router) with React 19 and TypeScript
 - **Tailwind CSS v4** for styling
-- **Lenis** for smooth scrolling
 - **GSAP** (ScrollTrigger, Observer) for scroll-locking and step-based animations
 - **Framer Motion** for reveal and motion primitives
 - **Zustand** for lightweight state management
@@ -24,18 +23,38 @@ npm run lint     # Run ESLint
 
 ### Scroll System
 
-The site uses a hybrid scroll approach:
-- **Lenis** provides smooth scrolling globally, initialized after the splash screen completes
-- **GSAP Observer** temporarily takes over scroll input for step-based sections (like card stacks)
-- Lenis is exposed globally via `window.__lenis` so GSAP-controlled sections can pause/resume it
+The site uses GSAP for scroll-controlled animations:
+- **GSAP Observer** temporarily takes over scroll input for step-based sections (like card stacks, blob scroll)
+- Pages with full-page snapping use a fixed container with manual `gsap.to()` animation
 
-Pattern for scroll-locking sections (see `components/WeWorkTogether.tsx`):
+Pattern for scroll-locking sections (see `components/AboutBlobScroll.tsx`):
 ```typescript
-// Pause Lenis when Observer takes control
-window.__lenis?.stop?.();
+// Create Observer for scroll handling
+const observer = Observer.create({
+  type: 'wheel,touch,pointer',
+  wheelSpeed: -1,
+  tolerance: 50,
+  preventDefault: true,
+  onDown: () => handleScroll('up'),
+  onUp: () => handleScroll('down'),
+});
 
-// Resume when done
-window.__lenis?.start?.();
+// Enable/disable based on active state
+observer.enable();
+observer.disable();
+```
+
+### Mobile Viewport Height
+
+Mobile browsers have dynamic toolbars that affect viewport height. The site uses:
+- CSS `100dvh` (dynamic viewport height) where supported
+- JavaScript fallback that sets `--vh` CSS variable from `window.innerHeight`
+
+```css
+.section {
+  height: calc(100dvh - var(--header-height, 90px));
+  height: calc(var(--vh, 1vh) * 100 - var(--header-height, 90px)); /* Fallback */
+}
 ```
 
 ### Theme System
@@ -61,7 +80,7 @@ Two Zustand stores in `lib/stores/`:
 
 ## Antar Pravaah — Healing & Transformation
 
-Antar Pravaah is a modern, motion-forward website for a healing and transformation practice. The experience is designed to feel like a guided journey: a scroll-driven introduction (splash), a narrative “Journey” section, a scroll-locked “We Work Together” card sequence, and “Voices of Transformation” testimonials.
+Antar Pravaah is a modern, motion-forward website for a healing and transformation practice. The experience is designed to feel like a guided journey: a scroll-driven introduction (splash), a narrative "Journey" section, a scroll-locked "We Work Together" card sequence, and "Voices of Transformation" testimonials.
 
 ### Website sections
 
@@ -76,7 +95,6 @@ Antar Pravaah is a modern, motion-forward website for a healing and transformati
 - **Next.js (App Router)** + **React**
 - **TypeScript**
 - **Tailwind CSS v4**
-- **Lenis** for smooth scrolling
 - **GSAP** (`ScrollTrigger`, `Observer`) for scroll locking / step-based sequences
 - **Framer Motion** for reveal and motion primitives
 - **Zustand** for lightweight UI/theme state
@@ -114,6 +132,7 @@ npm run start
 
 ### Notes for developers
 
-- **Smooth scroll**: Lenis is initialized after splash completes on the home page (`app/page.tsx`).
-- **Scroll lock sections**: Some interactions (like the “We Work Together” cards) use **GSAP Observer** to temporarily take over wheel/touch input. Lenis is paused/resumed via a global handle (`window.__lenis`).
-- **Theme/background transitions**: Sections can drive theme state via `components/Section.tsx` + `lib/themeConfig.ts`.
+- **Scroll lock sections**: Some interactions (like the "We Work Together" cards, AboutBlobScroll) use **GSAP Observer** to temporarily take over wheel/touch input
+- **Theme/background transitions**: Sections can drive theme state via `components/Section.tsx` + `lib/themeConfig.ts`
+- **Mobile viewport**: Use `100dvh` with fallback to `calc(var(--vh) * 100)` for sections that need full viewport height
+- **Mobile toolbar issue**: The current GSAP Observer approach with `preventDefault: true` blocks native scroll detection, which prevents mobile browser toolbars from collapsing. This is a known limitation.

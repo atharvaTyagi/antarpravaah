@@ -111,15 +111,11 @@ export default function MobileImmersionsCarousel({
     onCardExpandedChange?.(expanded);
     
     if (expanded) {
-      // Pause Lenis smooth scroll when card is expanded
-      if (typeof window !== 'undefined' && (window as Window & { __lenis?: { stop?: () => void } }).__lenis?.stop) {
-        (window as Window & { __lenis?: { stop?: () => void } }).__lenis?.stop?.();
-      }
+      // Lock scroll when card is expanded
+      document.body.style.overflow = 'hidden';
     } else {
-      // Resume Lenis smooth scroll when card is collapsed
-      if (typeof window !== 'undefined' && (window as Window & { __lenis?: { start?: () => void } }).__lenis?.start) {
-        (window as Window & { __lenis?: { start?: () => void } }).__lenis?.start?.();
-      }
+      // Restore scroll when card is collapsed
+      document.body.style.overflow = '';
     }
   }, [onCardExpandedChange]);
 

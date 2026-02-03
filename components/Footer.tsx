@@ -41,7 +41,7 @@ export default function Footer() {
         : '#f6edd0';
 
   return (
-    <footer className="relative z-20 w-full px-4 py-12 sm:px-6 sm:py-16 lg:px-20 lg:py-20" style={{ backgroundColor: footerBg }}>
+    <footer className="relative z-20 w-full h-full flex flex-col items-center justify-center px-4 py-12 sm:px-6 sm:py-16 lg:px-20 lg:py-20" style={{ backgroundColor: footerBg }}>
       <div className="mx-auto flex max-w-full sm:max-w-[calc(100vw-48px)] lg:max-w-[1282px] flex-col items-center gap-8 sm:gap-10 lg:gap-10">
         {/* Quick Links */}
         <div className="flex flex-col items-center gap-3 sm:gap-4 w-full">
