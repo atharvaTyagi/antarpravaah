@@ -1,14 +1,20 @@
 'use client';
 
-import { useRef, useLayoutEffect } from 'react';
+import { useRef, useLayoutEffect, useState, useEffect, useCallback } from 'react';
 import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import Section from './Section';
+import { Observer } from 'gsap/dist/Observer';
 import Button from './Button';
 
 // Register GSAP plugins
 if (typeof window !== 'undefined') {
-  gsap.registerPlugin(ScrollTrigger);
+  gsap.registerPlugin(Observer);
+}
+
+interface TheJourneyProps {
+  isActive?: boolean;
+  onEdgeReached?: (edge: 'start' | 'end') => void;
+  resetToStart?: boolean;
+  resetToEnd?: boolean;
 }
 
 const journeySteps = [
@@ -61,259 +67,581 @@ const ConnectorPath = ({ flip, clipId }: { flip: boolean; clipId: string }) => (
   </svg>
 );
 
-export default function TheJourney() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const stepsContainerRef = useRef<HTMLDivElement>(null);
+// Total steps: 4 journey steps + 1 CTA = 5 positions (0-4)
+const TOTAL_STEPS = journeySteps.length + 1; // 5 total
+
+export default function TheJourney({
+  isActive = false,
+  onEdgeReached,
+  resetToStart,
+  resetToEnd,
+}: TheJourneyProps) {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const stepRefs = useRef<Array<HTMLDivElement | null>>([]);
   const connectorRefs = useRef<Array<HTMLDivElement | null>>([]);
   const ctaContainerRef = useRef<HTMLDivElement>(null);
   const ctaTextRefs = useRef<Array<HTMLParagraphElement | null>>([]);
   const ctaButtonRef = useRef<HTMLDivElement>(null);
 
-  useLayoutEffect(() => {
-    if (typeof window === 'undefined') return;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [currentStep, setCurrentStep] = useState(0);
+  const currentStepRef = useRef(0);
+  const prevStepRef = useRef(0);
+  const isAnimatingRef = useRef(false);
+  const observerRef = useRef<Observer | null>(null);
+  const lastScrollTimeRef = useRef(0);
+  const [isClient, setIsClient] = useState(false);
 
-    const section = sectionRef.current;
-    const stepsContainer = stepsContainerRef.current;
-    if (!section || !stepsContainer) return;
-    const initTimeout = setTimeout(() => {
-      const steps = stepRefs.current.filter(Boolean) as HTMLDivElement[];
-      const connectors = connectorRefs.current.filter(Boolean) as HTMLDivElement[];
+  // Cooldown between step changes
+  const scrollCooldown = 500;
 
-      // Explicitly set clip rects to width 0 to ensure shapes start hidden
-      connectors.forEach((connector) => {
-        const clipRect = connector.querySelector('.clip-rect');
-        if (clipRect) {
-          gsap.set(clipRect, { attr: { width: 0 } });
-        }
-      });
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setIsClient(true);
+  }, []);
 
-      // Initialize steps as hidden
-      steps.forEach((step) => {
-        gsap.set(step, { opacity: 0, y: 50 });
-      });
+  // Get the scroll target position for a given step
+  const getScrollPositionForStep = useCallback((stepIndex: number): number => {
+    const scrollContainer = scrollContainerRef.current;
+    if (!scrollContainer) return 0;
 
-      // Create individual ScrollTriggers for each step and connector
-      // Each element animates when it enters the viewport
-      steps.forEach((step, index) => {
-        // Animate text when it comes into view
-        gsap.fromTo(
-          step,
-          { opacity: 0, y: 50 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 1,
-            ease: 'power2.out',
-            scrollTrigger: {
-              trigger: step,
-              start: 'top 85%', // Start when element is 85% down the viewport
-              end: 'top 40%',
-              scrub: 1,
-            },
-          }
-        );
-      });
+    if (stepIndex === 0) {
+      return 0; // First step - scroll to top
+    }
 
-      // Animate connectors (clip-path reveal) - faster animation
-      connectors.forEach((connector) => {
-        const clipRect = connector.querySelector('.clip-rect');
-        if (!clipRect) return;
+    if (stepIndex < journeySteps.length) {
+      // For journey steps, scroll to bring the step into view
+      // We want to scroll to the connector before the step (or the step itself for step 1)
+      const connector = connectorRefs.current[stepIndex - 1];
+      if (connector) {
+        const containerRect = scrollContainer.getBoundingClientRect();
+        const connectorRect = connector.getBoundingClientRect();
+        const currentScroll = scrollContainer.scrollTop;
+        // Scroll so connector is at the top with some padding
+        return currentScroll + connectorRect.top - containerRect.top - 20;
+      }
+    }
 
-        // Keep connector fully hidden until user scrolls further down the page.
-        // (If start is too low like '85%', it may already be "past start" on initial load.)
-        gsap.fromTo(
-          clipRect,
-          { attr: { width: 0 } },
-          {
-            attr: { width: 462 },
-            ease: 'power1.out',
-            scrollTrigger: {
-              trigger: connector,
-              start: 'top 55%',
-              end: 'top 25%',
-              scrub: 0.6,
-              invalidateOnRefresh: true,
-            },
-          }
-        );
-      });
-
-      // Animate CTA section
+    if (stepIndex === journeySteps.length) {
+      // CTA step - scroll to the CTA container
       const ctaContainer = ctaContainerRef.current;
       if (ctaContainer) {
-        const ctaTexts = ctaTextRefs.current.filter(Boolean) as HTMLParagraphElement[];
-        const ctaButton = ctaButtonRef.current;
+        const containerRect = scrollContainer.getBoundingClientRect();
+        const ctaRect = ctaContainer.getBoundingClientRect();
+        const currentScroll = scrollContainer.scrollTop;
+        // Scroll so CTA is visible with some padding from top
+        return currentScroll + ctaRect.top - containerRect.top - 40;
+      }
+    }
 
-        // Set initial state
-        gsap.set(ctaTexts, { opacity: 0, y: 30 });
-        if (ctaButton) gsap.set(ctaButton, { opacity: 0, y: 30 });
+    return 0;
+  }, []);
 
-        // Create timeline for CTA animation
-        const ctaTl = gsap.timeline({
-          scrollTrigger: {
-            trigger: ctaContainer,
-            start: 'top 75%',
-            end: 'top 35%',
-            scrub: 1,
-          },
-        });
+  // Handle reset to start (when entering from above)
+  useEffect(() => {
+    if (!resetToStart || !isClient) return;
+    
+    // Reset to first step and set all content to initial state
+    currentStepRef.current = 0;
+    prevStepRef.current = 0;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCurrentStep(0);
+    lastScrollTimeRef.current = Date.now();
+    
+    // Reset scroll position
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = 0;
+    }
+    
+    // Reset all visual states
+    const steps = stepRefs.current.filter(Boolean) as HTMLDivElement[];
+    const connectors = connectorRefs.current.filter(Boolean) as HTMLDivElement[];
+    const ctaTexts = ctaTextRefs.current.filter(Boolean) as HTMLParagraphElement[];
+    const ctaButton = ctaButtonRef.current;
+    
+    // Show first step, hide others
+    steps.forEach((step, index) => {
+      gsap.set(step, { opacity: index === 0 ? 1 : 0, y: index === 0 ? 0 : 50 });
+    });
+    
+    // Hide all connectors
+    connectors.forEach((connector) => {
+      const clipRect = connector.querySelector('.clip-rect');
+      if (clipRect) {
+        gsap.set(clipRect, { attr: { width: 0 } });
+      }
+    });
+    
+    // Hide CTA
+    gsap.set(ctaTexts, { opacity: 0, y: 30 });
+    if (ctaButton) gsap.set(ctaButton, { opacity: 0, y: 30 });
+  }, [resetToStart, isClient]);
 
-        // Animate text elements with stagger
-        ctaTl.to(ctaTexts, {
-          opacity: 1,
-          y: 0,
-          duration: 1,
-          stagger: 0.15,
-          ease: 'power2.out',
-        });
+  // Handle reset to end (when entering from below)
+  useEffect(() => {
+    if (!resetToEnd || !isClient) return;
+    
+    // Reset to last step (CTA visible)
+    const lastStep = TOTAL_STEPS - 1;
+    currentStepRef.current = lastStep;
+    prevStepRef.current = lastStep;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCurrentStep(lastStep);
+    lastScrollTimeRef.current = Date.now();
+    
+    // Show all content
+    const steps = stepRefs.current.filter(Boolean) as HTMLDivElement[];
+    const connectors = connectorRefs.current.filter(Boolean) as HTMLDivElement[];
+    const ctaTexts = ctaTextRefs.current.filter(Boolean) as HTMLParagraphElement[];
+    const ctaButton = ctaButtonRef.current;
+    
+    // Show all steps
+    steps.forEach((step) => {
+      gsap.set(step, { opacity: 1, y: 0 });
+    });
+    
+    // Show all connectors
+    connectors.forEach((connector) => {
+      const clipRect = connector.querySelector('.clip-rect');
+      if (clipRect) {
+        gsap.set(clipRect, { attr: { width: 462 } });
+      }
+    });
+    
+    // Show CTA
+    gsap.set(ctaTexts, { opacity: 1, y: 0 });
+    if (ctaButton) gsap.set(ctaButton, { opacity: 1, y: 0 });
+    
+    // Scroll to bottom
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+    }
+  }, [resetToEnd, isClient]);
 
-        // Animate button
-        if (ctaButton) {
-          ctaTl.to(
-            ctaButton,
+  // Enable/disable observer based on isActive prop
+  useEffect(() => {
+    if (!observerRef.current) return;
+    
+    if (isActive) {
+      // Add delay before enabling to prevent residual scroll from triggering
+      const timeout = setTimeout(() => {
+        observerRef.current?.enable();
+        lastScrollTimeRef.current = Date.now();
+      }, 300);
+      return () => clearTimeout(timeout);
+    } else {
+      observerRef.current.disable();
+    }
+  }, [isActive]);
+
+  // Animate step transition with scroll
+  const animateToStep = useCallback((newStep: number, direction: 'up' | 'down') => {
+    if (isAnimatingRef.current) return;
+    if (newStep < 0 || newStep >= TOTAL_STEPS) return;
+    if (newStep === currentStepRef.current) return;
+
+    isAnimatingRef.current = true;
+    prevStepRef.current = currentStepRef.current;
+    currentStepRef.current = newStep;
+    setCurrentStep(newStep);
+
+    const scrollContainer = scrollContainerRef.current;
+    const steps = stepRefs.current.filter(Boolean) as HTMLDivElement[];
+    const connectors = connectorRefs.current.filter(Boolean) as HTMLDivElement[];
+    const ctaTexts = ctaTextRefs.current.filter(Boolean) as HTMLParagraphElement[];
+    const ctaButton = ctaButtonRef.current;
+
+    const yStart = direction === 'down' ? 50 : -50;
+
+    // Calculate target scroll position
+    const targetScroll = getScrollPositionForStep(newStep);
+
+    // Animate scroll
+    if (scrollContainer) {
+      gsap.to(scrollContainer, {
+        scrollTop: targetScroll,
+        duration: 0.6,
+        ease: 'power2.inOut',
+      });
+    }
+
+    // Steps 0-3 correspond to journey steps, step 4 is CTA
+    if (direction === 'down') {
+      // Scrolling down - reveal the next element
+      if (newStep < journeySteps.length) {
+        // Reveal step and its preceding connector
+        const step = steps[newStep];
+        const connector = connectors[newStep - 1]; // Connector before this step
+        
+        // Animate connector first (if exists)
+        if (connector && newStep > 0) {
+          const clipRect = connector.querySelector('.clip-rect');
+          if (clipRect) {
+            gsap.to(clipRect, {
+              attr: { width: 462 },
+              duration: 0.5,
+              ease: 'power2.out',
+            });
+          }
+        }
+        
+        // Then animate step
+        if (step) {
+          gsap.fromTo(
+            step,
+            { opacity: 0, y: yStart },
             {
               opacity: 1,
               y: 0,
-              duration: 1,
-              ease: 'power2.out',
-            },
-            '-=0.3'
+              duration: 0.6,
+              ease: 'power3.out',
+              delay: connector ? 0.2 : 0,
+              onComplete: () => {
+                isAnimatingRef.current = false;
+                lastScrollTimeRef.current = Date.now();
+              },
+            }
           );
+        } else {
+          isAnimatingRef.current = false;
+          lastScrollTimeRef.current = Date.now();
+        }
+      } else if (newStep === journeySteps.length) {
+        // Reveal CTA (last connector then CTA)
+        const lastConnector = connectors[journeySteps.length - 1];
+        if (lastConnector) {
+          const clipRect = lastConnector.querySelector('.clip-rect');
+          if (clipRect) {
+            gsap.to(clipRect, {
+              attr: { width: 462 },
+              duration: 0.5,
+              ease: 'power2.out',
+            });
+          }
+        }
+        
+        // Animate CTA text and button
+        gsap.fromTo(
+          ctaTexts,
+          { opacity: 0, y: 30 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.5,
+            stagger: 0.1,
+            ease: 'power2.out',
+            delay: 0.3,
+          }
+        );
+        
+        if (ctaButton) {
+          gsap.fromTo(
+            ctaButton,
+            { opacity: 0, y: 30 },
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.5,
+              ease: 'power2.out',
+              delay: 0.6,
+              onComplete: () => {
+                isAnimatingRef.current = false;
+                lastScrollTimeRef.current = Date.now();
+              },
+            }
+          );
+        } else {
+          setTimeout(() => {
+            isAnimatingRef.current = false;
+            lastScrollTimeRef.current = Date.now();
+          }, 800);
         }
       }
+    } else {
+      // Scrolling up - hide the current element
+      const oldStep = prevStepRef.current;
+      
+      if (oldStep < journeySteps.length) {
+        // Hide step and its preceding connector
+        const step = steps[oldStep];
+        const connector = connectors[oldStep - 1];
+        
+        // Animate step out
+        if (step) {
+          gsap.to(step, {
+            opacity: 0,
+            y: yStart,
+            duration: 0.4,
+            ease: 'power2.in',
+          });
+        }
+        
+        // Animate connector out
+        if (connector && oldStep > 0) {
+          const clipRect = connector.querySelector('.clip-rect');
+          if (clipRect) {
+            gsap.to(clipRect, {
+              attr: { width: 0 },
+              duration: 0.4,
+              ease: 'power2.in',
+              onComplete: () => {
+                isAnimatingRef.current = false;
+                lastScrollTimeRef.current = Date.now();
+              },
+            });
+          }
+        } else {
+          setTimeout(() => {
+            isAnimatingRef.current = false;
+            lastScrollTimeRef.current = Date.now();
+          }, 400);
+        }
+      } else if (oldStep === journeySteps.length) {
+        // Hide CTA
+        gsap.to(ctaTexts, {
+          opacity: 0,
+          y: 30,
+          duration: 0.3,
+          stagger: 0.05,
+          ease: 'power2.in',
+        });
+        
+        if (ctaButton) {
+          gsap.to(ctaButton, { opacity: 0, y: 30, duration: 0.3 });
+        }
+        
+        // Hide last connector
+        const lastConnector = connectors[journeySteps.length - 1];
+        if (lastConnector) {
+          const clipRect = lastConnector.querySelector('.clip-rect');
+          if (clipRect) {
+            gsap.to(clipRect, {
+              attr: { width: 0 },
+              duration: 0.4,
+              ease: 'power2.in',
+              delay: 0.2,
+              onComplete: () => {
+                isAnimatingRef.current = false;
+                lastScrollTimeRef.current = Date.now();
+              },
+            });
+          }
+        } else {
+          setTimeout(() => {
+            isAnimatingRef.current = false;
+            lastScrollTimeRef.current = Date.now();
+          }, 500);
+        }
+      }
+    }
+  }, [getScrollPositionForStep]);
 
-      // Refresh ScrollTrigger
-      ScrollTrigger.refresh();
-    }, 600);
+  // Handle scroll input
+  const handleScroll = useCallback((direction: 'up' | 'down') => {
+    const now = Date.now();
+    if (now - lastScrollTimeRef.current < scrollCooldown) return;
+    if (isAnimatingRef.current) return;
+
+    const step = currentStepRef.current;
+
+    if (direction === 'down') {
+      if (step < TOTAL_STEPS - 1) {
+        animateToStep(step + 1, 'down');
+      } else {
+        // At the end - notify parent
+        lastScrollTimeRef.current = now;
+        onEdgeReached?.('end');
+      }
+    } else {
+      if (step > 0) {
+        animateToStep(step - 1, 'up');
+      } else {
+        // At the start - notify parent
+        lastScrollTimeRef.current = now;
+        onEdgeReached?.('start');
+      }
+    }
+  }, [animateToStep, onEdgeReached]);
+
+  // Setup Observer-based scroll handling
+  useLayoutEffect(() => {
+    if (typeof window === 'undefined' || !isClient) return;
+
+    // Create Observer for scroll handling - starts disabled
+    const journeyObserver = Observer.create({
+      type: 'wheel,touch,pointer',
+      wheelSpeed: -1,
+      tolerance: 50,
+      preventDefault: true,
+      onDown: () => handleScroll('up'),
+      onUp: () => handleScroll('down'),
+    });
+
+    // Start disabled
+    journeyObserver.disable();
+    observerRef.current = journeyObserver;
+
+    // Initialize visual state
+    const steps = stepRefs.current.filter(Boolean) as HTMLDivElement[];
+    const connectors = connectorRefs.current.filter(Boolean) as HTMLDivElement[];
+    const ctaTexts = ctaTextRefs.current.filter(Boolean) as HTMLParagraphElement[];
+    const ctaButton = ctaButtonRef.current;
+
+    // Set initial states - first step visible, rest hidden
+    steps.forEach((step, index) => {
+      gsap.set(step, { opacity: index === 0 ? 1 : 0, y: index === 0 ? 0 : 50 });
+    });
+
+    // Hide all connectors
+    connectors.forEach((connector) => {
+      const clipRect = connector.querySelector('.clip-rect');
+      if (clipRect) {
+        gsap.set(clipRect, { attr: { width: 0 } });
+      }
+    });
+
+    // Hide CTA
+    gsap.set(ctaTexts, { opacity: 0, y: 30 });
+    if (ctaButton) gsap.set(ctaButton, { opacity: 0, y: 30 });
 
     return () => {
-      clearTimeout(initTimeout);
-      ScrollTrigger.getAll().forEach((st) => st.kill());
+      journeyObserver.kill();
+      observerRef.current = null;
     };
-  }, []);
+  }, [isClient, handleScroll]);
 
   return (
-    <Section
+    <div
       id="journey"
-      className="relative w-full bg-[#f6edd0] pb-16 sm:pb-20 lg:pb-24 pt-[120px] sm:pt-[140px] lg:pt-[180px]"
       ref={sectionRef}
+      className="relative w-full h-full bg-[#f6edd0] overflow-hidden"
     >
-      {/* Section Title - Sticky within section */}
-      <div 
-        className="sticky top-[90px] sm:top-[108px] lg:top-[148px] z-20 w-full text-center py-4 lg:py-6 px-4 bg-[#f6edd0]"
-      >
-        <h2
-          className="text-[36px] sm:text-[42px] lg:text-[48px] leading-[1.1] text-[#354443]"
-          style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400 }}
-        >
-          The Journey
-        </h2>
-      </div>
-
-      <div ref={stepsContainerRef} className="mx-auto max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1177px] px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 lg:pt-10">
-        {/* Journey steps with animated connectors */}
-        <div className="mx-auto w-full max-w-full sm:max-w-[calc(100vw-80px)] lg:max-w-[1097px] py-6 sm:py-8 lg:py-10 flex flex-col items-center justify-center">
-          {journeySteps.map((step, index) => {
-            const isRight = step.alignment === 'right';
-            const hasConnector = index < journeySteps.length - 1;
-
-            return (
-              <div key={index} className="w-full">
-                {/* Text content */}
-                <div className={`flex w-full justify-center ${isRight ? 'lg:justify-end' : 'lg:justify-start'}`}>
-                  <div
-                    ref={(el) => {
-                      stepRefs.current[index] = el;
-                    }}
-                    className="w-full sm:w-[340px] lg:w-[400px] text-justify journey-step px-2 sm:px-0"
-                    style={{ opacity: 0 }}
-                  >
-                    <p
-                      className="text-[24px] sm:text-[30px] lg:text-[36px] leading-[1.0] text-[#9ac1bf]"
-                      style={{ fontFamily: 'var(--font-saphira), serif' }}
-                    >
-                      {step.title}
-                    </p>
-                    <p
-                      className="mt-2 sm:mt-3 text-[14px] sm:text-[15px] lg:text-[16px] leading-[24px] text-[#354443]"
-                      style={{ fontFamily: 'var(--font-graphik), sans-serif' }}
-                    >
-                      {step.body}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Animated connector SVG - with extra vertical spacing for scroll room */}
-                {hasConnector && (
-                  <div
-                    ref={(el) => {
-                      connectorRefs.current[index] = el;
-                    }}
-                    className="mx-auto my-8 sm:my-12 lg:my-16 w-full max-w-[280px] sm:max-w-[360px] lg:max-w-[462px] journey-connector min-h-[180px] sm:min-h-[200px] lg:min-h-[250px]"
-                  >
-                    <ConnectorPath flip={index % 2 !== 0} clipId={`connector-clip-${index}`} />
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-
-        {/* CTA Section */}
-        <div 
-          ref={ctaContainerRef}
-          className="mt-10 sm:mt-12 lg:mt-16 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#9ac1bf] p-6 sm:p-8 lg:p-10 text-center"
-        >
-          <div className="mb-6 sm:mb-8 lg:mb-10">
-            <p
-              ref={(el) => { ctaTextRefs.current[0] = el; }}
-              className="mb-2 sm:mb-2.5 lg:mb-3 text-[24px] sm:text-[30px] lg:text-[36px] leading-[1.0] text-[#354443]"
-              style={{ fontFamily: 'var(--font-saphira), serif' }}
-            >
-              If you&apos;re ready
-            </p>
-            <p
-              ref={(el) => { ctaTextRefs.current[1] = el; }}
-              className="mb-2 sm:mb-2.5 lg:mb-3 text-[24px] sm:text-[30px] lg:text-[36px] leading-[1.0] text-[#354443]"
-              style={{ fontFamily: 'var(--font-saphira), serif' }}
-            >
-              to stop searching
-            </p>
-            <p
-              ref={(el) => { ctaTextRefs.current[2] = el; }}
-              className="mb-2 sm:mb-2.5 lg:mb-3 text-[24px] sm:text-[30px] lg:text-[36px] leading-[1.0] text-[#354443]"
-              style={{ fontFamily: 'var(--font-saphira), serif' }}
-            >
-              outside yourself
-            </p>
-            <p
-              ref={(el) => { ctaTextRefs.current[3] = el; }}
-              className="mb-2 sm:mb-2.5 lg:mb-3 text-[24px] sm:text-[30px] lg:text-[36px] leading-[1.0] text-[#354443]"
-              style={{ fontFamily: 'var(--font-saphira), serif' }}
-            >
-              for answers...
-            </p>
-          </div>
-          <p
-            ref={(el) => { ctaTextRefs.current[4] = el; }}
-            className="mb-6 sm:mb-8 lg:mb-10 text-[24px] sm:text-[30px] lg:text-[36px] leading-[1.0] text-[#354443]"
-            style={{ fontFamily: 'var(--font-saphira), serif' }}
+      {/* Fixed height container that fills the section */}
+      <div className="h-full flex flex-col">
+        {/* Section Title - Fixed at top */}
+        <div className="flex-shrink-0 w-full text-center py-4 lg:py-6 px-4 bg-[#f6edd0] z-20">
+          <h2
+            className="text-[36px] sm:text-[42px] lg:text-[48px] leading-[1.1] text-[#354443]"
+            style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400 }}
           >
-            You&apos;re in the right place.
-          </p>
-          <div ref={ctaButtonRef}>
-            <Button
-              text="Begin Your Journey"
-              size="large"
-              mode="dark"
-              onClick={() => {
-                // Handle button click
-              }}
-            />
+            The Journey
+          </h2>
+        </div>
+
+        {/* Scrollable content area - hidden scrollbar, programmatic scroll */}
+        <div 
+          ref={scrollContainerRef} 
+          className="flex-1 overflow-y-scroll overflow-x-hidden px-4 sm:px-6 lg:px-8 pb-8 no-scrollbar"
+          style={{
+            scrollbarWidth: 'none', /* Firefox */
+            msOverflowStyle: 'none', /* IE/Edge */
+          }}
+        >
+          <div className="mx-auto max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1177px]">
+            {/* Journey steps with animated connectors */}
+            <div className="mx-auto w-full max-w-full sm:max-w-[calc(100vw-80px)] lg:max-w-[1097px] py-4 sm:py-6 lg:py-8 flex flex-col items-center justify-center">
+              {journeySteps.map((step, index) => {
+                const isRight = step.alignment === 'right';
+                const hasConnector = index < journeySteps.length - 1;
+
+                return (
+                  <div key={index} className="w-full">
+                    {/* Text content */}
+                    <div className={`flex w-full justify-center ${isRight ? 'lg:justify-end' : 'lg:justify-start'}`}>
+                      <div
+                        ref={(el) => {
+                          stepRefs.current[index] = el;
+                        }}
+                        className="w-full sm:w-[340px] lg:w-[400px] text-justify journey-step px-2 sm:px-0"
+                      >
+                        <p
+                          className="text-[24px] sm:text-[30px] lg:text-[36px] leading-[1.0] text-[#9ac1bf]"
+                          style={{ fontFamily: 'var(--font-saphira), serif' }}
+                        >
+                          {step.title}
+                        </p>
+                        <p
+                          className="mt-2 sm:mt-3 text-[14px] sm:text-[15px] lg:text-[16px] leading-[24px] text-[#354443]"
+                          style={{ fontFamily: 'var(--font-graphik), sans-serif' }}
+                        >
+                          {step.body}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Animated connector SVG */}
+                    {hasConnector && (
+                      <div
+                        ref={(el) => {
+                          connectorRefs.current[index] = el;
+                        }}
+                        className="mx-auto my-6 sm:my-8 lg:my-10 w-full max-w-[280px] sm:max-w-[360px] lg:max-w-[462px] journey-connector"
+                      >
+                        <ConnectorPath flip={index % 2 !== 0} clipId={`connector-clip-${index}`} />
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* CTA Section */}
+            <div 
+              ref={ctaContainerRef}
+              className="mt-6 sm:mt-8 lg:mt-10 mb-4 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#9ac1bf] p-6 sm:p-8 lg:p-10 text-center"
+            >
+              <div className="mb-6 sm:mb-8 lg:mb-10">
+                <p
+                  ref={(el) => { ctaTextRefs.current[0] = el; }}
+                  className="mb-2 sm:mb-2.5 lg:mb-3 text-[24px] sm:text-[30px] lg:text-[36px] leading-[1.0] text-[#354443]"
+                  style={{ fontFamily: 'var(--font-saphira), serif' }}
+                >
+                  If you&apos;re ready
+                </p>
+                <p
+                  ref={(el) => { ctaTextRefs.current[1] = el; }}
+                  className="mb-2 sm:mb-2.5 lg:mb-3 text-[24px] sm:text-[30px] lg:text-[36px] leading-[1.0] text-[#354443]"
+                  style={{ fontFamily: 'var(--font-saphira), serif' }}
+                >
+                  to stop searching
+                </p>
+                <p
+                  ref={(el) => { ctaTextRefs.current[2] = el; }}
+                  className="mb-2 sm:mb-2.5 lg:mb-3 text-[24px] sm:text-[30px] lg:text-[36px] leading-[1.0] text-[#354443]"
+                  style={{ fontFamily: 'var(--font-saphira), serif' }}
+                >
+                  outside yourself
+                </p>
+                <p
+                  ref={(el) => { ctaTextRefs.current[3] = el; }}
+                  className="mb-2 sm:mb-2.5 lg:mb-3 text-[24px] sm:text-[30px] lg:text-[36px] leading-[1.0] text-[#354443]"
+                  style={{ fontFamily: 'var(--font-saphira), serif' }}
+                >
+                  for answers...
+                </p>
+              </div>
+              <p
+                ref={(el) => { ctaTextRefs.current[4] = el; }}
+                className="mb-6 sm:mb-8 lg:mb-10 text-[24px] sm:text-[30px] lg:text-[36px] leading-[1.0] text-[#354443]"
+                style={{ fontFamily: 'var(--font-saphira), serif' }}
+              >
+                You&apos;re in the right place.
+              </p>
+              <div ref={ctaButtonRef}>
+                <Button
+                  text="Begin Your Journey"
+                  size="large"
+                  mode="dark"
+                  onClick={() => {
+                    // Handle button click
+                  }}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </Section>
+    </div>
   );
 }

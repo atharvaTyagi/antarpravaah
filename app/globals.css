@@ -87,6 +87,8 @@ html {
 :root {
   /* Header height CSS variables for responsive layouts */
   --header-height: 90px;
+  /* Viewport height fallback for mobile browsers with dynamic toolbars */
+  --vh: 1vh;
 }
 
 @media (min-width: 640px) {
@@ -179,6 +181,38 @@ body {
 /* Ensure pinned sections work correctly */
 .pin-spacer {
   scroll-snap-align: none !important;
+}
+
+/* Fixed container architecture for homepage */
+.main-container {
+  position: fixed;
+  top: var(--header-height, 90px);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(100vh - var(--header-height, 90px));
+  height: calc(var(--vh, 1vh) * 100 - var(--header-height, 90px));
+}
+
+@supports (height: 100dvh) {
+  .main-container {
+    height: calc(100dvh - var(--header-height, 90px));
+  }
+}
+
+/* Section height for fixed container sections */
+.section-height {
+  height: calc(100vh - var(--header-height, 90px));
+  min-height: calc(100vh - var(--header-height, 90px));
+  height: calc(var(--vh, 1vh) * 100 - var(--header-height, 90px));
+  min-height: calc(var(--vh, 1vh) * 100 - var(--header-height, 90px));
+}
+
+@supports (height: 100dvh) {
+  .section-height {
+    height: calc(100dvh - var(--header-height, 90px));
+    min-height: calc(100dvh - var(--header-height, 90px));
+  }
 }
 
 /* Hide scrollbar but keep functionality */

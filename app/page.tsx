@@ -1,49 +1,294 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback, useLayoutEffect } from 'react';
 import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { Observer } from 'gsap/dist/Observer';
 import TheJourney from '@/components/TheJourney';
 import WeWorkTogether from '@/components/WeWorkTogether';
 import VoicesOfTransformation from '@/components/VoicesOfTransformation';
 import ReadyToBegin from '@/components/ReadyToBegin';
+import Footer from '@/components/Footer';
 import SplashScreen from '@/components/SplashScreen';
 import GuidedJourneyModal from '@/components/GuidedJourneyModal';
 import { useUiStore } from '@/lib/stores/useUiStore';
+import { useThemeStore } from '@/lib/stores/useThemeStore';
+import { SectionId } from '@/lib/themeConfig';
 
 // Register GSAP plugins
 if (typeof window !== 'undefined') {
-  gsap.registerPlugin(ScrollTrigger);
+  gsap.registerPlugin(Observer);
 }
 
+// Section configuration
+const SECTIONS: { id: string; type: 'static' | 'journey-scroll' | 'cards-scroll' | 'carousel-scroll' | 'footer'; themeId: SectionId }[] = [
+  { id: 'journey', type: 'journey-scroll', themeId: 'journey' },
+  { id: 'work-together', type: 'cards-scroll', themeId: 'work-together' },
+  { id: 'voices', type: 'carousel-scroll', themeId: 'voices' },
+  { id: 'ready-to-begin', type: 'static', themeId: 'ready-to-begin' },
+  { id: 'footer', type: 'footer', themeId: 'journey' },
+];
+
 export default function Home() {
+  // Splash and modal state
   const [splashComplete, setSplashComplete] = useState(false);
   const [showGuidedJourney, setShowGuidedJourney] = useState(false);
   const setGlobalSplashComplete = useUiStore((state) => state.setSplashComplete);
+  const setTheme = useThemeStore((state) => state.setTheme);
 
-  // Initialize scroll behavior after splash completes
+  // Section navigation state
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [isMobile, setIsMobile] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [currentSection, setCurrentSection] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [isReady, setIsReady] = useState(false);
+
+  // Journey section scroll state
+  const [isJourneyScrollActive, setIsJourneyScrollActive] = useState(false);
+  const [journeyResetToStart, setJourneyResetToStart] = useState(false);
+  const [journeyResetToEnd, setJourneyResetToEnd] = useState(false);
+
+  // WeWorkTogether cards scroll state
+  const [isCardsScrollActive, setIsCardsScrollActive] = useState(false);
+  const [cardsResetToStart, setCardsResetToStart] = useState(false);
+  const [cardsResetToEnd, setCardsResetToEnd] = useState(false);
+
+  // VoicesOfTransformation carousel scroll state
+  const [isCarouselScrollActive, setIsCarouselScrollActive] = useState(false);
+  const [carouselResetToStart, setCarouselResetToStart] = useState(false);
+  const [carouselResetToEnd, setCarouselResetToEnd] = useState(false);
+
+  // Refs
+  const containerRef = useRef<HTMLDivElement>(null);
+  const sectionsRef = useRef<HTMLDivElement[]>([]);
+  const observerRef = useRef<Observer | null>(null);
+  const lastScrollTimeRef = useRef<number>(0);
+  const currentSectionRef = useRef(0);
+
+  // Cooldown between section changes
+  const sectionScrollCooldown = 800;
+
+  // Detect mobile breakpoint
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Set --vh CSS variable for mobile viewport height
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const setVh = () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    };
+
+    setVh();
+    window.addEventListener('resize', setVh);
+    return () => window.removeEventListener('resize', setVh);
+  }, []);
+
+  // Go to section with GSAP animation
+  const goToSection = useCallback((index: number, direction: 'up' | 'down' = 'down') => {
+    if (isAnimating) return;
+    if (index < 0 || index >= SECTIONS.length) return;
+    if (index === currentSectionRef.current) return;
+
+    const container = containerRef.current;
+    if (!container) return;
+
+    // Get section height (viewport height minus header)
+    const sectionHeight = sectionsRef.current[0]?.offsetHeight || window.innerHeight - 148;
+    const targetY = -index * sectionHeight;
+
+    setIsAnimating(true);
+
+    // Deactivate all scroll sections before animating
+    setIsJourneyScrollActive(false);
+    setIsCardsScrollActive(false);
+    setIsCarouselScrollActive(false);
+
+    gsap.to(container, {
+      y: targetY,
+      duration: 0.7,
+      ease: 'power2.inOut',
+      onComplete: () => {
+        currentSectionRef.current = index;
+        setCurrentSection(index);
+        lastScrollTimeRef.current = Date.now();
+
+        const section = SECTIONS[index];
+
+        // Update theme
+        setTheme(section.themeId);
+
+        // Handle journey section entry
+        if (section.type === 'journey-scroll') {
+          if (direction === 'down') {
+            setJourneyResetToStart(true);
+            setTimeout(() => setJourneyResetToStart(false), 100);
+          } else {
+            setJourneyResetToEnd(true);
+            setTimeout(() => setJourneyResetToEnd(false), 100);
+          }
+          setTimeout(() => setIsJourneyScrollActive(true), 400);
+        }
+
+        // Handle cards section entry
+        if (section.type === 'cards-scroll') {
+          if (direction === 'down') {
+            setCardsResetToStart(true);
+            setTimeout(() => setCardsResetToStart(false), 100);
+          } else {
+            setCardsResetToEnd(true);
+            setTimeout(() => setCardsResetToEnd(false), 100);
+          }
+          setTimeout(() => setIsCardsScrollActive(true), 400);
+        }
+
+        // Handle carousel section entry
+        if (section.type === 'carousel-scroll') {
+          if (direction === 'down') {
+            setCarouselResetToStart(true);
+            setTimeout(() => setCarouselResetToStart(false), 100);
+          } else {
+            setCarouselResetToEnd(true);
+            setTimeout(() => setCarouselResetToEnd(false), 100);
+          }
+          setTimeout(() => setIsCarouselScrollActive(true), 400);
+        }
+
+        setIsAnimating(false);
+      },
+    });
+  }, [isAnimating, setTheme]);
+
+  // Edge reached handlers for scroll-controlled sections
+  const handleJourneyEdgeReached = useCallback((edge: 'start' | 'end') => {
+    const now = Date.now();
+    if (now - lastScrollTimeRef.current < sectionScrollCooldown) return;
+
+    if (edge === 'end') {
+      // Move to next section (WeWorkTogether)
+      goToSection(currentSectionRef.current + 1, 'down');
+    }
+    // Journey is the first section, so 'start' edge has nowhere to go
+  }, [goToSection]);
+
+  const handleCardsEdgeReached = useCallback((edge: 'start' | 'end') => {
+    const now = Date.now();
+    if (now - lastScrollTimeRef.current < sectionScrollCooldown) return;
+
+    if (edge === 'start') {
+      // Move to previous section (TheJourney)
+      goToSection(currentSectionRef.current - 1, 'up');
+    } else if (edge === 'end') {
+      // Move to next section (VoicesOfTransformation)
+      goToSection(currentSectionRef.current + 1, 'down');
+    }
+  }, [goToSection]);
+
+  const handleCarouselEdgeReached = useCallback((edge: 'start' | 'end') => {
+    const now = Date.now();
+    if (now - lastScrollTimeRef.current < sectionScrollCooldown) return;
+
+    if (edge === 'start') {
+      // Move to previous section (WeWorkTogether)
+      goToSection(currentSectionRef.current - 1, 'up');
+    } else if (edge === 'end') {
+      // Move to next section (ReadyToBegin)
+      goToSection(currentSectionRef.current + 1, 'down');
+    }
+  }, [goToSection]);
+
+  // Global scroll handler
+  const handleScroll = useCallback((direction: 'up' | 'down') => {
+    if (isAnimating) return;
+    if (!isReady) return;
+
+    const now = Date.now();
+    if (now - lastScrollTimeRef.current < sectionScrollCooldown) return;
+
+    const section = SECTIONS[currentSectionRef.current];
+
+    // Delegate to internal scroll handlers if active
+    if (section.type === 'journey-scroll' && isJourneyScrollActive) return;
+    if (section.type === 'cards-scroll' && isCardsScrollActive) return;
+    if (section.type === 'carousel-scroll' && isCarouselScrollActive) return;
+
+    // Handle static sections and footer
+    if (direction === 'down') {
+      if (currentSectionRef.current < SECTIONS.length - 1) {
+        goToSection(currentSectionRef.current + 1, 'down');
+      }
+    } else {
+      if (currentSectionRef.current > 0) {
+        goToSection(currentSectionRef.current - 1, 'up');
+      }
+    }
+  }, [isAnimating, isReady, isJourneyScrollActive, isCardsScrollActive, isCarouselScrollActive, goToSection]);
+
+  // Setup GSAP Observer for global scroll handling
+  useLayoutEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (!isReady) return;
+
+    // Create Observer for scroll handling
+    const pageObserver = Observer.create({
+      type: 'wheel,touch,pointer',
+      wheelSpeed: -1,
+      tolerance: 50,
+      preventDefault: true,
+      onDown: () => handleScroll('up'),
+      onUp: () => handleScroll('down'),
+    });
+
+    observerRef.current = pageObserver;
+
+    return () => {
+      pageObserver.kill();
+      observerRef.current = null;
+    };
+  }, [isReady, handleScroll]);
+
+  // Initialize after splash completes
   useEffect(() => {
     if (!splashComplete) return;
 
-    // Ensure scroll is enabled
-    document.body.style.overflow = '';
-    document.documentElement.style.overflow = '';
+    // Lock body scroll since we use fixed container
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
 
-    // Refresh ScrollTrigger after a short delay
-    const refreshTimeout = setTimeout(() => {
-      ScrollTrigger.refresh(true);
-    }, 500);
+    // Start at section 0 with journey scroll active
+    const initTimeout = setTimeout(() => {
+      setIsReady(true);
+      setTheme(SECTIONS[0].themeId);
+      
+      // Activate journey scroll after a short delay
+      setTimeout(() => {
+        setIsJourneyScrollActive(true);
+      }, 500);
+    }, 100);
 
     return () => {
-      clearTimeout(refreshTimeout);
+      clearTimeout(initTimeout);
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
     };
-  }, [splashComplete]);
+  }, [splashComplete, setTheme]);
 
   const handleSplashComplete = () => {
     setSplashComplete(true);
     setGlobalSplashComplete(true);
     
-    // Show guided journey modal after a short delay (desktop only to avoid mobile scroll lock)
+    // Show guided journey modal after a short delay (desktop only)
     setTimeout(() => {
       const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
       const isMobileSize = window.innerWidth < 1024;
@@ -51,48 +296,83 @@ export default function Home() {
         setShowGuidedJourney(true);
       }
     }, 2000);
-  }; 
+  };
 
   const handleCloseGuidedJourney = () => {
     setShowGuidedJourney(false);
   };
 
   return (
-    <main className="relative min-h-screen">
+    <main className="relative">
       {/* Splash Screen - Fixed overlay that fades out on scroll */}
       <SplashScreen onComplete={handleSplashComplete} />
 
       {/* Guided Journey Modal - Shows after splash completes */}
       <GuidedJourneyModal isOpen={showGuidedJourney} onClose={handleCloseGuidedJourney} />
 
-      {/* Main Content - Snap scroll sections */}
-      <div
-        className="relative z-10 w-full snap-scroll-wrapper"
+      {/* Fixed Container - visible after splash */}
+      <div 
+        className="main-container overflow-hidden bg-[#f6edd0] z-[30]"
         style={{
           opacity: splashComplete ? 1 : 0,
           pointerEvents: splashComplete ? 'auto' : 'none',
-          // CSS Snap scrolling for smooth section transitions
-          scrollSnapType: 'y proximity',
         }}
       >
-        {/* TheJourney - Scrollable content section */}
-        <div className="snap-section" style={{ scrollSnapAlign: 'start' }}>
-          <TheJourney />
-        </div>
-        
-        {/* WeWorkTogether - Card stack with internal snap */}
-        <div className="snap-section" style={{ scrollSnapAlign: 'start' }}>
-          <WeWorkTogether />
-        </div>
-        
-        {/* VoicesOfTransformation - Horizontal carousel */}
-        <div className="snap-section" style={{ scrollSnapAlign: 'start' }}>
-          <VoicesOfTransformation />
-        </div>
-        
-        {/* ReadyToBegin - CTA section */}
-        <div className="snap-section" style={{ scrollSnapAlign: 'start' }}>
-          <ReadyToBegin />
+        <div ref={containerRef} className="will-change-transform">
+          {/* Section 1: Journey */}
+          <div 
+            ref={(el) => { if (el) sectionsRef.current[0] = el; }} 
+            className="section-height"
+          >
+            <TheJourney
+              isActive={isJourneyScrollActive}
+              onEdgeReached={handleJourneyEdgeReached}
+              resetToStart={journeyResetToStart}
+              resetToEnd={journeyResetToEnd}
+            />
+          </div>
+
+          {/* Section 2: WeWorkTogether */}
+          <div 
+            ref={(el) => { if (el) sectionsRef.current[1] = el; }} 
+            className="section-height"
+          >
+            <WeWorkTogether
+              isActive={isCardsScrollActive}
+              onEdgeReached={handleCardsEdgeReached}
+              resetToStart={cardsResetToStart}
+              resetToEnd={cardsResetToEnd}
+            />
+          </div>
+
+          {/* Section 3: VoicesOfTransformation */}
+          <div 
+            ref={(el) => { if (el) sectionsRef.current[2] = el; }} 
+            className="section-height"
+          >
+            <VoicesOfTransformation
+              isActive={isCarouselScrollActive}
+              onEdgeReached={handleCarouselEdgeReached}
+              resetToStart={carouselResetToStart}
+              resetToEnd={carouselResetToEnd}
+            />
+          </div>
+
+          {/* Section 4: ReadyToBegin */}
+          <div 
+            ref={(el) => { if (el) sectionsRef.current[3] = el; }} 
+            className="section-height"
+          >
+            <ReadyToBegin />
+          </div>
+
+          {/* Section 5: Footer */}
+          <div 
+            ref={(el) => { if (el) sectionsRef.current[4] = el; }} 
+            className="section-height"
+          >
+            <Footer />
+          </div>
         </div>
       </div>
     </main>

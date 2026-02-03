@@ -1,16 +1,22 @@
 'use client';
 
-import { useLayoutEffect, useRef, useState, useEffect } from 'react';
+import { useLayoutEffect, useRef, useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import Section from './Section';
+import { Observer } from 'gsap/dist/Observer';
 import Button from './Button';
 import { getCloudinaryUrl } from '@/lib/cloudinary';
 
 // Register GSAP plugins
 if (typeof window !== 'undefined') {
-  gsap.registerPlugin(ScrollTrigger);
+  gsap.registerPlugin(Observer);
+}
+
+interface WeWorkTogetherProps {
+  isActive?: boolean;
+  onEdgeReached?: (edge: 'start' | 'end') => void;
+  resetToStart?: boolean;
+  resetToEnd?: boolean;
 }
 
 const workCards = [
@@ -33,118 +39,239 @@ const workCards = [
   },
 ];
 
-export default function WeWorkTogether() {
-  const sectionRef = useRef<HTMLElement | null>(null);
+// Total cards: 4 content cards + 1 CTA = 5
+const TOTAL_CARDS = workCards.length + 1;
+
+export default function WeWorkTogether({
+  isActive = false,
+  onEdgeReached,
+  resetToStart,
+  resetToEnd,
+}: WeWorkTogetherProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const cardsContainerRef = useRef<HTMLDivElement | null>(null);
-  const [isReady, setIsReady] = useState(false);
+  
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [activeIndex, setActiveIndex] = useState(0);
+  const activeIndexRef = useRef(0);
+  const prevIndexRef = useRef(0);
+  const isAnimatingRef = useRef(false);
+  const observerRef = useRef<Observer | null>(null);
+  const lastScrollTimeRef = useRef(0);
+  const [isClient, setIsClient] = useState(false);
 
-  // Calculate viewport-based dimensions
+  // Cooldown between card changes
+  const scrollCooldown = 400;
+
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    
-    const readyTimeout = setTimeout(() => {
-      setIsReady(true);
-    }, 100);
-
-    return () => {
-      clearTimeout(readyTimeout);
-    };
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setIsClient(true);
   }, []);
 
-  useLayoutEffect(() => {
-    if (typeof window === 'undefined') return;
-    if (!isReady) return;
-
-    const container = containerRef.current;
+  // Handle reset to start (when entering from above)
+  useEffect(() => {
+    if (!resetToStart || !isClient) return;
+    
+    // Reset to first card
+    activeIndexRef.current = 0;
+    prevIndexRef.current = 0;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setActiveIndex(0);
+    lastScrollTimeRef.current = Date.now();
+    
+    // Reset visual state
     const cardsContainer = cardsContainerRef.current;
-    if (!container || !cardsContainer) return;
+    if (!cardsContainer) return;
+    
+    const cards = Array.from(cardsContainer.querySelectorAll<HTMLElement>('.work-card'));
+    cards.forEach((card, index) => {
+      gsap.set(card, {
+        autoAlpha: index === 0 ? 1 : 0,
+        scale: index === 0 ? 1 : 0.95,
+        y: index === 0 ? 0 : 30,
+        pointerEvents: index === 0 ? 'auto' : 'none',
+      });
+    });
+  }, [resetToStart, isClient]);
+
+  // Handle reset to end (when entering from below)
+  useEffect(() => {
+    if (!resetToEnd || !isClient) return;
+    
+    // Reset to last card (CTA)
+    const lastIndex = TOTAL_CARDS - 1;
+    activeIndexRef.current = lastIndex;
+    prevIndexRef.current = lastIndex;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setActiveIndex(lastIndex);
+    lastScrollTimeRef.current = Date.now();
+    
+    // Reset visual state
+    const cardsContainer = cardsContainerRef.current;
+    if (!cardsContainer) return;
+    
+    const cards = Array.from(cardsContainer.querySelectorAll<HTMLElement>('.work-card'));
+    cards.forEach((card, index) => {
+      gsap.set(card, {
+        autoAlpha: index === lastIndex ? 1 : 0,
+        scale: index === lastIndex ? 1 : 0.95,
+        y: index === lastIndex ? 0 : -20,
+        pointerEvents: index === lastIndex ? 'auto' : 'none',
+      });
+    });
+  }, [resetToEnd, isClient]);
+
+  // Enable/disable observer based on isActive prop
+  useEffect(() => {
+    if (!observerRef.current) return;
+    
+    if (isActive) {
+      // Add delay before enabling to prevent residual scroll from triggering
+      const timeout = setTimeout(() => {
+        observerRef.current?.enable();
+        lastScrollTimeRef.current = Date.now();
+      }, 300);
+      return () => clearTimeout(timeout);
+    } else {
+      observerRef.current.disable();
+    }
+  }, [isActive]);
+
+  // Animate card transition
+  const animateToIndex = useCallback((newIndex: number, callback?: () => void) => {
+    if (newIndex < 0 || newIndex >= TOTAL_CARDS) return;
+    if (isAnimatingRef.current) return;
+    
+    const currentIndex = activeIndexRef.current;
+    if (newIndex === currentIndex) return;
+
+    const cardsContainer = cardsContainerRef.current;
+    if (!cardsContainer) return;
 
     const cards = Array.from(cardsContainer.querySelectorAll<HTMLElement>('.work-card'));
+    if (cards.length === 0) return;
+
+    isAnimatingRef.current = true;
+    prevIndexRef.current = currentIndex;
+    activeIndexRef.current = newIndex;
+    setActiveIndex(newIndex);
+
+    // Determine scroll direction
+    const isScrollingDown = newIndex > currentIndex;
+    const yStart = isScrollingDown ? 30 : -30;
+    const yEnd = isScrollingDown ? -20 : 20;
+
+    // Animate out current card
+    const currentCard = cards[currentIndex];
+    if (currentCard) {
+      gsap.to(currentCard, {
+        autoAlpha: 0,
+        scale: 0.95,
+        y: yEnd,
+        duration: 0.4,
+        ease: 'power2.inOut',
+        onComplete: () => {
+          gsap.set(currentCard, { pointerEvents: 'none' });
+        },
+      });
+    }
+
+    // Animate in new card
+    const newCard = cards[newIndex];
+    if (newCard) {
+      gsap.fromTo(
+        newCard,
+        {
+          autoAlpha: 0,
+          scale: 0.95,
+          y: yStart,
+          pointerEvents: 'none',
+        },
+        {
+          autoAlpha: 1,
+          scale: 1,
+          y: 0,
+          pointerEvents: 'auto',
+          duration: 0.5,
+          ease: 'power3.out',
+          delay: 0.1,
+          onComplete: () => {
+            isAnimatingRef.current = false;
+            lastScrollTimeRef.current = Date.now();
+            callback?.();
+          },
+        }
+      );
+    } else {
+      isAnimatingRef.current = false;
+      lastScrollTimeRef.current = Date.now();
+    }
+  }, []);
+
+  // Handle scroll input
+  const handleScroll = useCallback((direction: 'up' | 'down') => {
+    const now = Date.now();
+    if (now - lastScrollTimeRef.current < scrollCooldown) return;
+    if (isAnimatingRef.current) return;
+
+    const currentIndex = activeIndexRef.current;
+
+    if (direction === 'down') {
+      if (currentIndex < TOTAL_CARDS - 1) {
+        animateToIndex(currentIndex + 1);
+      } else {
+        // At the end - notify parent
+        lastScrollTimeRef.current = now;
+        onEdgeReached?.('end');
+      }
+    } else {
+      if (currentIndex > 0) {
+        animateToIndex(currentIndex - 1);
+      } else {
+        // At the start - notify parent
+        lastScrollTimeRef.current = now;
+        onEdgeReached?.('start');
+      }
+    }
+  }, [animateToIndex, onEdgeReached]);
+
+  // Setup Observer-based scroll handling
+  useLayoutEffect(() => {
+    if (typeof window === 'undefined' || !isClient) return;
+    if (!cardsContainerRef.current) return;
+
+    const cards = Array.from(cardsContainerRef.current.querySelectorAll<HTMLElement>('.work-card'));
     if (cards.length < 2) return;
 
     // Set initial states - all cards hidden except first
-    gsap.set(cards, {
-      autoAlpha: 0,
-      scale: 0.95,
-      y: 30,
-    });
-    gsap.set(cards[0], { autoAlpha: 1, scale: 1, y: 0 });
-
-    // Create timeline for card transitions
-    const tl = gsap.timeline();
-
-    // Build card transition animations
     cards.forEach((card, index) => {
-      if (index === 0) return; // Skip first card (already visible)
-      
-      const prevCard = cards[index - 1];
-      
-      // Add label for this card
-      tl.addLabel(`card${index}`);
-      
-      // Fade out previous card
-      tl.to(prevCard, {
-        autoAlpha: 0,
-        scale: 0.95,
-        y: -20,
-        duration: 0.5,
-        ease: 'power2.inOut',
+      gsap.set(card, {
+        autoAlpha: index === 0 ? 1 : 0,
+        scale: index === 0 ? 1 : 0.95,
+        y: index === 0 ? 0 : 30,
+        pointerEvents: index === 0 ? 'auto' : 'none',
       });
-      
-      // Fade in current card
-      tl.to(card, {
-        autoAlpha: 1,
-        scale: 1,
-        y: 0,
-        duration: 0.5,
-        ease: 'power2.out',
-      }, '<0.2');
     });
 
-    // Add final label
-    tl.addLabel(`card${cards.length}`);
-
-    // Calculate scroll distance (more distance = more scroll needed per card)
-    const isMobile = window.innerWidth < 640;
-    const scrollPerCard = isMobile ? 150 : 200;
-    const totalScrollDistance = (cards.length - 1) * scrollPerCard;
-
-    // Get header height for proper positioning
-    const headerHeight = window.innerWidth >= 1024 ? 148 : window.innerWidth >= 640 ? 108 : 90;
-    
-    // Create ScrollTrigger with snap
-    const st = ScrollTrigger.create({
-      id: 'WORK-CARDS-SNAP',
-      trigger: container,
-      pin: true,
-      pinSpacing: true,
-      anticipatePin: 1,
-      // Start pinning when section top reaches just below the header
-      start: `top top+=${headerHeight}`,
-      end: `+=${totalScrollDistance}`,
-      scrub: 0.5,
-      animation: tl,
-      snap: {
-        snapTo: 'labelsDirectional',
-        duration: { min: 0.2, max: 0.5 },
-        delay: 0.1,
-        ease: 'power2.inOut',
-      },
-      invalidateOnRefresh: true,
+    // Create Observer for scroll handling - starts disabled
+    const cardsObserver = Observer.create({
+      type: 'wheel,touch,pointer',
+      wheelSpeed: -1,
+      tolerance: 50,
+      preventDefault: true,
+      onDown: () => handleScroll('up'),
+      onUp: () => handleScroll('down'),
     });
 
-    // Refresh after setup
-    const refreshTimeout = setTimeout(() => {
-      ScrollTrigger.refresh(true);
-    }, 200);
+    // Start disabled
+    cardsObserver.disable();
+    observerRef.current = cardsObserver;
 
     return () => {
-      clearTimeout(refreshTimeout);
-      st.kill();
-      tl.kill();
+      cardsObserver.kill();
+      observerRef.current = null;
     };
-  }, [isReady]);
+  }, [isClient, handleScroll]);
 
   // Get image sources
   const imageSrcs = [
@@ -155,20 +282,13 @@ export default function WeWorkTogether() {
   ];
 
   return (
-    <Section
+    <div
       id="work-together"
-      className="relative w-full bg-[#f6edd0]"
-      ref={sectionRef}
+      ref={containerRef}
+      className="relative w-full h-full bg-[#f6edd0] overflow-hidden"
     >
-      {/* Full viewport container - height accounts for header */}
-      <div 
-        ref={containerRef} 
-        className="relative w-full flex flex-col bg-[#f6edd0]"
-        style={{ 
-          minHeight: 'calc(100vh - var(--header-height, 90px))',
-          height: 'calc(100vh - var(--header-height, 90px))',
-        }}
-      >
+      {/* Full height container */}
+      <div className="relative w-full h-full flex flex-col">
         {/* Background pattern */}
         <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
           <img
@@ -195,7 +315,7 @@ export default function WeWorkTogether() {
         </div>
 
         {/* Section Title */}
-        <div className="relative z-10 w-full text-center pt-8 sm:pt-12 lg:pt-16 pb-4 sm:pb-6 lg:pb-8">
+        <div className="relative z-10 w-full text-center pt-6 sm:pt-8 lg:pt-12 pb-4 sm:pb-6 lg:pb-8 flex-shrink-0">
           <h2
             className="text-[32px] sm:text-[42px] lg:text-[48px] leading-[1.1] text-[#645c42]"
             style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400 }}
@@ -207,14 +327,14 @@ export default function WeWorkTogether() {
         {/* Cards Container - Centered in remaining viewport */}
         <div 
           ref={cardsContainerRef}
-          className="relative z-10 flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 pb-8 sm:pb-12 lg:pb-16"
+          className="relative z-10 flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 pb-6 sm:pb-8 lg:pb-12"
         >
           <div className="relative w-full max-w-[95vw] sm:max-w-[90vw] lg:max-w-[1000px]">
             {/* Card Stack - All cards positioned absolutely */}
             <div 
               className="relative w-full"
               style={{ 
-                height: 'clamp(400px, 60vh, 600px)',
+                height: 'clamp(350px, 55vh, 550px)',
               }}
             >
               {/* Intro Card */}
@@ -287,6 +407,6 @@ export default function WeWorkTogether() {
           </div>
         </div>
       </div>
-    </Section>
+    </div>
   );
 }

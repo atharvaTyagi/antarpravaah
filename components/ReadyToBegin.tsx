@@ -1,14 +1,13 @@
 'use client';
 
-import Section from './Section';
 import Button from './Button';
 import PageEndBlob from './PageEndBlob';
 
 export default function ReadyToBegin() {
   return (
-    <Section
+    <div
       id="ready-to-begin"
-      className="relative w-full bg-[#f6edd0] flex flex-col items-center justify-center min-h-[50vh] sm:min-h-[60vh]"
+      className="relative w-full h-full bg-[#f6edd0] flex flex-col items-center justify-center"
     >
       <div className="mx-auto w-full max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1177px] px-4 sm:px-6 lg:px-10">
         <div className="flex flex-col items-center gap-5 sm:gap-6 lg:gap-8 py-10 sm:py-14 lg:py-20">
@@ -35,6 +34,6 @@ export default function ReadyToBegin() {
           </div>
         </div>
       </div>
-    </Section>
+    </div>
   );
 }
