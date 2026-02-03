@@ -171,18 +171,23 @@ export default function GuidedJourneyModal({ isOpen, onClose }: GuidedJourneyMod
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[9998] bg-black/60"
+        className="fixed inset-0 z-[9998] bg-black/60 backdrop-blur-sm"
         onClick={onClose}
       />
 
-      {/* Modal Container - No animation on container */}
+      {/* Modal Container */}
       <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 md:p-8 pointer-events-none">
-        <div
-          className="relative w-full max-w-[1097px] max-h-[90vh] overflow-y-auto rounded-[24px] shadow-2xl pointer-events-auto"
+        <motion.div
+          layout
+          transition={{ 
+            layout: { duration: 0.3, ease: 'easeInOut' }
+          }}
+          className="relative w-full max-w-[1097px] max-h-[90vh] min-h-[650px] overflow-hidden rounded-[24px] shadow-2xl pointer-events-auto"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Render current step - Smooth content transitions only */}
-          <AnimatePresence mode="wait">
+          <div className="h-full overflow-y-auto no-scrollbar">
+            {/* Render current step - Smooth content transitions only */}
+            <AnimatePresence mode="sync" initial={false}>
             {currentStep === 'welcome' && (
               <WelcomeScreen
                 key="welcome"
@@ -243,8 +248,9 @@ export default function GuidedJourneyModal({ isOpen, onClose }: GuidedJourneyMod
                 onClose={onClose}
               />
             )}
-          </AnimatePresence>
-        </div>
+            </AnimatePresence>
+          </div>
+        </motion.div>
       </div>
     </>
   );

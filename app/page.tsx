@@ -10,6 +10,7 @@ import ReadyToBegin from '@/components/ReadyToBegin';
 import Footer from '@/components/Footer';
 import SplashScreen from '@/components/SplashScreen';
 import GuidedJourneyModal from '@/components/GuidedJourneyModal';
+import Button from '@/components/Button';
 import { useUiStore } from '@/lib/stores/useUiStore';
 import { useThemeStore } from '@/lib/stores/useThemeStore';
 import { SectionId } from '@/lib/themeConfig';
@@ -22,6 +23,7 @@ if (typeof window !== 'undefined') {
 // Section configuration
 const SECTIONS: { id: string; type: 'static' | 'journey-scroll' | 'cards-scroll' | 'carousel-scroll' | 'footer'; themeId: SectionId }[] = [
   { id: 'journey', type: 'journey-scroll', themeId: 'journey' },
+  { id: 'journey-cta', type: 'static', themeId: 'journey' },
   { id: 'work-together', type: 'cards-scroll', themeId: 'work-together' },
   { id: 'voices', type: 'carousel-scroll', themeId: 'voices' },
   { id: 'ready-to-begin', type: 'static', themeId: 'ready-to-begin' },
@@ -176,7 +178,7 @@ export default function Home() {
     if (now - lastScrollTimeRef.current < sectionScrollCooldown) return;
 
     if (edge === 'end') {
-      // Move to next section (WeWorkTogether)
+      // Move to next section (Journey CTA)
       goToSection(currentSectionRef.current + 1, 'down');
     }
     // Journey is the first section, so 'start' edge has nowhere to go
@@ -187,7 +189,7 @@ export default function Home() {
     if (now - lastScrollTimeRef.current < sectionScrollCooldown) return;
 
     if (edge === 'start') {
-      // Move to previous section (TheJourney)
+      // Move to previous section (Journey CTA)
       goToSection(currentSectionRef.current - 1, 'up');
     } else if (edge === 'end') {
       // Move to next section (VoicesOfTransformation)
@@ -332,9 +334,60 @@ export default function Home() {
             />
           </div>
 
-          {/* Section 2: WeWorkTogether */}
+          {/* Section 2: Journey CTA */}
           <div 
             ref={(el) => { if (el) sectionsRef.current[1] = el; }} 
+            className="section-height"
+          >
+            <div className="relative w-full h-full bg-[#f6edd0] flex items-center justify-center px-4 sm:px-6 lg:px-8">
+              <div className="w-full max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1177px]">
+                <div className="rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#9ac1bf] p-6 sm:p-8 lg:p-10 text-center">
+                  <div className="mb-6 sm:mb-8 lg:mb-10">
+                    <p
+                      className="mb-2 sm:mb-2.5 lg:mb-3 text-[24px] sm:text-[30px] lg:text-[36px] leading-[1.0] text-[#354443]"
+                      style={{ fontFamily: 'var(--font-saphira), serif' }}
+                    >
+                      If you&apos;re ready
+                    </p>
+                    <p
+                      className="mb-2 sm:mb-2.5 lg:mb-3 text-[24px] sm:text-[30px] lg:text-[36px] leading-[1.0] text-[#354443]"
+                      style={{ fontFamily: 'var(--font-saphira), serif' }}
+                    >
+                      to stop searching
+                    </p>
+                    <p
+                      className="mb-2 sm:mb-2.5 lg:mb-3 text-[24px] sm:text-[30px] lg:text-[36px] leading-[1.0] text-[#354443]"
+                      style={{ fontFamily: 'var(--font-saphira), serif' }}
+                    >
+                      outside yourself
+                    </p>
+                    <p
+                      className="mb-2 sm:mb-2.5 lg:mb-3 text-[24px] sm:text-[30px] lg:text-[36px] leading-[1.0] text-[#354443]"
+                      style={{ fontFamily: 'var(--font-saphira), serif' }}
+                    >
+                      for answers...
+                    </p>
+                  </div>
+                  <p
+                    className="mb-6 sm:mb-8 lg:mb-10 text-[24px] sm:text-[30px] lg:text-[36px] leading-[1.0] text-[#354443]"
+                    style={{ fontFamily: 'var(--font-saphira), serif' }}
+                  >
+                    You&apos;re in the right place.
+                  </p>
+                  <Button
+                    text="Begin Your Journey"
+                    size="large"
+                    mode="dark"
+                    href="/contact"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Section 3: WeWorkTogether */}
+          <div 
+            ref={(el) => { if (el) sectionsRef.current[2] = el; }} 
             className="section-height"
           >
             <WeWorkTogether
@@ -345,9 +398,9 @@ export default function Home() {
             />
           </div>
 
-          {/* Section 3: VoicesOfTransformation */}
+          {/* Section 4: VoicesOfTransformation */}
           <div 
-            ref={(el) => { if (el) sectionsRef.current[2] = el; }} 
+            ref={(el) => { if (el) sectionsRef.current[3] = el; }} 
             className="section-height"
           >
             <VoicesOfTransformation
@@ -358,17 +411,17 @@ export default function Home() {
             />
           </div>
 
-          {/* Section 4: ReadyToBegin */}
+          {/* Section 5: ReadyToBegin */}
           <div 
-            ref={(el) => { if (el) sectionsRef.current[3] = el; }} 
+            ref={(el) => { if (el) sectionsRef.current[4] = el; }} 
             className="section-height"
           >
             <ReadyToBegin />
           </div>
 
-          {/* Section 5: Footer */}
+          {/* Section 6: Footer */}
           <div 
-            ref={(el) => { if (el) sectionsRef.current[4] = el; }} 
+            ref={(el) => { if (el) sectionsRef.current[5] = el; }} 
             className="section-height"
           >
             <Footer />

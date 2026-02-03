@@ -62,10 +62,10 @@ export default function BookingScreen({
   if (step === 'calendar') {
     return (
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.25, ease: 'easeInOut' }}
+        initial={{ y: 8 }}
+        animate={{ y: 0 }}
+        exit={{ y: 0 }}
+        transition={{ duration: 0.3, ease: 'easeInOut' }}
         className="relative w-full p-10 bg-[#2d291f] min-h-[750px]"
       >
         {/* Close Button */}
@@ -149,10 +149,10 @@ export default function BookingScreen({
 
     return (
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.25, ease: 'easeInOut' }}
+        initial={{ y: 8 }}
+        animate={{ y: 0 }}
+        exit={{ y: 0 }}
+        transition={{ duration: 0.3, ease: 'easeInOut' }}
         className="relative w-full p-10 bg-[#2d291f] min-h-[750px]"
       >
         {/* Close Button */}
@@ -311,10 +311,10 @@ export default function BookingScreen({
 
     return (
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.25, ease: 'easeInOut' }}
+        initial={{ y: 8 }}
+        animate={{ y: 0 }}
+        exit={{ y: 0 }}
+        transition={{ duration: 0.3, ease: 'easeInOut' }}
         className="relative w-full p-10 bg-[#2d291f] min-h-[750px]"
       >
         {/* Close Button */}

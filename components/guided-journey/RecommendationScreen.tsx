@@ -21,10 +21,10 @@ export default function RecommendationScreen({ path, onScheduleCall, onClose }: 
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.25, ease: 'easeInOut' }}
+      initial={{ y: 8 }}
+      animate={{ y: 0 }}
+      exit={{ y: 0 }}
+      transition={{ duration: 0.3, ease: 'easeInOut' }}
       className="relative w-full p-10 bg-[#3e3629] min-h-[765px]"
     >
       {/* Close Button */}

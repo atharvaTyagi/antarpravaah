@@ -16,7 +16,7 @@ export default function QuestionScreen({ questionNumber, onAnswer, onBack, onClo
 
   if (!question) return null;
 
-  const progressPercentage = (questionNumber / 6) * 100;
+  const progressPercentage = ((questionNumber - 1) / 5) * 100;
 
   const buttonColors = {
     fg: '#3e3629',
@@ -26,10 +26,10 @@ export default function QuestionScreen({ questionNumber, onAnswer, onBack, onClo
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.25, ease: 'easeInOut' }}
+      initial={{ y: 8 }}
+      animate={{ y: 0 }}
+      exit={{ y: 0 }}
+      transition={{ duration: 0.3, ease: 'easeInOut' }}
       className="relative w-full p-10 bg-[#f6edd0] min-h-[650px]"
     >
       {/* Navigation */}
