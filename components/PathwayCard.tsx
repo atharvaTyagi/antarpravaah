@@ -258,14 +258,23 @@ export default function PathwayCard({ pathway, isMobile = false, onExpandedChang
           </div>
           
           {/* CTA Button */}
-          <Button
-            text={pathway.ctaText}
-            href={onCtaClick ? undefined : pathway.ctaHref}
-            onClick={onCtaClick}
-            mode="dark"
-            size="large"
-            colors={pathwaysButtonColors}
-          />
+          {onCtaClick ? (
+            <Button
+              text={pathway.ctaText}
+              onClick={onCtaClick}
+              mode="dark"
+              size="large"
+              colors={pathwaysButtonColors}
+            />
+          ) : (
+            <Button
+              text={pathway.ctaText}
+              href={pathway.ctaHref}
+              mode="dark"
+              size="large"
+              colors={pathwaysButtonColors}
+            />
+          )}
         </div>
       </div>
     );
