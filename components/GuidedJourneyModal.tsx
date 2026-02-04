@@ -12,6 +12,7 @@ import { submitBooking, formatDateForBooking, type SessionType } from '@/lib/api
 interface GuidedJourneyModalProps {
   isOpen: boolean;
   onClose: () => void;
+  startAt?: ModalStep; // Optional prop to start at a specific step
 }
 
 export type ModalStep = 
@@ -27,7 +28,7 @@ export type ModalStep =
   | 'booking-form'
   | 'booking-confirmation';
 
-export default function GuidedJourneyModal({ isOpen, onClose }: GuidedJourneyModalProps) {
+export default function GuidedJourneyModal({ isOpen, onClose, startAt = 'welcome' }: GuidedJourneyModalProps) {
   const [currentStep, setCurrentStep] = useState<ModalStep>('welcome');
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [recommendedPath, setRecommendedPath] = useState<PathType | null>(null);
@@ -43,14 +44,14 @@ export default function GuidedJourneyModal({ isOpen, onClose }: GuidedJourneyMod
   // Reset state when modal opens
   useEffect(() => {
     if (isOpen) {
-      setCurrentStep('welcome');
+      setCurrentStep(startAt);
       setAnswers({});
       setRecommendedPath(null);
       setBookingData({});
       setIsSubmitting(false);
       setSubmitError(null);
     }
-  }, [isOpen]);
+  }, [isOpen, startAt]);
 
   // Prevent body scroll when modal is open, always restore on close/unmount
   useEffect(() => {
@@ -222,6 +223,7 @@ export default function GuidedJourneyModal({ isOpen, onClose }: GuidedJourneyMod
                 onDateSelected={handleDateSelected}
                 onBack={handleBack}
                 onClose={onClose}
+                showProgress={startAt === 'booking-calendar'}
               />
             )}
 
@@ -235,6 +237,7 @@ export default function GuidedJourneyModal({ isOpen, onClose }: GuidedJourneyMod
                 onClose={onClose}
                 isSubmitting={isSubmitting}
                 submitError={submitError}
+                showProgress={startAt === 'booking-calendar'}
               />
             )}
 

@@ -9,6 +9,7 @@ import TherapyCard from '@/components/TherapyCard';
 import TherapiesBlobScroll from '@/components/TherapiesBlobScroll';
 import Button from '@/components/Button';
 import Footer from '@/components/Footer';
+import GuidedJourneyModal from '@/components/GuidedJourneyModal';
 import { therapies, DescriptionItem } from '@/data/therapiesContent';
 import { useThemeStore } from '@/lib/stores/useThemeStore';
 import { SectionId } from '@/lib/themeConfig';
@@ -65,6 +66,10 @@ export default function TherapiesPage() {
   const [isCardExpanded, setIsCardExpanded] = useState(false);
   const [aspScrolledToEnd, setAspScrolledToEnd] = useState(false);
   const [isBlobScrollActive, setIsBlobScrollActive] = useState(false);
+
+  // Modal state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalStartAt, setModalStartAt] = useState<'welcome' | 'booking-calendar'>('welcome');
 
   // Track scroll reset states for modalities and blob
   const [modalitiesResetToStart, setModalitiesResetToStart] = useState(false);
@@ -483,6 +488,21 @@ export default function TherapiesPage() {
   // Section height class name
   const sectionClass = "section-height";
 
+  // Modal handlers
+  const handleOpenModalInitial = useCallback(() => {
+    setModalStartAt('welcome');
+    setIsModalOpen(true);
+  }, []);
+
+  const handleOpenModalCalendar = useCallback(() => {
+    setModalStartAt('booking-calendar');
+    setIsModalOpen(true);
+  }, []);
+
+  const handleCloseModal = useCallback(() => {
+    setIsModalOpen(false);
+  }, []);
+
   return (
     <>
       <style jsx global>{`
@@ -590,6 +610,7 @@ export default function TherapiesPage() {
                       isVisible={aspCardVisible} 
                       isMobile={true}
                       onScrollEnd={handleAspScrollEnd}
+                      onCtaClick={handleOpenModalInitial}
                     />
                   </div>
                 </div>
@@ -621,6 +642,7 @@ export default function TherapiesPage() {
                         <MobileModalityCard
                           data={modality}
                           onExpandedChange={handleCardExpandedChange}
+                          onCtaClick={handleOpenModalCalendar}
                         />
                       </div>
                     ))}
@@ -683,6 +705,7 @@ export default function TherapiesPage() {
 
                   {/* Multi-line CTA Button */}
                   <button
+                    onClick={handleOpenModalInitial}
                     className="group inline-flex items-center justify-center gap-2 p-3 text-[#645c42] hover:opacity-80 transition-opacity"
                     style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
                   >
@@ -713,6 +736,7 @@ export default function TherapiesPage() {
                   onEdgeReached={handleBlobEdgeReached}
                   resetToStart={blobResetToStart}
                   resetToEnd={blobResetToEnd}
+                  onCtaClick={handleOpenModalInitial}
                 />
               </div>
 
@@ -772,7 +796,7 @@ export default function TherapiesPage() {
                   className={`relative flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 bg-[#f6edd0] overflow-hidden ${sectionClass}`}
                 >
                   <div className="max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1347px] mx-auto w-full">
-                    <TherapyCard therapy={antarSmaranProcess} isVisible={aspCardVisible} />
+                    <TherapyCard therapy={antarSmaranProcess} isVisible={aspCardVisible} onCtaClick={handleOpenModalInitial} />
                   </div>
                 </div>
               )}
@@ -789,6 +813,7 @@ export default function TherapiesPage() {
                   onEdgeReached={handleModalitiesEdgeReached}
                   resetToStart={modalitiesResetToStart}
                   resetToEnd={modalitiesResetToEnd}
+                  onCtaClick={handleOpenModalCalendar}
                 />
               </div>
 
@@ -834,7 +859,7 @@ export default function TherapiesPage() {
                   </p>
 
                   <div className="flex flex-col gap-2 sm:gap-3 mt-2">
-                    <Button text="Schedule a Free Consultation" size="large" colors={therapiesButtonColors} />
+                    <Button text="Schedule a Free Consultation" size="large" colors={therapiesButtonColors} onClick={handleOpenModalInitial} />
                   </div>
                 </div>
               </div>
@@ -903,7 +928,7 @@ export default function TherapiesPage() {
 
                       {/* CTA button inside the blob */}
                       <div className="mt-[clamp(10px,1.8vh,20px)]">
-                        <Button text="Book your first session" size="large" colors={therapiesButtonColors} />
+                        <Button text="Book your first session" size="large" colors={therapiesButtonColors} onClick={handleOpenModalInitial} />
                       </div>
                     </div>
                   </div>
@@ -921,6 +946,13 @@ export default function TherapiesPage() {
           )}
         </div>
       </main>
+
+      {/* Guided Journey Modal */}
+      <GuidedJourneyModal 
+        isOpen={isModalOpen} 
+        onClose={handleCloseModal}
+        startAt={modalStartAt}
+      />
     </>
   );
 }

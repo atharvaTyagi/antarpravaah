@@ -36,6 +36,7 @@ interface TherapiesBlobScrollProps {
   onEdgeReached?: (edge: 'start' | 'end') => void;
   resetToStart?: boolean;
   resetToEnd?: boolean;
+  onCtaClick?: () => void;
 }
 
 export default function TherapiesBlobScroll({
@@ -43,6 +44,7 @@ export default function TherapiesBlobScroll({
   onEdgeReached,
   resetToStart,
   resetToEnd,
+  onCtaClick,
 }: TherapiesBlobScrollProps) {
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const blobContainerRef = useRef<HTMLDivElement | null>(null);
@@ -233,6 +235,7 @@ export default function TherapiesBlobScroll({
                 style={{ opacity: showCTA ? 1 : 0 }}
               >
                 <button
+                  onClick={onCtaClick}
                   className="group inline-flex items-center justify-center gap-2 p-2 text-[#645c42] hover:opacity-80 transition-opacity"
                   style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
                 >

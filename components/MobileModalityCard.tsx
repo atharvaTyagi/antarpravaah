@@ -91,11 +91,13 @@ export interface MobileModalityData {
 interface MobileModalityCardProps {
   data: MobileModalityData;
   onExpandedChange?: (expanded: boolean) => void;
+  onCtaClick?: () => void;
 }
 
 export default function MobileModalityCard({
   data,
   onExpandedChange,
+  onCtaClick,
 }: MobileModalityCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -277,7 +279,7 @@ export default function MobileModalityCard({
 
         {/* CTA Button */}
         <div className="pt-2">
-          <ModalityCtaButton text={data.ctaText} fullWidth />
+          <ModalityCtaButton text={data.ctaText} fullWidth onClick={onCtaClick} />
         </div>
       </div>
     </div>

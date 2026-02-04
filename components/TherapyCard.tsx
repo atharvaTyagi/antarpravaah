@@ -64,9 +64,10 @@ interface TherapyCardProps {
   isVisible?: boolean; // Trigger animation when section is active
   isMobile?: boolean; // Mobile layout variant
   onScrollEnd?: () => void; // Callback when content is scrolled to end
+  onCtaClick?: () => void; // Callback for CTA button click
 }
 
-export default function TherapyCard({ therapy, isVisible = false, isMobile = false, onScrollEnd }: TherapyCardProps) {
+export default function TherapyCard({ therapy, isVisible = false, isMobile = false, onScrollEnd, onCtaClick }: TherapyCardProps) {
   const isCenter = therapy.iconPosition === 'center';
   const cardRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -310,6 +311,7 @@ export default function TherapyCard({ therapy, isVisible = false, isMobile = fal
           {/* CTA Button inside scroll area */}
           <div className="mt-6 flex justify-center">
             <button
+              onClick={onCtaClick}
               className="group inline-flex items-center justify-center gap-2 p-3 text-[#645c42] hover:opacity-80 transition-opacity"
               style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
             >
@@ -355,7 +357,7 @@ export default function TherapyCard({ therapy, isVisible = false, isMobile = fal
 
           {/* CTA */}
           <div ref={ctaRef} className="mt-4 sm:mt-6">
-            <Button text={therapy.ctaText} size="large" colors={therapiesButtonColors} />
+            <Button text={therapy.ctaText} size="large" colors={therapiesButtonColors} onClick={onCtaClick} />
           </div>
         </div>
       </div>
@@ -429,7 +431,7 @@ export default function TherapyCard({ therapy, isVisible = false, isMobile = fal
 
           {/* CTA */}
           <div ref={ctaRef} className="mt-1 sm:mt-2">
-            <Button text={therapy.ctaText} size="small" colors={therapiesButtonColors} />
+            <Button text={therapy.ctaText} size="small" colors={therapiesButtonColors} onClick={onCtaClick} />
           </div>
         </div>
 

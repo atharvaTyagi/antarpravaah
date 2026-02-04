@@ -60,17 +60,17 @@ export default function ContactPage() {
           <div className="bg-[#93a378] rounded-[24px] p-10 flex flex-col lg:flex-row gap-10 items-stretch">
             {/* Contact Information */}
             <div className="flex-1 flex flex-col gap-4 p-5">
-              <div className="mb-4">
+              <div className="mb-2">
                 <p
-                  className="text-[24px] leading-normal text-[#474e3a] uppercase tracking-[3.84px] mb-4"
-                  style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
+                  className="text-[24px] leading-normal text-[#474e3a]"
+                  style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
                 >
                   Get In Touch
                 </p>
               </div>
 
               <h2
-                className="text-[48px] leading-normal text-[#474e3a]"
+                className="text-[36px] leading-normal text-[#474e3a] mb-2"
                 style={{ fontFamily: 'var(--font-saphira), serif' }}
               >
                 Antar Pravaah
@@ -79,54 +79,54 @@ export default function ContactPage() {
               {/* Address */}
               <div
                 className="text-[#474e3a]"
-                style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
+                style={{ fontFamily: 'var(--font-graphik), sans-serif' }}
               >
-                <p className="text-[12px] uppercase tracking-[1.92px] mb-1">Address</p>
-                <p className="text-[24px] leading-normal">Chittaranjan Park,</p>
-                <p className="text-[24px] leading-normal">New Delhi, India</p>
+                <p className="text-[16px] leading-[24px] mb-0" style={{ fontWeight: 500 }}>Address</p>
+                <p className="text-[16px] leading-[24px] mb-0" style={{ fontWeight: 400 }}>Chittaranjan Park,</p>
+                <p className="text-[16px] leading-[24px]" style={{ fontWeight: 400 }}>New Delhi, India</p>
               </div>
 
               {/* Phone */}
               <div
                 className="text-[#474e3a]"
-                style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
+                style={{ fontFamily: 'var(--font-graphik), sans-serif' }}
               >
-                <p className="text-[12px] uppercase tracking-[1.92px] mb-1">Phone</p>
-                <p className="text-[24px] leading-normal">+91 98765 43210</p>
+                <p className="text-[16px] leading-[24px] mb-0" style={{ fontWeight: 500 }}>Contact Number</p>
+                <p className="text-[16px] leading-[24px]" style={{ fontWeight: 400 }}>+91 98765 43210</p>
               </div>
 
               {/* Email */}
               <div
                 className="text-[#474e3a]"
-                style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
+                style={{ fontFamily: 'var(--font-graphik), sans-serif' }}
               >
-                <p className="text-[12px] uppercase tracking-[1.92px] mb-1">Email</p>
-                <p className="text-[24px] leading-normal">hello@antarpravaah.com</p>
+                <p className="text-[16px] leading-[24px] mb-0" style={{ fontWeight: 500 }}>Email</p>
+                <p className="text-[16px] leading-[24px]" style={{ fontWeight: 400 }}>hello@antarpravaah.com</p>
               </div>
 
               {/* Hours - Monday to Friday */}
               <div
                 className="text-[#474e3a]"
-                style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
+                style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
               >
-                <p className="text-[12px] uppercase tracking-[1.92px] mb-1">Monday - Friday</p>
-                <p className="text-[24px] leading-normal">10:00 AM - 7:00 PM</p>
+                <p className="text-[16px] leading-[24px] mb-0">Monday - Friday</p>
+                <p className="text-[16px] leading-[24px]">10:00 AM - 7:00 PM</p>
               </div>
 
               {/* Hours - Saturday */}
               <div
                 className="text-[#474e3a]"
-                style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
+                style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
               >
-                <p className="text-[12px] uppercase tracking-[1.92px] mb-1">Saturday</p>
-                <p className="text-[24px] leading-normal">10:00 AM - 5:00 PM</p>
+                <p className="text-[16px] leading-[24px] mb-0">Saturday</p>
+                <p className="text-[16px] leading-[24px]">10:00 AM - 5:00 PM</p>
               </div>
 
               {/* CTA Button */}
-              <div className="mt-auto pt-6">
+              <div className="mt-auto pt-4">
                 <Button
                   text="Schedule a Free Consultation"
-                  size="small"
+                  size="medium"
                   colors={cardButtonColors}
                 />
               </div>
@@ -161,8 +161,8 @@ export default function ContactPage() {
               Frequently Asked Questions
             </h2>
             <div
-              className="text-[24px] leading-normal text-[#474e3a]"
-              style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
+              className="text-[16px] leading-[24px] text-[#474e3a]"
+              style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
             >
               <p className="mb-2">Here are answers to the questions we hear most often.</p>
               <p>If you don't find what you're looking for, please reach out—we're happy to help.</p>
@@ -175,8 +175,8 @@ export default function ContactPage() {
               {/* Section Header */}
               <div className="w-full text-center py-4">
                 <h3
-                  className="text-[24px] leading-normal text-[#93a378] uppercase tracking-[3.84px]"
-                  style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
+                  className="text-[24px] leading-normal text-[#93a378]"
+                  style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
                 >
                   {section.title}
                 </h3>
@@ -222,25 +222,20 @@ export default function ContactPage() {
       <Section id="contact-cta" className="relative z-10 w-full px-8 pb-24">
         <div className="max-w-[840px] mx-auto text-center flex flex-col gap-8 items-center">
           <h2
-            className="text-[48px] leading-normal text-[#93a378]"
+            className="text-[36px] leading-normal text-[#93a378]"
             style={{ fontFamily: 'var(--font-saphira), serif' }}
           >
             We're here to help
           </h2>
           <p
-            className="text-[24px] leading-normal text-[#93a378] max-w-[687px]"
-            style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
+            className="text-[16px] leading-[24px] text-[#93a378] max-w-[600px]"
+            style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
           >
             Can't find the answer you're looking for? We're happy to discuss any questions or
             concerns you might have about your healing journey.
           </p>
           <div className="flex flex-col gap-3 items-center">
             <Button text="Book your first session" size="large" colors={contactButtonColors} />
-            <Button
-              text="Schedule a Free Consultation"
-              size="small"
-              colors={contactButtonColors}
-            />
           </div>
         </div>
       </Section>

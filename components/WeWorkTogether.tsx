@@ -2,6 +2,7 @@
 
 import { useLayoutEffect, useRef, useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { gsap } from 'gsap';
 import { Observer } from 'gsap/dist/Observer';
 import Button from './Button';
@@ -395,11 +396,14 @@ export default function WeWorkTogether({
               })}
 
               {/* CTA Card */}
-              <div 
-                className="work-card absolute inset-0 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#645c42] p-6 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex items-center justify-center"
+              <Link
+                href="/approach"
+                className="work-card absolute inset-0 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#645c42] p-6 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex items-center justify-center cursor-pointer hover:bg-[#555141] transition-colors duration-300 group"
               >
-                <Button text="Explore Our Approach" size="large" mode="light" href="/approach" />
-              </div>
+                <div className="pointer-events-none">
+                  <Button text="Explore Our Approach" size="large" mode="light" />
+                </div>
+              </Link>
             </div>
           </div>
         </div>

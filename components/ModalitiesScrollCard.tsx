@@ -32,6 +32,7 @@ interface ModalitiesScrollCardProps {
   onEdgeReached?: (edge: 'start' | 'end') => void;
   resetToStart?: boolean;
   resetToEnd?: boolean;
+  onCtaClick?: () => void;
 }
 
 // Button colors for therapies page
@@ -48,6 +49,7 @@ export default function ModalitiesScrollCard({
   onEdgeReached,
   resetToStart,
   resetToEnd,
+  onCtaClick,
 }: ModalitiesScrollCardProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const cardRef = useRef<HTMLDivElement | null>(null);
@@ -347,7 +349,8 @@ export default function ModalitiesScrollCard({
               <Button 
                 text={currentModality.ctaText} 
                 size="large" 
-                colors={therapiesButtonColors} 
+                colors={therapiesButtonColors}
+                onClick={onCtaClick}
               />
             </div>
           </div>

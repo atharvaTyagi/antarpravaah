@@ -24,6 +24,7 @@ interface BookingScreenProps {
   onClose: () => void;
   isSubmitting?: boolean;
   submitError?: string | null;
+  showProgress?: boolean; // Show progress bar (for when accessed directly, not from questions flow)
 }
 
 export default function BookingScreen({
@@ -37,6 +38,7 @@ export default function BookingScreen({
   onClose,
   isSubmitting = false,
   submitError = null,
+  showProgress = false,
 }: BookingScreenProps) {
   const [formData, setFormData] = useState({
     name: '',
@@ -60,6 +62,10 @@ export default function BookingScreen({
 
   // Render Calendar View
   if (step === 'calendar') {
+    // Progress percentage: Assuming user went through all 6 questions + recommendation = 7 steps
+    // Total flow is: welcome (0%) → 6 questions (0-100%) → recommendation (100%) → booking (100%)
+    const progressPercentage = showProgress ? 100 : 0;
+
     return (
       <motion.div
         initial={{ y: 8 }}
@@ -68,22 +74,53 @@ export default function BookingScreen({
         transition={{ duration: 0.3, ease: 'easeInOut' }}
         className="relative w-full p-10 bg-[#2d291f] min-h-[750px]"
       >
-        {/* Close Button */}
-        <div className="flex items-center justify-end mb-10">
-          <button
-            onClick={onClose}
-            className="flex h-6 w-6 items-center justify-center text-[#f6edd0] hover:opacity-70 transition-opacity"
-            aria-label="Close modal"
-          >
-            <img
-              src="/Icon - Close.svg"
-              alt="Close"
-              className="h-6 w-6"
-              style={{
-                filter: 'brightness(0) saturate(100%) invert(95%) sepia(8%) saturate(435%) hue-rotate(357deg) brightness(103%) contrast(92%)',
-              }}
-            />
-          </button>
+        {/* Navigation with Progress Bar and Close Button */}
+        <div className="flex items-center justify-between mb-10">
+          {showProgress ? (
+            <>
+              {/* Progress Bar */}
+              <div className="flex-1 max-w-[913px] h-2 rounded-full overflow-hidden relative bg-[#6b5d47]">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progressPercentage}%` }}
+                  transition={{ duration: 0.5 }}
+                  className="h-full bg-[#f6edd0] rounded-full"
+                />
+              </div>
+              {/* Close Button */}
+              <button
+                onClick={onClose}
+                className="ml-8 flex h-6 w-6 items-center justify-center text-[#f6edd0] hover:opacity-70 transition-opacity"
+                aria-label="Close modal"
+              >
+                <img
+                  src="/Icon - Close.svg"
+                  alt="Close"
+                  className="h-6 w-6"
+                  style={{
+                    filter: 'brightness(0) saturate(100%) invert(95%) sepia(8%) saturate(435%) hue-rotate(357deg) brightness(103%) contrast(92%)',
+                  }}
+                />
+              </button>
+            </>
+          ) : (
+            <div className="w-full flex justify-end">
+              <button
+                onClick={onClose}
+                className="flex h-6 w-6 items-center justify-center text-[#f6edd0] hover:opacity-70 transition-opacity"
+                aria-label="Close modal"
+              >
+                <img
+                  src="/Icon - Close.svg"
+                  alt="Close"
+                  className="h-6 w-6"
+                  style={{
+                    filter: 'brightness(0) saturate(100%) invert(95%) sepia(8%) saturate(435%) hue-rotate(357deg) brightness(103%) contrast(92%)',
+                  }}
+                />
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Header */}
@@ -147,6 +184,8 @@ export default function BookingScreen({
       ? selectedDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
       : '';
 
+    const progressPercentage = showProgress ? 100 : 0;
+
     return (
       <motion.div
         initial={{ y: 8 }}
@@ -155,22 +194,53 @@ export default function BookingScreen({
         transition={{ duration: 0.3, ease: 'easeInOut' }}
         className="relative w-full p-10 bg-[#2d291f] min-h-[750px]"
       >
-        {/* Close Button */}
-        <div className="flex items-center justify-end mb-10">
-          <button
-            onClick={onClose}
-            className="flex h-6 w-6 items-center justify-center text-[#f6edd0] hover:opacity-70 transition-opacity"
-            aria-label="Close modal"
-          >
-            <img
-              src="/Icon - Close.svg"
-              alt="Close"
-              className="h-6 w-6"
-              style={{
-                filter: 'brightness(0) saturate(100%) invert(95%) sepia(8%) saturate(435%) hue-rotate(357deg) brightness(103%) contrast(92%)',
-              }}
-            />
-          </button>
+        {/* Navigation with Progress Bar and Close Button */}
+        <div className="flex items-center justify-between mb-10">
+          {showProgress ? (
+            <>
+              {/* Progress Bar */}
+              <div className="flex-1 max-w-[913px] h-2 rounded-full overflow-hidden relative bg-[#6b5d47]">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progressPercentage}%` }}
+                  transition={{ duration: 0.5 }}
+                  className="h-full bg-[#f6edd0] rounded-full"
+                />
+              </div>
+              {/* Close Button */}
+              <button
+                onClick={onClose}
+                className="ml-8 flex h-6 w-6 items-center justify-center text-[#f6edd0] hover:opacity-70 transition-opacity"
+                aria-label="Close modal"
+              >
+                <img
+                  src="/Icon - Close.svg"
+                  alt="Close"
+                  className="h-6 w-6"
+                  style={{
+                    filter: 'brightness(0) saturate(100%) invert(95%) sepia(8%) saturate(435%) hue-rotate(357deg) brightness(103%) contrast(92%)',
+                  }}
+                />
+              </button>
+            </>
+          ) : (
+            <div className="w-full flex justify-end">
+              <button
+                onClick={onClose}
+                className="flex h-6 w-6 items-center justify-center text-[#f6edd0] hover:opacity-70 transition-opacity"
+                aria-label="Close modal"
+              >
+                <img
+                  src="/Icon - Close.svg"
+                  alt="Close"
+                  className="h-6 w-6"
+                  style={{
+                    filter: 'brightness(0) saturate(100%) invert(95%) sepia(8%) saturate(435%) hue-rotate(357deg) brightness(103%) contrast(92%)',
+                  }}
+                />
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Header */}
