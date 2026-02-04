@@ -50,6 +50,44 @@ function ArrowRight({ className }: { className?: string }) {
   );
 }
 
+function SidePillLeft({ className }: { className?: string }) {
+  return (
+    <svg
+      width="6"
+      height="7"
+      viewBox="0 0 6 7"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      aria-hidden
+    >
+      <path
+        d="M3.95403 6.84653C0.187192 8.1341 -1.7 0.921172 2.00456 0.0757431C5.65533 -0.757083 7.82278 5.5243 3.95403 6.84653Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
+function SidePillRight({ className }: { className?: string }) {
+  return (
+    <svg
+      width="6"
+      height="7"
+      viewBox="0 0 6 7"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      aria-hidden
+    >
+      <path
+        d="M2.04597 6.84653C5.81281 8.1341 7.7 0.921172 3.99544 0.0757431C0.344669 -0.757083 -1.82278 5.5243 2.04597 6.84653Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
 // CTA Button with optional 2-line text layout for mobile
 function CtaButton({ text, onClick, singleLine = false }: { text: string; onClick?: () => void; singleLine?: boolean }) {
   const getTextLines = (fullText: string): string[] => {
@@ -71,16 +109,24 @@ function CtaButton({ text, onClick, singleLine = false }: { text: string; onClic
   return (
     <button
       onClick={onClick}
-      className="group inline-flex items-center justify-center gap-2 p-3 text-[#6a3f33] hover:opacity-80 transition-opacity"
+      className="group inline-flex items-center justify-center gap-2 p-3 text-[#6a3f33]"
       style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
     >
-      <ArrowLeft className="w-7 h-5 shrink-0" />
-      <span className={`text-center text-[18px] tracking-[2.88px] uppercase leading-tight px-2 py-1 ${singleLine ? 'whitespace-nowrap' : ''}`}>
+      {/* Left slot: arrow ↔ pill (animated) */}
+      <span className="w-7 h-5 relative shrink-0">
+        <ArrowLeft className="w-7 h-5 absolute inset-0 m-auto transition-all duration-200 ease-out group-hover:opacity-0 group-hover:-translate-x-1 group-hover:scale-90" />
+        <SidePillLeft className="w-[6px] h-[7px] absolute inset-0 m-auto opacity-0 translate-x-1 scale-90 transition-all duration-200 ease-out group-hover:opacity-100 group-hover:translate-x-0 group-hover:scale-100 text-[#6a3f33]" />
+      </span>
+      <span className={`text-center text-[18px] tracking-[2.88px] uppercase leading-tight px-3 py-1.5 rounded-lg transition-colors duration-150 group-hover:bg-[#6a3f33] group-hover:text-[#d58761] ${singleLine ? 'whitespace-nowrap' : ''}`}>
         {lines.map((line, idx) => (
           <span key={idx} className="block">{line}</span>
         ))}
       </span>
-      <ArrowRight className="w-7 h-5 shrink-0" />
+      {/* Right slot: arrow ↔ pill (animated) */}
+      <span className="w-7 h-5 relative shrink-0">
+        <ArrowRight className="w-7 h-5 absolute inset-0 m-auto transition-all duration-200 ease-out group-hover:opacity-0 group-hover:translate-x-1 group-hover:scale-90" />
+        <SidePillRight className="w-[6px] h-[7px] absolute inset-0 m-auto opacity-0 -translate-x-1 scale-90 transition-all duration-200 ease-out group-hover:opacity-100 group-hover:translate-x-0 group-hover:scale-100 text-[#6a3f33]" />
+      </span>
     </button>
   );
 }
