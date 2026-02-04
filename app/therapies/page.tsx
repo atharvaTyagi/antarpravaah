@@ -26,7 +26,7 @@ const SECTIONS_DESKTOP: { id: string; type: 'static' | 'modalities-scroll' | 'fo
   { id: 'therapies-modalities', type: 'modalities-scroll', themeId: 'therapies-modalities' },
   { id: 'therapies-not-sure', type: 'static', themeId: 'therapies-not-sure' },
   { id: 'therapies-come-find-me', type: 'static', themeId: 'therapies-come-find-me' },
-  { id: 'therapies-footer', type: 'footer', themeId: 'therapies' },
+  { id: 'therapies-footer', type: 'footer', themeId: 'therapies-footer' },
 ];
 
 // Mobile section configuration - modalities as carousel, blob as scroll-driven
@@ -36,7 +36,7 @@ const SECTIONS_MOBILE: { id: string; type: 'static' | 'asp-scroll' | 'modalities
   { id: 'therapies-modalities', type: 'modalities-carousel', themeId: 'therapies-modalities' },
   { id: 'therapies-not-sure', type: 'static', themeId: 'therapies-not-sure' },
   { id: 'therapies-come-find-me', type: 'blob-scroll', themeId: 'therapies-come-find-me' },
-  { id: 'therapies-footer', type: 'footer', themeId: 'therapies' },
+  { id: 'therapies-footer', type: 'footer', themeId: 'therapies-footer' },
 ];
 
 // Therapies page button colors matching the page theme
@@ -49,10 +49,6 @@ const therapiesButtonColors = {
 export default function TherapiesPage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const sectionsRef = useRef<HTMLDivElement[]>([]);
-  const heading1Ref = useRef<HTMLHeadingElement>(null);
-  const heading2Ref = useRef<HTMLHeadingElement>(null);
-  const textLineRefs = useRef<(HTMLParagraphElement | null)[]>([]);
-  const blobTextContainerRef = useRef<HTMLDivElement>(null);
   const modalitiesCarouselRef = useRef<HTMLDivElement>(null);
 
   const setTheme = useThemeStore((state) => state.setTheme);
@@ -66,6 +62,7 @@ export default function TherapiesPage() {
   const [isCardExpanded, setIsCardExpanded] = useState(false);
   const [aspScrolledToEnd, setAspScrolledToEnd] = useState(false);
   const [isBlobScrollActive, setIsBlobScrollActive] = useState(false);
+  const [isDesktopBlobActive, setIsDesktopBlobActive] = useState(false);
 
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -83,7 +80,6 @@ export default function TherapiesPage() {
 
   const lastScrollTimeRef = useRef<number>(0);
   const sectionScrollCooldown = 1000;
-  const blobAnimationRanRef = useRef(false);
 
   // Get current sections based on viewport
   const SECTIONS = isMobile ? SECTIONS_MOBILE : SECTIONS_DESKTOP;
@@ -109,56 +105,6 @@ export default function TherapiesPage() {
       clearTimeout(readyTimeout);
     };
   }, [setTheme]);
-
-  // Run blob text animation (desktop only)
-  const runBlobAnimation = useCallback(() => {
-    if (!heading1Ref.current || !heading2Ref.current) return;
-
-    const validLines = textLineRefs.current.filter((p) => p !== null);
-    if (validLines.length === 0) return;
-
-    // Set initial state - everything invisible
-    gsap.set([heading1Ref.current, ...validLines, heading2Ref.current], {
-      opacity: 0,
-      y: 20,
-    });
-
-    // Create timeline
-    const tl = gsap.timeline();
-
-    // Animate first heading "Come and find me...."
-    tl.to(heading1Ref.current, {
-      opacity: 1,
-      y: 0,
-      duration: 1,
-      ease: 'power2.out',
-    });
-
-    // Then animate each line of text with stagger
-    tl.to(
-      validLines,
-      {
-        opacity: 1,
-        y: 0,
-        duration: 1,
-        stagger: 0.25,
-        ease: 'power2.out',
-      },
-      '-=0.3'
-    );
-
-    // Finally animate the closing heading
-    tl.to(
-      heading2Ref.current,
-      {
-        opacity: 1,
-        y: 0,
-        duration: 1.2,
-        ease: 'power2.out',
-      },
-      '-=0.4'
-    );
-  }, []);
 
   // Navigate to a specific section
   const goToSection = useCallback((index: number, direction: 'up' | 'down' = 'down') => {
@@ -227,17 +173,16 @@ export default function TherapiesPage() {
           setTimeout(() => setIsBlobScrollActive(true), 400);
         }
 
-        // Desktop blob animation when reaching the "Come and find me" section
-        if (section.id === 'therapies-come-find-me' && !isMobile && !blobAnimationRanRef.current) {
-          blobAnimationRanRef.current = true;
-          runBlobAnimation();
+        // Desktop blob animation - activate when landing on the blob section
+        if (section.id === 'therapies-come-find-me' && !isMobile) {
+          setTimeout(() => setIsDesktopBlobActive(true), 300);
         }
 
         lastScrollTimeRef.current = Date.now();
         setIsAnimating(false);
       },
     });
-  }, [isAnimating, SECTIONS, setTheme, isMobile, aspCardVisible, runBlobAnimation]);
+  }, [isAnimating, SECTIONS, setTheme, isMobile, aspCardVisible]);
 
   // Handle modalities scroll edge reached
   const handleModalitiesEdgeReached = useCallback((edge: 'start' | 'end') => {
@@ -632,7 +577,7 @@ export default function TherapiesPage() {
                 </div>
 
                 {/* Carousel Container */}
-                <div className="flex-1 flex items-center overflow-hidden px-5 pb-4">
+                <div className="flex-1 flex items-center overflow-hidden px-5 py-6">
                   <div
                     ref={modalitiesCarouselRef}
                     className="flex gap-4 will-change-transform"
@@ -647,18 +592,6 @@ export default function TherapiesPage() {
                       </div>
                     ))}
                   </div>
-                </div>
-
-                {/* Pagination Dots */}
-                <div className="flex justify-center gap-2 pb-4">
-                  {mobileModalitiesContent.map((_, index) => (
-                    <div
-                      key={index}
-                      className={`w-2 h-2 rounded-full transition-colors ${
-                        index === currentModalityIndex ? 'bg-[#645c42]' : 'bg-[#645c42]/30'
-                      }`}
-                    />
-                  ))}
                 </div>
               </div>
 
@@ -864,75 +797,15 @@ export default function TherapiesPage() {
                 </div>
               </div>
 
-              {/* Section 5: Come and Find Me - Big Blob */}
+              {/* Section 5: Come and Find Me - Blob with word-by-word animation */}
               <div
                 ref={(el) => { if (el) sectionsRef.current[4] = el; }}
                 className={`relative flex items-center justify-center bg-[#f6edd0] overflow-hidden ${sectionClass}`}
               >
-                {/* Blob with text and CTA inside - larger blob filling more viewport */}
-                <div 
-                  className="relative flex items-center justify-center w-full h-[92%] max-h-[92vh]" 
-                  ref={blobTextContainerRef}
-                >
-                  {/* Background blob - scales to fit container */}
-                  <img
-                    src="/about_text_blob.svg"
-                    alt=""
-                    className="h-full w-auto max-w-[98vw] object-contain"
-                    style={{
-                      filter:
-                        'brightness(0) saturate(100%) invert(87%) sepia(11%) saturate(939%) hue-rotate(7deg) brightness(102%) contrast(85%)'
-                    }}
-                  />
-
-                  {/* Content positioned inside the blob */}
-                  <div className="absolute inset-0 flex flex-col items-center justify-center px-[18%] py-[12%]">
-                    <div className="text-center flex flex-col gap-[clamp(6px,1.2vh,14px)] max-w-[88%]">
-                      <h2
-                        ref={heading1Ref}
-                        className="text-[clamp(16px,3vw,38px)] leading-tight text-[#645c42] opacity-0"
-                        style={{ fontFamily: 'var(--font-saphira), serif' }}
-                      >
-                        Come and find me....
-                      </h2>
-
-                      <div
-                        className="text-[clamp(8px,1.3vw,16px)] leading-[1.35] text-[#645c42]"
-                        style={{ fontFamily: 'var(--font-saphira), serif' }}
-                      >
-                        <p className="opacity-0" ref={(el) => { textLineRefs.current[0] = el; }}>Find me when you have lost track of your path,</p>
-                        <p className="opacity-0" ref={(el) => { textLineRefs.current[1] = el; }}>When you have forgotten what you like and dislike,</p>
-                        <p className="opacity-0" ref={(el) => { textLineRefs.current[2] = el; }}>
-                          When you are bored of always seeking people to fill the emptiness you feel within,
-                        </p>
-                        <p className="opacity-0" ref={(el) => { textLineRefs.current[3] = el; }}>When your body hurts and you can&apos;t take it no more,</p>
-                        <p className="opacity-0" ref={(el) => { textLineRefs.current[4] = el; }}>When you feel purposeless and joyless,</p>
-                        <p className="opacity-0" ref={(el) => { textLineRefs.current[5] = el; }}>When this life seems alien,</p>
-                        <p className="opacity-0" ref={(el) => { textLineRefs.current[6] = el; }}>When dealing with others drains your energy,</p>
-                        <p className="opacity-0" ref={(el) => { textLineRefs.current[7] = el; }}>
-                          When you cannot see the light in others and only the dark in yourself,
-                        </p>
-                        <p className="opacity-0" ref={(el) => { textLineRefs.current[8] = el; }}>Find me when no answer is good enough,</p>
-                        <p className="opacity-0" ref={(el) => { textLineRefs.current[9] = el; }}>
-                          When you have been to enough people seeking to get clarity about your life,
-                        </p>
-                      </div>
-
-                      <h2
-                        ref={heading2Ref}
-                        className="text-[clamp(14px,2.5vw,32px)] leading-tight text-[#645c42] mt-[clamp(6px,1.2vh,14px)] opacity-0"
-                        style={{ fontFamily: 'var(--font-saphira), serif' }}
-                      >
-                        Find me when you are ready to find yourself.
-                      </h2>
-
-                      {/* CTA button inside the blob */}
-                      <div className="mt-[clamp(10px,1.8vh,20px)]">
-                        <Button text="Book your first session" size="large" colors={therapiesButtonColors} onClick={handleOpenModalInitial} />
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <TherapiesBlobScroll
+                  isActive={isDesktopBlobActive}
+                  onCtaClick={handleOpenModalInitial}
+                />
               </div>
 
               {/* Section 6: Footer */}

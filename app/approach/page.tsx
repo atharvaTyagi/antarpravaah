@@ -25,7 +25,7 @@ const SECTIONS_DESKTOP: { id: string; type: 'static' | 'pathways-scroll' | 'foot
   { id: 'pathways', type: 'pathways-scroll', themeId: 'pathways' },
   { id: 'thoughts', type: 'static', themeId: 'thoughts' },
   { id: 'approach-cta', type: 'static', themeId: 'approach-cta' },
-  { id: 'footer', type: 'footer', themeId: 'approach' },
+  { id: 'footer', type: 'footer', themeId: 'approach-footer' },
 ];
 
 // Mobile sections (same structure as desktop)
@@ -34,7 +34,7 @@ const SECTIONS_MOBILE: { id: string; type: 'static' | 'pathways-scroll' | 'foote
   { id: 'pathways', type: 'pathways-scroll', themeId: 'pathways' },
   { id: 'thoughts', type: 'static', themeId: 'thoughts' },
   { id: 'approach-cta', type: 'static', themeId: 'approach-cta' },
-  { id: 'footer', type: 'footer', themeId: 'approach' },
+  { id: 'footer', type: 'footer', themeId: 'approach-footer' },
 ];
 
 // Approach page button colors
@@ -366,7 +366,7 @@ export default function ApproachPage() {
           {/* ===== SECTION 3: Thoughts & Ponderings ===== */}
           <div
             ref={(el) => { if (el) sectionsRef.current[2] = el; }}
-            className={`relative flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 py-16 sm:py-20 bg-[#f6edd0] overflow-hidden ${sectionClass}`}
+            className={`relative flex flex-col px-4 sm:px-8 lg:px-12 py-8 sm:py-12 bg-[#f6edd0] overflow-y-auto md:overflow-hidden ${sectionClass}`}
           >
             <ThoughtsAndPonderings />
           </div>

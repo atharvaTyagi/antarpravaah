@@ -126,7 +126,7 @@ const SECTIONS: { id: string; type: 'static' | 'carousel' | 'footer'; themeId: S
   { id: 'trainings-intro', type: 'static', themeId: 'trainings-intro' },
   { id: 'trainings-carousel', type: 'carousel', themeId: 'trainings-listings' },
   { id: 'cta', type: 'static', themeId: 'cta' },
-  { id: 'footer', type: 'footer', themeId: 'immersions' },
+  { id: 'footer', type: 'footer', themeId: 'immersions-footer' },
 ];
 
 // Component that uses searchParams - wrapped in Suspense

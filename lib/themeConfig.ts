@@ -1,6 +1,7 @@
 export type SectionId =
   | 'hero'
   | 'journey'
+  | 'journey-footer'
   | 'work-together'
   | 'voices'
   | 'ready-to-begin'
@@ -10,8 +11,10 @@ export type SectionId =
   | 'therapies-modalities'
   | 'therapies-not-sure'
   | 'therapies-come-find-me'
+  | 'therapies-footer'
   | 'approach'
   | 'approach-cta'
+  | 'approach-footer'
   | 'pathways'
   | 'thoughts'
   | 'immersions'
@@ -20,10 +23,12 @@ export type SectionId =
   | 'trainings-intro'
   | 'trainings-listings'
   | 'cta'
+  | 'immersions-footer'
   | 'about'
   | 'about-intro'
   | 'about-body'
   | 'about-cta'
+  | 'about-footer'
   | 'inspiration'
   | 'contact'
   | 'contact-info'
@@ -52,6 +57,14 @@ export const SECTION_THEMES: Record<SectionId, Theme> = {
     accent: '#9ac1bf', // Teal accent (from Figma)
     headerBg: '#354443', // Dark teal header (from Figma)
     headerOuterBg: '#f6edd0', // Light beige outer
+  },
+  'journey-footer': {
+    bg: '#354443', // Dark teal background (footer bg)
+    text: '#9ac1bf', // Teal text
+    accent: '#f6edd0', // Light beige accent
+    headerBg: '#9ac1bf', // Light teal header (light on dark section)
+    headerOuterBg: '#354443', // Dark teal outer (matches footer bg)
+    headerText: '#354443', // Dark text on light header
   },
   'work-together': {
     bg: '#f6edd0', // Light beige (from Figma)
@@ -116,6 +129,14 @@ export const SECTION_THEMES: Record<SectionId, Theme> = {
     headerBg: '#645c42', // Dark brown header
     headerOuterBg: '#f6edd0', // Light beige outer
   },
+  'therapies-footer': {
+    bg: '#645c42', // Dark brown background (footer bg)
+    text: '#d6c68e', // Light gold text
+    accent: '#f6edd0', // Light beige accent
+    headerBg: '#d6c68e', // Light gold header (light on dark section)
+    headerOuterBg: '#645c42', // Dark brown outer (matches footer bg)
+    headerText: '#645c42', // Dark brown text on light header
+  },
   approach: {
     bg: '#f6edd0', // Base White (from Figma)
     text: '#474e3a', // G800 (from Figma)
@@ -129,6 +150,14 @@ export const SECTION_THEMES: Record<SectionId, Theme> = {
     accent: '#9ac1bf', // Teal accent
     headerBg: '#354443', // Dark teal header (from Figma)
     headerOuterBg: '#f6edd0', // Light beige outer
+  },
+  'approach-footer': {
+    bg: '#354443', // Dark teal background (footer bg)
+    text: '#9ac1bf', // Teal text
+    accent: '#f6edd0', // Light beige accent
+    headerBg: '#9ac1bf', // Light teal header (light on dark section)
+    headerOuterBg: '#354443', // Dark teal outer (matches footer bg)
+    headerText: '#354443', // Dark text on light header
   },
   pathways: {
     bg: '#354443', // Dark teal background
@@ -183,6 +212,14 @@ export const SECTION_THEMES: Record<SectionId, Theme> = {
     accent: '#6a3f33', // Dark brown accent
     headerBg: '#6a3f33', // Dark Brown header (matches immersions theme)
   },
+  'immersions-footer': {
+    bg: '#6a3f33', // Dark brown background (footer bg)
+    text: '#d58761', // Orange text
+    accent: '#f6edd0', // Light beige accent
+    headerBg: '#f6edd0', // Light beige header (light on dark section)
+    headerOuterBg: '#6a3f33', // Dark brown outer (matches footer bg)
+    headerText: '#6a3f33', // Dark brown text on light header
+  },
   about: {
     // Figma About page
     bg: '#f6edd0', // Base white
@@ -212,6 +249,14 @@ export const SECTION_THEMES: Record<SectionId, Theme> = {
     accent: '#474e3a', // Deep green accent
     headerBg: '#474e3a', // Deep green header
     headerOuterBg: '#f6edd0', // Light beige outer
+  },
+  'about-footer': {
+    bg: '#474e3a', // Deep green background (footer bg)
+    text: '#93a378', // Soft green text
+    accent: '#f6edd0', // Light beige accent
+    headerBg: '#93a378', // Light green header (light on dark section)
+    headerOuterBg: '#474e3a', // Deep green outer (matches footer bg)
+    headerText: '#474e3a', // Dark green text on light header
   },
   inspiration: {
     bg: '#f6edd0', // Base white (section bg, card is green)

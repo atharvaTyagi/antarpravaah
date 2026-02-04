@@ -28,23 +28,23 @@ export default function Footer() {
   const theme = SECTION_THEMES[currentTheme] || SECTION_THEMES['hero'];
 
   // Use theme colors for footer
-  // Background: darker color (headerBg)
-  // Text: lighter color that contrasts with headerBg
-  const footerBg = theme.headerBg || '#474e3a';
+  // Background: use the theme's main bg color (should be dark for footer sections)
+  // Text: lighter color that contrasts with bg
+  const footerBg = theme.bg || '#474e3a';
 
   // Choose a contrasting color for text - use accent if it contrasts, otherwise use text color or fallback to light
   const footerAccent =
-    theme.accent !== theme.headerBg
+    theme.accent !== theme.bg
       ? theme.accent
-      : theme.text !== theme.headerBg
+      : theme.text !== theme.bg
         ? theme.text
         : '#f6edd0';
 
   return (
     <footer className="relative z-20 w-full h-full flex flex-col items-center justify-center px-4 py-12 sm:px-6 sm:py-16 lg:px-20 lg:py-20" style={{ backgroundColor: footerBg }}>
       <div className="mx-auto flex max-w-full sm:max-w-[calc(100vw-48px)] lg:max-w-[1282px] flex-col items-center gap-8 sm:gap-10 lg:gap-10">
-        {/* Quick Links */}
-        <div className="flex flex-col items-center gap-3 sm:gap-4 w-full">
+        {/* Quick Links - Hidden on mobile */}
+        <div className="hidden sm:flex flex-col items-center gap-3 sm:gap-4 w-full">
           <p
             className="text-center text-[20px] sm:text-[22px] lg:text-[24px] leading-[normal]"
             style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400, color: footerAccent }}

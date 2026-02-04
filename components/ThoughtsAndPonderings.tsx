@@ -2,6 +2,19 @@
 
 import { useThoughts, type SanityThought } from '@/sanity/lib/queries';
 import Image from 'next/image';
+import { useMemo, useState, useEffect } from 'react';
+
+// =============================================================================
+// Constants
+// =============================================================================
+
+// Grid configuration: 4 columns x 2 rows = 8 cards max before horizontal scroll
+const GRID_COLUMNS = 4;
+const GRID_ROWS = 2;
+const MAX_CARDS_IN_VIEW = GRID_COLUMNS * GRID_ROWS;
+
+// Mobile breakpoint
+const MOBILE_BREAKPOINT = 768;
 
 // =============================================================================
 // Loading Spinner Component
@@ -90,61 +103,124 @@ function EmptyState() {
 }
 
 // =============================================================================
-// Thought Card Component
+// Thought Card Component (Desktop Grid)
 // =============================================================================
 
 interface ThoughtCardProps {
   thought: SanityThought;
-  isLarge?: boolean;
 }
 
-function ThoughtCard({ thought, isLarge = false }: ThoughtCardProps) {
+function ThoughtCard({ thought }: ThoughtCardProps) {
   const { content, imageUrl } = thought;
   const hasImage = !!imageUrl;
   
-  // Determine if content is long (for varying card heights when no image)
-  const isLongContent = content.length > 150;
+  // Dynamic text size based on content length
+  const getTextSize = () => {
+    if (content.length < 50) {
+      return 'text-[20px] sm:text-[22px] lg:text-[26px]';
+    }
+    if (content.length < 100) {
+      return 'text-[18px] sm:text-[20px] lg:text-[22px]';
+    }
+    if (content.length < 200) {
+      return 'text-[16px] sm:text-[18px] lg:text-[20px]';
+    }
+    return 'text-[14px] sm:text-[16px] lg:text-[18px]';
+  };
   
   return (
     <div
-      className={`
+      className="
         flex flex-col overflow-hidden
-        rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] 
+        h-full
+        rounded-[16px] sm:rounded-[20px] lg:rounded-[24px]
         bg-[#9ac1bf]
-        ${isLarge 
-          ? 'lg:row-span-2' 
-          : ''
-        }
-        ${!hasImage && !isLarge
-          ? isLongContent 
-            ? 'min-h-[220px] sm:min-h-[260px]' 
-            : 'min-h-[180px] sm:min-h-[200px]'
-          : ''
-        }
-      `}
+      "
     >
-      {/* Image (if available) */}
+      {/* Image (if available) - takes ~55% of card height */}
       {hasImage && (
-        <div className={`relative w-full ${isLarge ? 'h-[200px] lg:h-[280px]' : 'h-[160px] sm:h-[180px]'}`}>
+        <div className="relative w-full h-[55%] min-h-[100px] overflow-hidden">
           <Image
             src={imageUrl}
             alt=""
             fill
             className="object-cover"
-            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            loading="lazy"
+          />
+        </div>
+      )}
+      
+      {/* Content - fills remaining space */}
+      <div
+        className={`
+          flex items-center justify-center p-3 sm:p-4 lg:p-5 overflow-hidden
+          ${hasImage ? 'h-[45%]' : 'flex-1'}
+        `}
+      >
+        <p
+          className={`text-center ${getTextSize()} leading-snug text-[#354443] line-clamp-6`}
+          style={{ fontFamily: 'var(--font-saphira), serif' }}
+        >
+          {content}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// =============================================================================
+// Mobile Thought Card Component (for vertical scroll view)
+// =============================================================================
+
+interface MobileThoughtCardProps {
+  thought: SanityThought;
+}
+
+function MobileThoughtCard({ thought }: MobileThoughtCardProps) {
+  const { content, imageUrl } = thought;
+  const hasImage = !!imageUrl;
+  
+  // Dynamic text size for mobile
+  const getTextSize = () => {
+    if (content.length < 50) {
+      return 'text-[20px]';
+    }
+    if (content.length < 100) {
+      return 'text-[18px]';
+    }
+    if (content.length < 200) {
+      return 'text-[16px]';
+    }
+    return 'text-[15px]';
+  };
+  
+  return (
+    <div
+      className="
+        flex flex-col overflow-hidden shrink-0
+        rounded-[16px]
+        bg-[#9ac1bf]
+      "
+    >
+      {/* Image (if available) */}
+      {hasImage && (
+        <div className="relative w-full aspect-[4/3] max-h-[200px] overflow-hidden">
+          <Image
+            src={imageUrl}
+            alt=""
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, 50vw"
             loading="lazy"
           />
         </div>
       )}
       
       {/* Content */}
-      <div className={`
-        flex flex-1 items-center justify-center p-6 sm:p-8 lg:p-10
-        ${hasImage ? '' : 'min-h-[180px] sm:min-h-[200px]'}
-        ${isLarge && hasImage ? 'lg:min-h-[136px]' : ''}
-      `}>
+      <div className="flex items-center justify-center p-5">
         <p
-          className="text-center text-[20px] sm:text-[22px] lg:text-[24px] leading-normal text-[#354443]"
+          className={`text-center ${getTextSize()} leading-relaxed text-[#354443]`}
           style={{ fontFamily: 'var(--font-saphira), serif' }}
         >
           {content}
@@ -160,11 +236,28 @@ function ThoughtCard({ thought, isLarge = false }: ThoughtCardProps) {
 
 export default function ThoughtsAndPonderings() {
   const { thoughts, isLoading, error, refetch } = useThoughts();
+  const [isMobile, setIsMobile] = useState(false);
+  
+  // Check if mobile on mount and resize
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+  
+  // Determine if we need horizontal scroll on desktop (more cards than fit in 4x2 grid)
+  const needsHorizontalScroll = useMemo(() => {
+    return thoughts.length > MAX_CARDS_IN_VIEW;
+  }, [thoughts.length]);
   
   // Loading state
   if (isLoading) {
     return (
-      <div className="mx-auto flex max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1177px] flex-col items-center gap-8 sm:gap-10 lg:gap-12">
+      <div className="w-full h-full flex flex-col items-center justify-center gap-6">
         <h2
           className="text-center text-[36px] sm:text-[42px] lg:text-[48px] leading-[1.0] text-[#354443]"
           style={{ fontFamily: 'var(--font-saphira), serif' }}
@@ -179,7 +272,7 @@ export default function ThoughtsAndPonderings() {
   // Error state
   if (error) {
     return (
-      <div className="mx-auto flex max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1177px] flex-col items-center gap-8 sm:gap-10 lg:gap-12">
+      <div className="w-full h-full flex flex-col items-center justify-center gap-6">
         <h2
           className="text-center text-[36px] sm:text-[42px] lg:text-[48px] leading-[1.0] text-[#354443]"
           style={{ fontFamily: 'var(--font-saphira), serif' }}
@@ -194,7 +287,7 @@ export default function ThoughtsAndPonderings() {
   // Empty state
   if (thoughts.length === 0) {
     return (
-      <div className="mx-auto flex max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1177px] flex-col items-center gap-8 sm:gap-10 lg:gap-12">
+      <div className="w-full h-full flex flex-col items-center justify-center gap-6">
         <h2
           className="text-center text-[36px] sm:text-[42px] lg:text-[48px] leading-[1.0] text-[#354443]"
           style={{ fontFamily: 'var(--font-saphira), serif' }}
@@ -206,32 +299,79 @@ export default function ThoughtsAndPonderings() {
     );
   }
   
-  // Render thought cards in a masonry-like grid
+  // ==========================================================================
+  // MOBILE VIEW: Vertically scrollable stacked cards
+  // ==========================================================================
+  if (isMobile) {
+    return (
+      <div className="w-full h-full flex flex-col gap-4">
+        {/* Title */}
+        <h2
+          className="text-center text-[32px] leading-[1.0] text-[#354443] shrink-0 px-4"
+          style={{ fontFamily: 'var(--font-saphira), serif' }}
+        >
+          Thoughts & Ponderings
+        </h2>
+        
+        {/* Scrollable card container - native scroll with containment */}
+        <div 
+          className="flex-1 overflow-y-auto overflow-x-hidden px-4 pb-4 min-h-0"
+          style={{ 
+            overscrollBehavior: 'contain',
+            WebkitOverflowScrolling: 'touch',
+          }}
+        >
+          <div className="flex flex-col gap-4">
+            {thoughts.map((thought) => (
+              <MobileThoughtCard
+                key={thought._id}
+                thought={thought}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
+  // ==========================================================================
+  // DESKTOP VIEW: CSS Grid layout
+  // ==========================================================================
   return (
-    <div className="mx-auto flex max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1177px] flex-col items-center gap-8 sm:gap-10 lg:gap-12">
-      {/* Title */}
+    <div className="w-full h-full flex flex-col gap-6 sm:gap-8">
+      {/* Title - fixed height */}
       <h2
-        className="text-center text-[36px] sm:text-[42px] lg:text-[48px] leading-[1.0] text-[#354443]"
+        className="text-center text-[36px] sm:text-[42px] lg:text-[48px] leading-[1.0] text-[#354443] shrink-0"
         style={{ fontFamily: 'var(--font-saphira), serif' }}
       >
         Thoughts & Ponderings
       </h2>
 
-      {/* Grid of thought cards */}
-      <div className="grid w-full grid-cols-1 gap-4 sm:gap-5 lg:gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {thoughts.map((thought, index) => {
-          // Make every 3rd card (starting from index 2) span 2 rows on desktop
-          // This creates a nice masonry-like effect
-          const isLargeCard = index % 5 === 2; // Position 3, 8, 13, etc.
-          
-          return (
+      {/* Grid Container - fills remaining height */}
+      <div
+        className={`
+          flex-1 min-h-0
+          ${needsHorizontalScroll ? 'overflow-x-auto overflow-y-hidden pb-2' : ''}
+        `}
+      >
+        {/* CSS Grid Layout */}
+        <div
+          className={`
+            grid gap-4 sm:gap-5 lg:gap-6 h-full
+            ${needsHorizontalScroll 
+              ? 'grid-flow-col auto-cols-[minmax(280px,320px)] grid-rows-2' 
+              : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 grid-rows-2'
+            }
+          `}
+          style={needsHorizontalScroll ? { width: 'max-content' } : undefined}
+        >
+          {thoughts.map((thought) => (
             <ThoughtCard
               key={thought._id}
               thought={thought}
-              isLarge={isLargeCard}
             />
-          );
-        })}
+          ))}
+        </div>
       </div>
     </div>
   );

@@ -27,7 +27,7 @@ const SECTIONS: { id: string; type: 'static' | 'journey-scroll' | 'cards-scroll'
   { id: 'work-together', type: 'cards-scroll', themeId: 'work-together' },
   { id: 'voices', type: 'carousel-scroll', themeId: 'voices' },
   { id: 'ready-to-begin', type: 'static', themeId: 'ready-to-begin' },
-  { id: 'footer', type: 'footer', themeId: 'journey' },
+  { id: 'footer', type: 'footer', themeId: 'journey-footer' },
 ];
 
 export default function Home() {

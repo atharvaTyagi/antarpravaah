@@ -21,7 +21,7 @@ const SECTIONS_MOBILE: { id: string; type: 'static' | 'blob-scroll' | 'inspirati
   { id: 'about-photos-2', type: 'static', themeId: 'about-body' },
   { id: 'inspiration', type: 'inspiration-scroll', themeId: 'inspiration' },
   { id: 'about-cta', type: 'static', themeId: 'about-cta' },
-  { id: 'footer', type: 'footer', themeId: 'about' },
+  { id: 'footer', type: 'footer', themeId: 'about-footer' },
 ];
 
 const SECTIONS_DESKTOP: { id: string; type: 'static' | 'blob-scroll' | 'footer'; themeId: SectionId }[] = [
@@ -29,7 +29,7 @@ const SECTIONS_DESKTOP: { id: string; type: 'static' | 'blob-scroll' | 'footer';
   { id: 'about-body', type: 'blob-scroll', themeId: 'about-body' },
   { id: 'inspiration', type: 'static', themeId: 'inspiration' },
   { id: 'about-cta', type: 'static', themeId: 'about-cta' },
-  { id: 'footer', type: 'footer', themeId: 'about' },
+  { id: 'footer', type: 'footer', themeId: 'about-footer' },
 ];
 
 export default function AboutPage() {
