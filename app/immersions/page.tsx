@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, useCallback, useLayoutEffect } from 'react';
+import { useEffect, useRef, useState, useCallback, useLayoutEffect, Suspense } from 'react';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import { gsap } from 'gsap';
@@ -129,7 +129,8 @@ const SECTIONS: { id: string; type: 'static' | 'carousel' | 'footer'; themeId: S
   { id: 'footer', type: 'footer', themeId: 'immersions' },
 ];
 
-export default function ImmersionsPage() {
+// Component that uses searchParams - wrapped in Suspense
+function ImmersionsPageContent() {
   const containerRef = useRef<HTMLDivElement>(null);
   const sectionsRef = useRef<HTMLDivElement[]>([]);
   const immersionsCarouselRef = useRef<HTMLDivElement>(null);
@@ -903,5 +904,14 @@ export default function ImmersionsPage() {
         startAt="booking-calendar"
       />
     </>
+  );
+}
+
+// Main page component with Suspense boundary
+export default function ImmersionsPage() {
+  return (
+    <Suspense fallback={<div className="fixed inset-0 bg-[#f6edd0]" />}>
+      <ImmersionsPageContent />
+    </Suspense>
   );
 }
