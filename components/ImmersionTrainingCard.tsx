@@ -115,16 +115,18 @@ interface ImmersionCardProps {
   data: ImmersionData;
   isMobile?: boolean;
   onExpandedChange?: (expanded: boolean) => void;
+  onBookingClick?: () => void;
 }
 
 interface TrainingCardProps {
   data: TrainingData;
   isMobile?: boolean;
   onExpandedChange?: (expanded: boolean) => void;
+  onBookingClick?: () => void;
 }
 
 // Immersion/Workshop Card Component
-export function ImmersionCard({ data, isMobile = false, onExpandedChange }: ImmersionCardProps) {
+export function ImmersionCard({ data, isMobile = false, onExpandedChange, onBookingClick }: ImmersionCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -273,7 +275,7 @@ export function ImmersionCard({ data, isMobile = false, onExpandedChange }: Imme
         </div>
 
         <div className="flex justify-end">
-          <CtaButton text={data.ctaText} singleLine />
+          <CtaButton text={data.ctaText} onClick={onBookingClick} singleLine />
         </div>
       </div>
     );
@@ -423,7 +425,7 @@ export function ImmersionCard({ data, isMobile = false, onExpandedChange }: Imme
 
             {/* CTA Button */}
             <div className="flex justify-center w-full pt-2">
-              <CtaButton text={data.ctaText} />
+              <CtaButton text={data.ctaText} onClick={onBookingClick} />
             </div>
           </div>
         </div>
@@ -433,7 +435,7 @@ export function ImmersionCard({ data, isMobile = false, onExpandedChange }: Imme
 }
 
 // Training Card Component
-export function TrainingCard({ data, isMobile = false, onExpandedChange }: TrainingCardProps) {
+export function TrainingCard({ data, isMobile = false, onExpandedChange, onBookingClick }: TrainingCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -537,7 +539,7 @@ export function TrainingCard({ data, isMobile = false, onExpandedChange }: Train
         </div>
 
         <div className="flex justify-center mt-auto pt-4">
-          <CtaButton text={data.ctaText} singleLine />
+          <CtaButton text={data.ctaText} onClick={onBookingClick} singleLine />
         </div>
       </div>
     );
@@ -658,7 +660,7 @@ export function TrainingCard({ data, isMobile = false, onExpandedChange }: Train
 
             {/* CTA Button */}
             <div className="flex justify-center w-full pt-2">
-              <CtaButton text={data.ctaText} />
+              <CtaButton text={data.ctaText} onClick={onBookingClick} />
             </div>
           </div>
         </div>

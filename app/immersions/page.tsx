@@ -7,6 +7,7 @@ import { gsap } from 'gsap';
 import Button from '@/components/Button';
 import PageEndBlob from '@/components/PageEndBlob';
 import Footer from '@/components/Footer';
+import GuidedJourneyModal from '@/components/GuidedJourneyModal';
 import { getCloudinaryUrl } from '@/lib/cloudinary';
 import { ImmersionCard, TrainingCard, type ImmersionData, type TrainingData } from '@/components/ImmersionTrainingCard';
 import { useThemeStore } from '@/lib/stores/useThemeStore';
@@ -143,6 +144,7 @@ export default function ImmersionsPage() {
   const [isAnimating, setIsAnimating] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [hasScrolledToTarget, setHasScrolledToTarget] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   
   // Carousel scroll positions (in pixels)
   const immersionsScrollX = useRef(0);
@@ -207,6 +209,11 @@ export default function ImmersionsPage() {
   const handleCardExpandedChange = useCallback((expanded: boolean) => {
     setIsCardExpanded(expanded);
     // Scroll is already locked via body.style.overflow = 'hidden' for this page
+  }, []);
+
+  // Handle opening booking modal
+  const handleOpenBookingModal = useCallback(() => {
+    setIsModalOpen(true);
   }, []);
 
   // Navigate to a specific section
@@ -622,6 +629,7 @@ export default function ImmersionsPage() {
                       data={immersion}
                       isMobile={isMobile}
                       onExpandedChange={handleCardExpandedChange}
+                      onBookingClick={handleOpenBookingModal}
                     />
                   </div>
                 ))}
@@ -789,6 +797,7 @@ export default function ImmersionsPage() {
                       data={training}
                       isMobile={isMobile}
                       onExpandedChange={handleCardExpandedChange}
+                      onBookingClick={handleOpenBookingModal}
                     />
                   </div>
                 ))}
@@ -826,6 +835,7 @@ export default function ImmersionsPage() {
                 {isMobile ? (
                   <>
                     <button
+                      onClick={() => goToSection(2, 'down')}
                       className="flex items-center justify-center gap-2 p-3 text-[#6a3f33] hover:opacity-80 transition-opacity"
                       style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
                     >
@@ -836,6 +846,7 @@ export default function ImmersionsPage() {
                       </span>
                     </button>
                     <button
+                      onClick={() => goToSection(4, 'down')}
                       className="flex items-center justify-center gap-2 p-3 text-[#6a3f33] hover:opacity-80 transition-opacity"
                       style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
                     >
@@ -851,6 +862,7 @@ export default function ImmersionsPage() {
                     <Button
                       text="Explore Upcoming Immersions"
                       size="large"
+                      onClick={() => goToSection(2, 'down')}
                       colors={{
                         fg: '#6a3f33',
                         fgHover: '#d58761',
@@ -860,6 +872,7 @@ export default function ImmersionsPage() {
                     <Button
                       text="View Training Programs"
                       size="large"
+                      onClick={() => goToSection(4, 'down')}
                       colors={{
                         fg: '#6a3f33',
                         fgHover: '#d58761',
@@ -882,6 +895,13 @@ export default function ImmersionsPage() {
           </div>
         </div>
       </main>
+
+      {/* Guided Journey Modal */}
+      <GuidedJourneyModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        startAt="booking-calendar"
+      />
     </>
   );
 }
