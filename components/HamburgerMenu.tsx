@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useThemeStore } from '@/lib/stores/useThemeStore';
@@ -40,51 +40,81 @@ export default function HamburgerMenu({
     setIsOpen(false);
   };
 
+  // Prevent body scroll when menu is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
   return (
     <div className="relative">
-      {/* Hamburger Button */}
+      {/* Hamburger Button - Using new icon_menu.svg */}
       <button
         onClick={toggleMenu}
-        className="flex flex-col items-center justify-center w-10 h-10 space-y-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#9ac1bf]"
+        className="flex items-center justify-center w-10 h-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#9ac1bf]"
         aria-label="Toggle menu"
         aria-expanded={isOpen}
       >
-        <span
-          className={`block w-6 h-0.5 transition-all duration-300 ${
-            isOpen ? 'rotate-45 translate-y-2' : ''
-          }`}
-          style={{ backgroundColor: navTextColor }}
-        />
-        <span
-          className={`block w-6 h-0.5 transition-all duration-300 ${
-            isOpen ? 'opacity-0' : 'opacity-100'
-          }`}
-          style={{ backgroundColor: navTextColor }}
-        />
-        <span
-          className={`block w-6 h-0.5 transition-all duration-300 ${
-            isOpen ? '-rotate-45 -translate-y-2' : ''
-          }`}
-          style={{ backgroundColor: navTextColor }}
+        <img
+          src="/icon_menu.svg"
+          alt="Menu"
+          className="w-[25px] h-[12px] transition-[filter] duration-500"
+          style={{
+            filter: isLightHeader ? 'brightness(0) sepia(1) saturate(5) hue-rotate(-15deg)' : 'none',
+          }}
         />
       </button>
 
-      {/* Dropdown Menu */}
+      {/* Fullscreen Menu */}
       {isOpen && (
-        <>
-          {/* Backdrop */}
-          <div
-            className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm"
-            onClick={closeMenu}
-            aria-hidden="true"
-          />
+        <div
+          className="fixed inset-0 z-[70] flex flex-col animate-in fade-in duration-300"
+          style={{ backgroundColor: headerBg }}
+        >
+          {/* Header section with logo and close button */}
+          <div className="flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5">
+            {/* Logo - Icon only */}
+            <Link href="/" onClick={closeMenu} className="flex h-[40px] sm:h-[50px] w-[80px] sm:w-[100px] items-center shrink-0">
+              <img
+                src="/asp_logo.svg"
+                alt="Antar Pravaah"
+                className="h-auto w-full transition-[filter] duration-500"
+                style={{
+                  filter: isLightHeader 
+                    ? 'brightness(0) sepia(1) saturate(5) hue-rotate(-15deg)' 
+                    : 'brightness(0) saturate(100%) invert(95%) sepia(8%) saturate(435%) hue-rotate(357deg) brightness(103%) contrast(92%)',
+                }}
+              />
+            </Link>
 
-          {/* Menu Content */}
-          <div
-            className="absolute right-0 top-12 z-50 w-64 rounded-[16px] shadow-2xl animate-in fade-in slide-in-from-top-2 duration-300"
-            style={{ backgroundColor: headerBg }}
-          >
-            <nav className="flex flex-col p-4 space-y-2">
+            {/* Close Button */}
+            <button
+              onClick={closeMenu}
+              className="flex h-6 w-6 items-center justify-center hover:opacity-70 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#9ac1bf]"
+              aria-label="Close menu"
+            >
+              <img
+                src="/Icon - Close.svg"
+                alt="Close"
+                className="h-6 w-6 transition-[filter] duration-500"
+                style={{
+                  filter: isLightHeader 
+                    ? 'brightness(0) sepia(1) saturate(5) hue-rotate(-15deg)' 
+                    : 'brightness(0) saturate(100%) invert(95%) sepia(8%) saturate(435%) hue-rotate(357deg) brightness(103%) contrast(92%)',
+                }}
+              />
+            </button>
+          </div>
+
+          {/* Navigation Items - Centered */}
+          <nav className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 pb-8">
+            <div className="flex flex-col gap-[40px] w-full max-w-md">
               {navItems.map((item) => {
                 const isActive = pathname === item.href;
                 return (
@@ -93,27 +123,19 @@ export default function HamburgerMenu({
                     href={item.href}
                     onClick={closeMenu}
                     className={`
-                      px-4 py-3 rounded-[8px] uppercase tracking-[1.92px] text-[12px] 
-                      transition-all duration-200
+                      text-center uppercase tracking-[2.56px] text-[16px] 
+                      transition-colors duration-200
                       ${isActive ? 'font-bold' : 'font-light'}
-                      hover:bg-opacity-10
                     `}
                     style={{
                       fontFamily: 'var(--font-graphik), sans-serif',
                       fontWeight: isActive ? 700 : 300,
                       color: navTextColor,
-                      backgroundColor: isActive
-                        ? `${navHoverColor}20`
-                        : 'transparent',
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = `${navHoverColor}20`;
                       e.currentTarget.style.color = navHoverColor;
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = isActive
-                        ? `${navHoverColor}20`
-                        : 'transparent';
                       e.currentTarget.style.color = navTextColor;
                     }}
                   >
@@ -121,9 +143,9 @@ export default function HamburgerMenu({
                   </Link>
                 );
               })}
-            </nav>
-          </div>
-        </>
+            </div>
+          </nav>
+        </div>
       )}
     </div>
   );

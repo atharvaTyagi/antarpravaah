@@ -28,6 +28,8 @@ interface PathwaysCardStackProps {
   onEdgeReached?: (edge: 'start' | 'end') => void;
   resetToStart?: boolean;
   resetToEnd?: boolean;
+  /** Callback for first card CTA (opens modal) */
+  onFirstCardCta?: () => void;
 }
 
 export default function PathwaysCardStack({ 
@@ -39,6 +41,7 @@ export default function PathwaysCardStack({
   onEdgeReached,
   resetToStart,
   resetToEnd,
+  onFirstCardCta,
 }: PathwaysCardStackProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const cardContainerRef = useRef<HTMLDivElement | null>(null);
@@ -288,6 +291,7 @@ export default function PathwaysCardStack({
               pathway={pathway}
               isMobile={true}
               onExpandedChange={handleCardExpandedChange}
+              onCtaClick={index === 0 ? onFirstCardCta : undefined}
             />
           </div>
         </div>

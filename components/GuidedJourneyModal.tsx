@@ -160,31 +160,29 @@ export default function GuidedJourneyModal({ isOpen, onClose }: GuidedJourneyMod
 
   const currentQuestionNumber = getCurrentQuestionNumber();
 
-  if (!isOpen) return null;
-
-  if (!isOpen) return null;
-
   return (
-    <>
-      {/* Backdrop */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[9998] bg-black/60 backdrop-blur-sm"
-        onClick={onClose}
-      />
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] bg-black/60 backdrop-blur-sm"
+            onClick={onClose}
+          />
 
-      {/* Modal Container */}
-      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 md:p-8 pointer-events-none">
-        <motion.div
-          layout
-          transition={{ 
-            layout: { duration: 0.3, ease: 'easeInOut' }
-          }}
-          className="relative w-full max-w-[1097px] max-h-[90vh] min-h-[650px] overflow-hidden rounded-[24px] shadow-2xl pointer-events-auto"
-          onClick={(e) => e.stopPropagation()}
-        >
+          {/* Modal Container */}
+          <div className="fixed inset-0 z-[201] flex items-center justify-center p-4 md:p-8 pointer-events-none">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.2, ease: 'easeOut' }}
+              className="relative w-full max-w-[1097px] max-h-[90vh] min-h-[650px] overflow-hidden rounded-[24px] shadow-2xl pointer-events-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
           <div className="h-full overflow-y-auto no-scrollbar">
             {/* Render current step - Smooth content transitions only */}
             <AnimatePresence mode="sync" initial={false}>
@@ -250,9 +248,11 @@ export default function GuidedJourneyModal({ isOpen, onClose }: GuidedJourneyMod
             )}
             </AnimatePresence>
           </div>
-        </motion.div>
-      </div>
-    </>
+            </motion.div>
+          </div>
+        </>
+      )}
+    </AnimatePresence>
   );
 }
 

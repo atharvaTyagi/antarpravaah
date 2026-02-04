@@ -397,9 +397,9 @@ export default function VoicesOfTransformation({
       {/* Full height container */}
       <div className="relative w-full h-full flex flex-col justify-center">
         {/* Section Title */}
-        <div className="w-full text-center mb-6 sm:mb-8 lg:mb-10 px-4 pt-6 sm:pt-8 lg:pt-12 flex-shrink-0">
+        <div className="w-full text-center mb-4 sm:mb-8 lg:mb-10 px-4 pt-4 sm:pt-8 lg:pt-12 flex-shrink-0">
           <h2
-            className="text-[32px] sm:text-[42px] lg:text-[48px] leading-[1.1] text-[#474e3a]"
+            className="text-[26px] sm:text-[42px] lg:text-[48px] leading-[1.1] text-[#474e3a]"
             style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400 }}
           >
             Voices of Transformation
@@ -407,32 +407,48 @@ export default function VoicesOfTransformation({
         </div>
 
         {/* Carousel Track */}
-        <div className="flex-1 flex items-center w-full px-4 sm:px-6 lg:px-10 overflow-hidden">
+        <div className="flex-1 flex items-center w-full px-4 sm:px-6 lg:px-10 overflow-hidden pb-4 sm:pb-0">
           <div
             ref={carouselRef}
-            className="flex gap-4 sm:gap-6 lg:gap-8 will-change-transform"
+            className="flex gap-4 sm:gap-6 lg:gap-8 will-change-transform h-full items-center"
           >
             {testimonials.map((t) => (
               <div
                 key={t._id}
-                className="voice-card shrink-0 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#474e3a] p-5 sm:p-8 lg:p-10 flex flex-col justify-center w-[calc(100vw-32px)] sm:w-[calc(100vw-48px)] lg:w-[calc(100vw-80px)] h-[clamp(300px,45vh,450px)]"
+                className="voice-card shrink-0 rounded-[24px] bg-[#474e3a] p-8 sm:p-8 lg:p-10 flex flex-col gap-6 sm:gap-8 lg:gap-10 justify-start w-[calc(100vw-32px)] sm:w-[calc(100vw-48px)] lg:w-[calc(100vw-80px)] h-[calc(100%-8px)] sm:h-[clamp(300px,45vh,450px)] overflow-hidden"
               >
-                <p
-                  className="text-justify text-[14px] sm:text-[18px] lg:text-[22px] leading-[1.5] sm:leading-[1.6] text-[#f6edd0]"
-                  style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
-                > 
-                  {t.testimonial}
-                </p>
-                <div className="pt-4 sm:pt-6 lg:pt-8 text-center text-[#f6edd0]">
+                <div className="flex-1 overflow-y-auto overflow-x-hidden hide-scrollbar pr-1">
                   <p
-                    className="text-[18px] sm:text-[20px] lg:text-[22px] leading-[normal]"
-                    style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400 }}
+                    className="text-justify text-[#f6edd0]"
+                    style={{ 
+                      fontFamily: 'var(--font-graphik), sans-serif', 
+                      fontWeight: 400,
+                      fontSize: 'clamp(16px, 2.5vw, 20px)',
+                      lineHeight: 'clamp(24px, 3.5vw, 30px)',
+                    }}
+                  > 
+                    {t.testimonial}
+                  </p>
+                </div>
+                <div className="text-center text-[#f6edd0] shrink-0">
+                  <p
+                    className="leading-[normal]"
+                    style={{ 
+                      fontFamily: 'var(--font-saphira), serif', 
+                      fontWeight: 400,
+                      fontSize: 'clamp(22px, 3vw, 28px)',
+                    }}
                   >
                     {t.name}
                   </p>
                   <p
-                    className="mt-0.5 sm:mt-1 text-[9px] sm:text-[10px] lg:text-[11px] uppercase tracking-[1.5px] sm:tracking-[1.7px]"
-                    style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
+                    className="mt-1 uppercase"
+                    style={{ 
+                      fontFamily: 'var(--font-graphik), sans-serif', 
+                      fontWeight: 400,
+                      fontSize: 'clamp(11px, 1.8vw, 14px)',
+                      letterSpacing: '1.92px',
+                    }}
                   >
                     {t.workshop}
                   </p>

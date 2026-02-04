@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback, useLayoutEffect } from 'react';
 import Image from 'next/image';
+import { useSearchParams } from 'next/navigation';
 import { gsap } from 'gsap';
 import Button from '@/components/Button';
 import PageEndBlob from '@/components/PageEndBlob';
@@ -132,6 +133,7 @@ export default function ImmersionsPage() {
   const sectionsRef = useRef<HTMLDivElement[]>([]);
   const immersionsCarouselRef = useRef<HTMLDivElement>(null);
   const trainingsCarouselRef = useRef<HTMLDivElement>(null);
+  const searchParams = useSearchParams();
   
   const setTheme = useThemeStore((state) => state.setTheme);
   
@@ -140,6 +142,7 @@ export default function ImmersionsPage() {
   const [currentSection, setCurrentSection] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [isReady, setIsReady] = useState(false);
+  const [hasScrolledToTarget, setHasScrolledToTarget] = useState(false);
   
   // Carousel scroll positions (in pixels)
   const immersionsScrollX = useRef(0);
@@ -253,6 +256,32 @@ export default function ImmersionsPage() {
       },
     });
   }, [isAnimating, getHeaderHeight, setTheme]);
+
+  // Handle scroll to target section from query parameter
+  useEffect(() => {
+    if (!isReady || hasScrolledToTarget) return;
+    
+    const scrollTo = searchParams.get('scrollTo');
+    if (!scrollTo) return;
+
+    // Find the target section index
+    let targetIndex = -1;
+    if (scrollTo === 'immersions') {
+      targetIndex = SECTIONS.findIndex(s => s.id === 'immersions-carousel');
+    } else if (scrollTo === 'trainings') {
+      targetIndex = SECTIONS.findIndex(s => s.id === 'trainings-carousel');
+    }
+
+    if (targetIndex !== -1 && targetIndex !== currentSection) {
+      // Wait a bit for layout to settle, then scroll
+      const scrollTimeout = setTimeout(() => {
+        goToSection(targetIndex, 'down');
+        setHasScrolledToTarget(true);
+      }, 500);
+
+      return () => clearTimeout(scrollTimeout);
+    }
+  }, [isReady, hasScrolledToTarget, searchParams, currentSection, goToSection]);
 
   // Update carousel position smoothly
   const updateCarouselPosition = useCallback((carouselType: 'immersions' | 'trainings', delta: number) => {

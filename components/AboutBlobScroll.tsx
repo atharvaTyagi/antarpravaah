@@ -215,20 +215,22 @@ export default function AboutBlobScroll({ isActive = false, onEdgeReached, reset
           <div className="absolute inset-0 flex items-center justify-center">
             {/* Mobile: "Hi!" title above paragraph */}
             <div className="relative w-full max-w-[320px] sm:max-w-[250px] md:max-w-[300px] lg:max-w-[350px] h-[320px] sm:h-[250px] md:h-[300px] lg:h-[350px] text-[#474e3a] flex flex-col items-center justify-center">
-              {/* Hi! title - only visible on mobile */}
-              <h3
-                className="block sm:hidden text-[36px] leading-[1.0] text-center mb-2"
-                style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400 }}
-              >
-                Hi !
-              </h3>
               {/* All paragraphs stacked, only one visible at a time */}
               <div className="relative w-full flex-1 sm:h-full">
                 {aboutParagraphs.map((text, index) => (
                   <div
                     key={index}
-                    className="paragraph-item absolute inset-0 flex items-center justify-center"
+                    className="paragraph-item absolute inset-0 flex flex-col items-center justify-center"
                   >
+                    {/* Hi! title - only visible with first paragraph */}
+                    {index === 0 && (
+                      <h3
+                        className="text-[36px] sm:text-[32px] md:text-[36px] lg:text-[40px] leading-[1.0] text-center mb-2"
+                        style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400 }}
+                      >
+                        Hi !
+                      </h3>
+                    )}
                     <p
                       className="text-justify text-[16px] sm:text-[13px] md:text-[14px] lg:text-[15px] leading-[24px] sm:leading-[22px] md:leading-[24px] lg:leading-[26px]"
                       style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}

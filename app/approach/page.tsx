@@ -9,6 +9,7 @@ import PathwaysCardStack from '@/components/PathwaysCardStack';
 import PathwayCard from '@/components/PathwayCard';
 import ThoughtsAndPonderings from '@/components/ThoughtsAndPonderings';
 import Footer from '@/components/Footer';
+import GuidedJourneyModal from '@/components/GuidedJourneyModal';
 import { pathways } from '@/data/pathwaysContent';
 import { useThemeStore } from '@/lib/stores/useThemeStore';
 import { SectionId } from '@/lib/themeConfig';
@@ -55,6 +56,7 @@ export default function ApproachPage() {
   const [isAnimating, setIsAnimating] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [isPathwaysScrollActive, setIsPathwaysScrollActive] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Reset state for pathways section
   const [pathwaysResetToStart, setPathwaysResetToStart] = useState(false);
@@ -67,9 +69,12 @@ export default function ApproachPage() {
   const SECTIONS = isMobile ? SECTIONS_MOBILE : SECTIONS_DESKTOP;
 
   // Prepare cards for the sticky stack
-  const pathwayCards = pathways.map((pathway) => ({
+  const pathwayCards = pathways.map((pathway, index) => ({
     key: pathway.id,
-    render: <PathwayCard pathway={pathway} />,
+    render: <PathwayCard 
+      pathway={pathway} 
+      onCtaClick={index === 0 ? () => setIsModalOpen(true) : undefined}
+    />,
   }));
 
   // Initialize and check mobile
@@ -354,6 +359,7 @@ export default function ApproachPage() {
               onEdgeReached={handlePathwaysEdgeReached}
               resetToStart={pathwaysResetToStart}
               resetToEnd={pathwaysResetToEnd}
+              onFirstCardCta={() => setIsModalOpen(true)}
             />
           </div>
 
@@ -390,10 +396,10 @@ export default function ApproachPage() {
               {/* CTA Button */}
               <Button
                 text="Begin Your Journey"
-                href="/contact"
                 size="large"
                 mode="light"
                 colors={approachButtonColors}
+                onClick={() => setIsModalOpen(true)}
               />
             </div>
           </div>
@@ -407,6 +413,8 @@ export default function ApproachPage() {
           </div>
         </div>
       </main>
+
+      <GuidedJourneyModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </>
   );
 }

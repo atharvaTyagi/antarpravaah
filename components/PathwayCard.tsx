@@ -59,7 +59,7 @@ function ArrowRight({ className }: { className?: string }) {
 }
 
 // Mobile CTA Button - 2 line text layout for better fit
-function MobileCtaButton({ text, href }: { text: string; href: string }) {
+function MobileCtaButton({ text, href, onClick }: { text: string; href?: string; onClick?: () => void }) {
   // Split text into 2 lines for mobile display
   // e.g., "Book a Private Session" -> ["Book a", "Private Session"]
   // e.g., "View Upcoming Immersions" -> ["View Upcoming", "Immersions"]
@@ -79,18 +79,36 @@ function MobileCtaButton({ text, href }: { text: string; href: string }) {
 
   const [line1, line2] = getTextLines(text);
 
-  return (
-    <Link
-      href={href}
-      className="group inline-flex items-center justify-center gap-2 p-3 text-[#9ac1bf] hover:opacity-80 transition-opacity"
-      style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
-    >
+  const content = (
+    <>
       <ArrowLeft className="w-7 h-5 shrink-0" />
       <span className="text-center text-[18px] tracking-[2.88px] uppercase leading-tight px-2 py-1">
         <span className="block">{line1}</span>
         <span className="block">{line2}</span>
       </span>
       <ArrowRight className="w-7 h-5 shrink-0" />
+    </>
+  );
+
+  if (onClick) {
+    return (
+      <button
+        onClick={onClick}
+        className="group inline-flex items-center justify-center gap-2 p-3 text-[#9ac1bf] hover:opacity-80 transition-opacity"
+        style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
+      >
+        {content}
+      </button>
+    );
+  }
+
+  return (
+    <Link
+      href={href || '#'}
+      className="group inline-flex items-center justify-center gap-2 p-3 text-[#9ac1bf] hover:opacity-80 transition-opacity"
+      style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
+    >
+      {content}
     </Link>
   );
 }
@@ -112,9 +130,11 @@ interface PathwayCardProps {
   isMobile?: boolean;
   /** Callback when expanded state changes (for scroll locking) */
   onExpandedChange?: (expanded: boolean) => void;
+  /** Optional callback for CTA button click (overrides href) */
+  onCtaClick?: () => void;
 }
 
-export default function PathwayCard({ pathway, isMobile = false, onExpandedChange }: PathwayCardProps) {
+export default function PathwayCard({ pathway, isMobile = false, onExpandedChange, onCtaClick }: PathwayCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -240,7 +260,8 @@ export default function PathwayCard({ pathway, isMobile = false, onExpandedChang
           {/* CTA Button */}
           <Button
             text={pathway.ctaText}
-            href={pathway.ctaHref}
+            href={onCtaClick ? undefined : pathway.ctaHref}
+            onClick={onCtaClick}
             mode="dark"
             size="large"
             colors={pathwaysButtonColors}
@@ -388,7 +409,8 @@ export default function PathwayCard({ pathway, isMobile = false, onExpandedChang
               <div className="flex justify-center w-full pt-2">
                 <MobileCtaButton
                   text={pathway.ctaText}
-                  href={pathway.ctaHref}
+                  href={onCtaClick ? undefined : pathway.ctaHref}
+                  onClick={onCtaClick}
                 />
               </div>
             </div>

@@ -1,9 +1,11 @@
 'use client';
-
 import Button from './Button';
 import PageEndBlob from './PageEndBlob';
+interface ReadyToBeginProps {
+  onBeginJourney?: () => void;
+}
 
-export default function ReadyToBegin() {
+export default function ReadyToBegin({ onBeginJourney }: ReadyToBeginProps) {
   return (
     <div
       id="ready-to-begin"
@@ -30,6 +32,7 @@ export default function ReadyToBegin() {
                 fgHover: '#f6edd0',
                 bgHover: '#474e3a',
               }}
+              onClick={onBeginJourney}
             />
           </div>
         </div>

@@ -339,9 +339,9 @@ export default function Home() {
             ref={(el) => { if (el) sectionsRef.current[1] = el; }} 
             className="section-height"
           >
-            <div className="relative w-full h-full bg-[#f6edd0] flex items-center justify-center px-4 sm:px-6 lg:px-8">
-              <div className="w-full max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1177px]">
-                <div className="rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#9ac1bf] p-6 sm:p-8 lg:p-10 text-center">
+            <div className="relative w-full h-full bg-[#f6edd0] flex items-center justify-center p-4 sm:px-6 lg:px-8">
+              <div className="w-full h-full sm:h-auto sm:max-w-[calc(100vw-64px)] lg:max-w-[1177px] flex items-center justify-center">
+                <div className="w-full h-full sm:h-auto rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#9ac1bf] p-6 sm:p-8 lg:p-10 text-center flex flex-col justify-center">
                   <div className="mb-6 sm:mb-8 lg:mb-10">
                     <p
                       className="mb-2 sm:mb-2.5 lg:mb-3 text-[24px] sm:text-[30px] lg:text-[36px] leading-[1.0] text-[#354443]"
@@ -378,7 +378,7 @@ export default function Home() {
                     text="Begin Your Journey"
                     size="large"
                     mode="dark"
-                    href="/contact"
+                    onClick={() => setShowGuidedJourney(true)}
                   />
                 </div>
               </div>
@@ -416,7 +416,7 @@ export default function Home() {
             ref={(el) => { if (el) sectionsRef.current[4] = el; }} 
             className="section-height"
           >
-            <ReadyToBegin />
+            <ReadyToBegin onBeginJourney={() => setShowGuidedJourney(true)} />
           </div>
 
           {/* Section 6: Footer */}

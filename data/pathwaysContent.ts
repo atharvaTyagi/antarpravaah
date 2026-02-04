@@ -31,7 +31,7 @@ export const pathways: Pathway[] = [
       'Possibility of having our concern addressed',
     ],
     ctaText: 'View Upcoming Immersions',
-    ctaHref: '#',
+    ctaHref: '/immersions?scrollTo=immersions',
     image: 'https://res.cloudinary.com/dtipijiwr/image/upload/c_fit,q_auto:good,f_auto/antarpravaah/general/AP%20Immersions',
   },
   {
@@ -48,7 +48,7 @@ export const pathways: Pathway[] = [
       'Application of the modality & Practice Sessions',
     ],
     ctaText: 'Explore Training Programs',
-    ctaHref: '#',
+    ctaHref: '/immersions?scrollTo=trainings',
     image: 'https://res.cloudinary.com/dtipijiwr/image/upload/c_fit,q_auto:good,f_auto/antarpravaah/general/Trainings',
   },
 ];

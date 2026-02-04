@@ -315,9 +315,9 @@ export default function WeWorkTogether({
         </div>
 
         {/* Section Title */}
-        <div className="relative z-10 w-full text-center pt-6 sm:pt-8 lg:pt-12 pb-4 sm:pb-6 lg:pb-8 flex-shrink-0">
+        <div className="relative z-10 w-full text-center pt-4 sm:pt-8 lg:pt-12 pb-3 sm:pb-6 lg:pb-8 flex-shrink-0">
           <h2
-            className="text-[32px] sm:text-[42px] lg:text-[48px] leading-[1.1] text-[#645c42]"
+            className="text-[28px] sm:text-[42px] lg:text-[48px] leading-[1.1] text-[#645c42]"
             style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400 }}
           >
             We Work Together
@@ -327,21 +327,18 @@ export default function WeWorkTogether({
         {/* Cards Container - Centered in remaining viewport */}
         <div 
           ref={cardsContainerRef}
-          className="relative z-10 flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 pb-6 sm:pb-8 lg:pb-12"
+          className="relative z-10 flex-1 flex items-center justify-center p-4 sm:px-6 lg:px-8 pb-6 sm:pb-8 lg:pb-12"
         >
-          <div className="relative w-full max-w-[95vw] sm:max-w-[90vw] lg:max-w-[1000px]">
+          <div className="relative w-full h-full sm:h-auto sm:max-w-[90vw] lg:max-w-[1000px]">
             {/* Card Stack - All cards positioned absolutely */}
             <div 
-              className="relative w-full"
-              style={{ 
-                height: 'clamp(350px, 55vh, 550px)',
-              }}
+              className="relative w-full h-full sm:h-[clamp(350px,55vh,550px)]"
             >
               {/* Intro Card */}
               <div 
-                className="work-card absolute inset-0 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d6c68e] p-5 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex flex-col items-center justify-center"
+                className="work-card absolute inset-0 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d6c68e] p-6 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex flex-col items-center justify-center gap-6 sm:gap-8 lg:gap-10"
               >
-                <div className="flex-1 flex items-center justify-center max-h-[60%] sm:max-h-[65%]">
+                <div className="flex items-center justify-center">
                   <Image
                     src={imageSrcs[0]}
                     alt=""
@@ -349,11 +346,11 @@ export default function WeWorkTogether({
                     height={450}
                     quality={85}
                     loading="lazy"
-                    className="w-auto h-full max-w-[280px] sm:max-w-[360px] lg:max-w-[420px] object-contain"
+                    className="w-auto h-auto max-w-[280px] max-h-[280px] sm:max-w-[320px] sm:max-h-[320px] lg:max-w-[380px] lg:max-h-[380px] object-contain"
                   />
                 </div>
                 <p
-                  className="text-center text-[14px] sm:text-[15px] lg:text-[16px] leading-[1.5] text-[#645c42] max-w-[90%] mt-4 sm:mt-6"
+                  className="text-center text-[15px] sm:text-[15px] lg:text-[16px] leading-[1.5] text-[#645c42] max-w-[90%] px-4"
                   style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
                 >
                   {workCards[0].text}
@@ -368,10 +365,10 @@ export default function WeWorkTogether({
                 return (
                   <div
                     key={index}
-                    className="work-card absolute inset-0 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d6c68e] p-5 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex items-center justify-center"
+                    className="work-card absolute inset-0 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d6c68e] p-6 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex items-center justify-center"
                   >
                     <div
-                      className={`flex flex-col items-center gap-4 sm:gap-6 lg:gap-8 w-full h-full justify-center ${
+                      className={`flex flex-col items-center gap-6 sm:gap-8 lg:gap-10 w-full h-full justify-center ${
                         isLeft ? 'sm:flex-row' : 'sm:flex-row-reverse'
                       }`}
                     >
@@ -379,15 +376,15 @@ export default function WeWorkTogether({
                         <Image
                           src={imageSrc}
                           alt=""
-                          width={200}
-                          height={200}
+                          width={430}
+                          height={450}
                           quality={85}
                           loading="lazy"
-                          className="w-[120px] h-[120px] sm:w-[160px] sm:h-[160px] lg:w-[200px] lg:h-[200px] object-contain"
+                          className="w-auto h-auto max-w-[280px] max-h-[280px] sm:max-w-[320px] sm:max-h-[320px] lg:max-w-[380px] lg:max-h-[380px] object-contain"
                         />
                       </div>
                       <p
-                        className="flex-1 text-justify text-[13px] sm:text-[14px] lg:text-[16px] leading-[1.5] sm:leading-[1.6] text-[#645c42] px-1 sm:px-2"
+                        className="flex-1 text-center sm:text-justify text-[15px] sm:text-[15px] lg:text-[16px] leading-[1.5] text-[#645c42] px-2 sm:px-4"
                         style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
                       >
                         {card.text}
@@ -399,7 +396,7 @@ export default function WeWorkTogether({
 
               {/* CTA Card */}
               <div 
-                className="work-card absolute inset-0 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#645c42] p-5 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex items-center justify-center"
+                className="work-card absolute inset-0 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#645c42] p-6 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex items-center justify-center"
               >
                 <Button text="Explore Our Approach" size="large" mode="light" href="/approach" />
               </div>

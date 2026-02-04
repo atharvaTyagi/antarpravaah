@@ -8,6 +8,7 @@ import FadeInImage from '@/components/FadeInImage';
 import AboutBlobScroll from '@/components/AboutBlobScroll';
 import InspirationScroll from '@/components/InspirationScroll';
 import Footer from '@/components/Footer';
+import GuidedJourneyModal from '@/components/GuidedJourneyModal';
 import { getCloudinaryUrl } from '@/lib/cloudinary';
 import { useThemeStore } from '@/lib/stores/useThemeStore';
 import { SectionId } from '@/lib/themeConfig';
@@ -43,6 +44,7 @@ export default function AboutPage() {
   const [isReady, setIsReady] = useState(false);
   const [isBlobScrollActive, setIsBlobScrollActive] = useState(false);
   const [isInspirationScrollActive, setIsInspirationScrollActive] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Track scroll reset states
   const [blobResetToStart, setBlobResetToStart] = useState(false);
@@ -462,7 +464,7 @@ export default function AboutPage() {
                     text="Begin Your Journey"
                     size="large"
                     colors={{ fg: '#474e3a', fgHover: '#93a378', bgHover: '#474e3a' }}
-                    href="/contact"
+                    onClick={() => setIsModalOpen(true)}
                   />
                 </div>
               </div>
@@ -625,7 +627,7 @@ export default function AboutPage() {
                       text="Begin Your Journey"
                       size="large"
                       colors={{ fg: '#474e3a', fgHover: '#93a378', bgHover: '#474e3a' }}
-                      href="/contact"
+                      onClick={() => setIsModalOpen(true)}
                     />
                   </div>
                 </div>
@@ -642,6 +644,8 @@ export default function AboutPage() {
           )}
         </div>
       </main>
+
+      <GuidedJourneyModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </>
   );
 }

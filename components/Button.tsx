@@ -148,8 +148,8 @@ export default function Button({
 
   const rootClasses = [
     'group inline-flex items-center justify-center select-none',
-    'p-1.5 sm:p-2',
-    isLarge ? 'gap-1.5 sm:gap-2' : 'gap-0.5 sm:gap-1',
+    isLarge ? 'p-2 sm:p-2' : 'p-1.5 sm:p-2',
+    isLarge ? 'gap-2 sm:gap-2' : 'gap-0.5 sm:gap-1',
     'uppercase transition-colors duration-150',
     disabled ? 'opacity-40 pointer-events-none' : 'hover:opacity-100',
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#9ac1bf] focus-visible:ring-offset-transparent',
@@ -180,7 +180,7 @@ export default function Button({
         />
       </span>
       <span
-        className={`px-1 py-1 ${labelClasses} whitespace-nowrap transition-colors duration-150 group-hover:bg-[var(--btn-bg-hover)] group-hover:text-[color:var(--btn-fg-hover)]`}
+        className={`px-2 py-1.5 ${labelClasses} transition-colors duration-150 group-hover:bg-[var(--btn-bg-hover)] group-hover:text-[color:var(--btn-fg-hover)] text-center max-w-[200px] sm:max-w-none sm:whitespace-nowrap leading-[1.3]`}
       >
         {text}
       </span>
