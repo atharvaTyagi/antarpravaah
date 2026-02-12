@@ -33,7 +33,8 @@
       "Bash(npm run upload:images:*)",
       "Bash(node scripts/upload-updated-images.js:*)",
       "Bash(node -e:*)",
-      "Bash(node scripts/invalidate-cloudinary-cache.js:*)"
+      "Bash(node scripts/invalidate-cloudinary-cache.js:*)",
+      "Bash(git checkout:*)"
     ]
   }
 }

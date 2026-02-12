@@ -92,9 +92,21 @@ export default function Home() {
       document.documentElement.style.setProperty('--vh', `${vh}px`);
     };
 
+    // Set immediately
     setVh();
+
+    // Update on resize and orientation change
     window.addEventListener('resize', setVh);
-    return () => window.removeEventListener('resize', setVh);
+    window.addEventListener('orientationchange', setVh);
+
+    // Also set after a short delay to catch any browser chrome adjustments
+    const timeoutId = setTimeout(setVh, 100);
+
+    return () => {
+      window.removeEventListener('resize', setVh);
+      window.removeEventListener('orientationchange', setVh);
+      clearTimeout(timeoutId);
+    };
   }, []);
 
   // Go to section with GSAP animation
@@ -305,21 +317,71 @@ export default function Home() {
   };
 
   return (
-    <main className="relative">
-      {/* Splash Screen - Fixed overlay that fades out on scroll */}
-      <SplashScreen onComplete={handleSplashComplete} />
+    <>
+      <style jsx global>{`
+        :root {
+          --header-height: 90px;
+          --vh: 1vh;
+        }
+        @media (min-width: 640px) {
+          :root {
+            --header-height: 108px;
+          }
+        }
+        @media (min-width: 1024px) {
+          :root {
+            --header-height: 148px;
+          }
+        }
 
-      {/* Guided Journey Modal - Shows after splash completes */}
-      <GuidedJourneyModal isOpen={showGuidedJourney} onClose={handleCloseGuidedJourney} />
+        /* Section height classes that work across all mobile browsers */
+        .section-height {
+          height: calc(100vh - var(--header-height, 90px));
+          min-height: calc(100vh - var(--header-height, 90px));
+          height: calc(var(--vh, 1vh) * 100 - var(--header-height, 90px));
+          min-height: calc(var(--vh, 1vh) * 100 - var(--header-height, 90px));
+        }
 
-      {/* Fixed Container - visible after splash */}
-      <div 
-        className="main-container overflow-hidden bg-[#f6edd0] z-[30]"
-        style={{
-          opacity: splashComplete ? 1 : 0,
-          pointerEvents: splashComplete ? 'auto' : 'none',
-        }}
-      >
+        @supports (height: 100dvh) {
+          .section-height {
+            height: calc(100dvh - var(--header-height, 90px));
+            min-height: calc(100dvh - var(--header-height, 90px));
+          }
+        }
+
+        /* Main container positioning */
+        .main-container {
+          position: fixed;
+          top: var(--header-height, 90px);
+          left: 0;
+          right: 0;
+          bottom: 0;
+          height: calc(100vh - var(--header-height, 90px));
+          height: calc(var(--vh, 1vh) * 100 - var(--header-height, 90px));
+        }
+
+        @supports (height: 100dvh) {
+          .main-container {
+            height: calc(100dvh - var(--header-height, 90px));
+          }
+        }
+      `}</style>
+
+      <main className="relative">
+        {/* Splash Screen - Fixed overlay that fades out on scroll */}
+        <SplashScreen onComplete={handleSplashComplete} />
+
+        {/* Guided Journey Modal - Shows after splash completes */}
+        <GuidedJourneyModal isOpen={showGuidedJourney} onClose={handleCloseGuidedJourney} />
+
+        {/* Fixed Container - visible after splash */}
+        <div
+          className="main-container overflow-hidden bg-[#f6edd0] z-[30]"
+          style={{
+            opacity: splashComplete ? 1 : 0,
+            pointerEvents: splashComplete ? 'auto' : 'none',
+          }}
+        >
         <div ref={containerRef} className="will-change-transform">
           {/* Section 1: Journey */}
           <div 
@@ -429,5 +491,6 @@ export default function Home() {
         </div>
       </div>
     </main>
+    </>
   );
 }

@@ -42,6 +42,25 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
   const isCompleting = useRef(false);
   const wordAnimationRef = useRef<gsap.core.Timeline | null>(null);
 
+  // Set --vh CSS variable for mobile viewport height (handles mobile browser UI)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const setVh = () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    };
+
+    setVh();
+    window.addEventListener('resize', setVh);
+    window.addEventListener('orientationchange', setVh);
+
+    return () => {
+      window.removeEventListener('resize', setVh);
+      window.removeEventListener('orientationchange', setVh);
+    };
+  }, []);
+
   useEffect(() => {
     if (!containerRef.current || !spiralContainerRef.current || !blobContainerRef.current) return;
 
@@ -160,7 +179,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
     <div
       ref={containerRef}
       className="fixed inset-0 z-[100] bg-[#6a3f33]"
-      style={{ 
+      style={{
         width: '100vw',
         height: '100vh',
         pointerEvents: 'auto',
