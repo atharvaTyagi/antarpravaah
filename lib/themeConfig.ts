@@ -4,6 +4,7 @@ export type SectionId =
   | 'journey-footer'
   | 'work-together'
   | 'voices'
+  | 'voices-footer'
   | 'ready-to-begin'
   | 'therapies'
   | 'therapies-intro'
@@ -42,14 +43,19 @@ export interface Theme {
   headerBg?: string; // Header inner container background color
   headerOuterBg?: string; // Header outer area background color (for blur area)
   headerText?: string; // Explicit header text color override
+  logoFilter?: string; // CSS filter for logo (e.g. to tint to #6a3f33)
+  logoColor?: string; // Exact logo color when using inline SVG (e.g. #9ac1bf)
 }
 
 export const SECTION_THEMES: Record<SectionId, Theme> = {
   hero: {
-    bg: '#6a3f33', // Dark Brown (from Figma design)
+    bg: '#6a3f33', // Dark Brown (splash section background)
     text: '#6a3f33', // Text color on beige background
     accent: '#f6edd0', // Beige background
-    headerBg: '#354443', // Dark teal/green
+    headerBg: '#d88762', // Warm orange/copper header when splash visible
+    headerOuterBg: '#6a3f33', // Dark brown - splash section background
+    headerText: '#6a3f33', // Dark brown text and logo on header
+    logoFilter: 'brightness(0) saturate(100%) invert(18%) sepia(28%) saturate(2500%) hue-rotate(350deg) brightness(94%) contrast(92%)', // #6a3f33
   },
   journey: {
     bg: '#f6edd0', // Light beige (from Figma)
@@ -57,6 +63,8 @@ export const SECTION_THEMES: Record<SectionId, Theme> = {
     accent: '#9ac1bf', // Teal accent (from Figma)
     headerBg: '#354443', // Dark teal header (from Figma)
     headerOuterBg: '#f6edd0', // Light beige outer
+    headerText: '#9ac1bf', // Teal nav text and logo in journey section
+    logoColor: '#9ac1bf', // Exact teal logo color (inline SVG, no filter)
   },
   'journey-footer': {
     bg: '#354443', // Dark teal background (footer bg)
@@ -72,6 +80,8 @@ export const SECTION_THEMES: Record<SectionId, Theme> = {
     accent: '#d6c68e', // Light yellow/beige (from Figma)
     headerBg: '#645c42', // Dark brown header (from Figma)
     headerOuterBg: '#f6edd0', // Light beige outer
+    headerText: '#d6c68e', // Gold nav text and logo
+    logoColor: '#d6c68e', // Exact gold logo color (inline SVG)
   },
   voices: {
     bg: '#f6edd0', // Light beige background (matches section background)
@@ -79,6 +89,17 @@ export const SECTION_THEMES: Record<SectionId, Theme> = {
     accent: '#93a378', // Soft green accent
     headerBg: '#474e3a', // Dark green header inner (from Figma)
     headerOuterBg: '#f6edd0', // Light beige outer (matches section background)
+    headerText: '#93a378', // Soft green nav text and logo
+    logoColor: '#93a378', // Soft green logo (inline SVG)
+  },
+  'voices-footer': {
+    bg: '#474e3a', // Dark green background (matches voices section header/dark accent)
+    text: '#93a378', // Soft green text
+    accent: '#f6edd0', // Light beige accent
+    headerBg: '#93a378', // Soft green header when footer visible
+    headerOuterBg: '#474e3a', // Dark green outer (matches footer bg)
+    headerText: '#474e3a', // Dark text on light header when footer visible
+    logoColor: '#474e3a', // Dark green logo when footer visible (inline SVG)
   },
   'ready-to-begin': {
     bg: '#f6edd0', // Light beige background
@@ -86,6 +107,8 @@ export const SECTION_THEMES: Record<SectionId, Theme> = {
     accent: '#474e3a', // Dark green accent
     headerBg: '#474e3a', // Dark green header
     headerOuterBg: '#f6edd0', // Light beige outer
+    headerText: '#93a378', // Same as voices: soft green nav text and logo
+    logoColor: '#93a378', // Same as voices: soft green logo (inline SVG)
   },
   therapies: {
     bg: '#f6edd0', // Light beige

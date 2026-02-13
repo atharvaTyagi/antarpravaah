@@ -4,9 +4,10 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 import { useThemeStore } from '@/lib/stores/useThemeStore';
-import { SECTION_THEMES, SectionId } from '@/lib/themeConfig';
 import { useUiStore } from '@/lib/stores/useUiStore';
+import { SECTION_THEMES, SectionId } from '@/lib/themeConfig';
 import HamburgerMenu from './HamburgerMenu';
+import LogoFull from './LogoFull';
 
 const navItems = [
   { label: 'Therapies', href: '/therapies', themeId: 'therapies' as SectionId },
@@ -21,6 +22,7 @@ export default function Header() {
   const setTheme = useThemeStore((state) => state.setTheme);
   const currentTheme = useThemeStore((state) => state.currentTheme);
   const splashComplete = useUiStore((state) => state.splashComplete);
+  const isHome = pathname === '/';
 
   // Set initial theme based on current route (only on route change, not continuously)
   useEffect(() => {
@@ -39,7 +41,7 @@ export default function Header() {
   const theme = SECTION_THEMES[currentTheme] || SECTION_THEMES['hero'];
   const headerBg = theme?.headerBg || '#354443';
   const headerOuterBg = theme?.headerOuterBg || '#f6edd0';
-  const isHome = pathname === '/';
+  // Header hidden on homepage until splash text is fully revealed
   const isVisible = !isHome || splashComplete;
 
   // Utility function to check if a color is light or dark
@@ -54,22 +56,20 @@ export default function Header() {
   };
 
   // Determine nav text color based on header background
-  // If header bg is light, use dark text; if dark, use light text
-  // Use explicit headerText override if provided
   const isLightHeader = isLightColor(headerBg);
   const navTextColor = theme.headerText || (isLightHeader ? '#354443' : '#f6edd0');
-  const navHoverColor = isLightHeader ? theme.text : theme.accent;
 
   // Handle logo src (works with both Next.js image imports and direct paths)
 
   return (
     <header
-      className="fixed top-0 left-0 right-0 z-[60] w-full py-3 sm:py-4 lg:py-6 transition-all duration-500"
+      className="fixed top-0 left-0 right-0 w-full py-3 sm:py-4 lg:py-6 transition-all duration-500"
       style={{
         opacity: isVisible ? 1 : 0,
         pointerEvents: isVisible ? 'auto' : 'none',
         visibility: isVisible ? 'visible' : 'hidden',
         backgroundColor: headerOuterBg,
+        zIndex: 50,
       }}
     >
       <div className="w-full px-2 sm:px-4 md:px-6">
@@ -79,14 +79,21 @@ export default function Header() {
         >
           {/* Logo */}
           <Link href="/" className="flex h-[28px] sm:h-[34px] lg:h-[42px] w-[180px] sm:w-[240px] lg:w-[309px] items-center shrink-0">
-            <img
-              src="/logo_full.svg"
-              alt="Antar Pravaah"
-              className="h-auto w-full transition-[filter] duration-500"
-              style={{
-                filter: isLightHeader ? 'brightness(0) sepia(1) saturate(5) hue-rotate(-15deg)' : 'none',
-              }}
-            />
+            {theme.logoColor ? (
+              <LogoFull
+                className="h-auto w-full transition-[color] duration-500"
+                style={{ color: theme.logoColor }}
+              />
+            ) : (
+              <img
+                src="/logo_full.svg"
+                alt="Antar Pravaah"
+                className="h-auto w-full transition-[filter] duration-500"
+                style={{
+                  filter: theme.logoFilter ?? (isLightHeader ? 'brightness(0) sepia(1) saturate(5) hue-rotate(-15deg)' : 'none'),
+                }}
+              />
+            )}
           </Link>
 
           {/* Desktop Navigation - Hidden on mobile/tablet */}
@@ -97,16 +104,14 @@ export default function Header() {
                 <Link
                   key={item.label}
                   href={item.href}
-                  className={`uppercase tracking-[1.92px] text-[12px] transition-colors ${
-                    isActive ? 'font-bold' : 'font-light'
+                  className={`uppercase tracking-[1.92px] text-[12px] transition-[font-weight] ${
+                    isActive ? 'font-bold' : 'font-light hover:font-bold'
                   }`}
                   style={{
                     fontFamily: 'var(--font-graphik), sans-serif',
                     fontWeight: isActive ? 700 : 300,
                     color: navTextColor,
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.color = navHoverColor)}
-                  onMouseLeave={(e) => (e.currentTarget.style.color = navTextColor)}
                 >
                   {item.label}
                 </Link>
@@ -119,7 +124,6 @@ export default function Header() {
             <HamburgerMenu
               headerBg={headerBg}
               navTextColor={navTextColor}
-              navHoverColor={navHoverColor}
               isLightHeader={isLightHeader}
             />
           </div>

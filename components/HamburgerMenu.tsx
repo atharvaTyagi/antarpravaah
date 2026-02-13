@@ -17,14 +17,12 @@ const navItems = [
 interface HamburgerMenuProps {
   headerBg: string;
   navTextColor: string;
-  navHoverColor: string;
   isLightHeader: boolean;
 }
 
 export default function HamburgerMenu({
   headerBg,
   navTextColor,
-  navHoverColor,
   isLightHeader,
 }: HamburgerMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -42,13 +40,18 @@ export default function HamburgerMenu({
 
   // Prevent body scroll when menu is open
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
+    if (!isOpen) return;
+
+    const body = document.body;
+    const originalOverflow = body.style.overflow;
+
+    body.style.overflow = 'hidden';
+
     return () => {
-      document.body.style.overflow = '';
+      // Only restore if we're the ones who set it
+      if (body.style.overflow === 'hidden') {
+        body.style.overflow = originalOverflow;
+      }
     };
   }, [isOpen]);
 
@@ -74,8 +77,8 @@ export default function HamburgerMenu({
       {/* Fullscreen Menu */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-[70] flex flex-col animate-in fade-in duration-300"
-          style={{ backgroundColor: headerBg }}
+          className="fixed inset-0 flex flex-col animate-in fade-in duration-300"
+          style={{ backgroundColor: headerBg, zIndex: 60 }}
         >
           {/* Header section with logo and close button */}
           <div className="flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5">
@@ -124,19 +127,13 @@ export default function HamburgerMenu({
                     onClick={closeMenu}
                     className={`
                       text-center uppercase tracking-[2.56px] text-[16px] 
-                      transition-colors duration-200
-                      ${isActive ? 'font-bold' : 'font-light'}
+                      transition-[font-weight] duration-200
+                      ${isActive ? 'font-bold' : 'font-light hover:font-bold'}
                     `}
                     style={{
                       fontFamily: 'var(--font-graphik), sans-serif',
                       fontWeight: isActive ? 700 : 300,
                       color: navTextColor,
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.color = navHoverColor;
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.color = navTextColor;
                     }}
                   >
                     {item.label}

@@ -436,7 +436,7 @@ export default function TheJourney({
                         className="w-full sm:w-[340px] lg:w-[400px] text-justify journey-step px-2 sm:px-0"
                       >
                         <p
-                          className="text-[24px] sm:text-[30px] lg:text-[36px] leading-[1.0] text-[#9ac1bf]"
+                          className="text-[24px] sm:text-[30px] lg:text-[36px] leading-[1.0] text-[#354443]"
                           style={{ fontFamily: 'var(--font-saphira), serif' }}
                         >
                           {step.title}

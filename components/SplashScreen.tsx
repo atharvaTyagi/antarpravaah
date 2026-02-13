@@ -1,9 +1,15 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import gsap from 'gsap';
+import { Observer } from 'gsap/dist/Observer';
 import Lottie, { LottieRefCurrentProps } from 'lottie-react';
 import animationData from '@/public/spiral_animation.json';
+
+// Register GSAP plugins
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(Observer);
+}
 
 // Helper component to render text with word-by-word spans
 function AnimatedText({ 
@@ -40,7 +46,20 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
   const lottieRef = useRef<LottieRefCurrentProps>(null);
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
   const isCompleting = useRef(false);
-  const wordAnimationRef = useRef<gsap.core.Timeline | null>(null);
+  const lottieCompletedRef = useRef(false);
+  const fallbackTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const absoluteTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Scroll-based word reveal state
+  const [blobReady, setBlobReady] = useState(false);
+  const [wordsComplete, setWordsComplete] = useState(false);
+  const [sequenceComplete, setSequenceComplete] = useState(false); // Prevents resets after completion
+  const observerRef = useRef<Observer | null>(null);
+  const currentWordIndexRef = useRef(0);
+  const totalWordsRef = useRef(0);
+  const lastScrollTimeRef = useRef(0);
+  const scrollCooldown = 80; // ms between word reveals
+  const wordsPerScroll = 3; // Reveal multiple words per scroll for smoother reading
 
   // Set --vh CSS variable for mobile viewport height (handles mobile browser UI)
   useEffect(() => {
@@ -52,52 +71,186 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
     };
 
     setVh();
+    
+    // Set after a delay to ensure DOM is ready
+    const timeoutId = setTimeout(setVh, 100);
+    
     window.addEventListener('resize', setVh);
     window.addEventListener('orientationchange', setVh);
 
     return () => {
       window.removeEventListener('resize', setVh);
       window.removeEventListener('orientationchange', setVh);
+      clearTimeout(timeoutId);
     };
   }, []);
 
+  // Separate effect for sequence complete state
   useEffect(() => {
+    if (!sequenceComplete) return;
     if (!containerRef.current || !spiralContainerRef.current || !blobContainerRef.current) return;
 
-    // Store original overflow values
-    const originalOverflow = document.body.style.overflow;
-    const originalOverflowHtml = document.documentElement.style.overflow;
-    
-    // Disable body scroll during splash
-    document.body.style.overflow = 'hidden';
-    document.documentElement.style.overflow = 'hidden';
+    gsap.set(spiralContainerRef.current, { opacity: 0, display: 'none' });
+    gsap.set(blobContainerRef.current, { opacity: 1, display: 'flex' });
+    gsap.set(containerRef.current, { opacity: 1 });
+    const words = blobContainerRef.current.querySelectorAll('.splash-word');
+    gsap.set(words, { opacity: 1 });
+  }, [sequenceComplete]);
 
-    // Set initial states
-    gsap.set(spiralContainerRef.current, { opacity: 1 });
-    gsap.set(blobContainerRef.current, { opacity: 0 });
+  // Main initialization effect - only runs once
+  useEffect(() => {
+    if (!containerRef.current || !spiralContainerRef.current || !blobContainerRef.current) return;
+    
+    // Skip if already complete
+    if (sequenceComplete) return;
+
+    // Set initial states - only on first mount
+    gsap.set(spiralContainerRef.current, { opacity: 1, display: 'flex' });
+    gsap.set(blobContainerRef.current, { opacity: 0, display: 'flex' });
     gsap.set(containerRef.current, { opacity: 1 });
 
-    // Cleanup function
+    // Fallback: if Lottie doesn't complete within 6 seconds, skip to blob
+    fallbackTimeoutRef.current = setTimeout(() => {
+      if (!lottieCompletedRef.current) {
+        handleLottieComplete();
+      }
+    }, 6000);
+
+    // Absolute safety timeout: force splash completion after 30 seconds
+    absoluteTimeoutRef.current = setTimeout(() => {
+      if (!isCompleting.current) {
+        if (blobContainerRef.current) {
+          const words = blobContainerRef.current.querySelectorAll('.splash-word');
+          gsap.set(words, { opacity: 1 });
+        }
+        setWordsComplete(true);
+        setSequenceComplete(true);
+        isCompleting.current = true;
+        onCompleteSafe();
+      }
+    }, 30000);
+    
+    // Mobile safety: auto-reveal words after 10 seconds if stuck
+    const mobileRevealTimeout = setTimeout(() => {
+      if (typeof window !== 'undefined' && window.innerWidth < 768) {
+        if (blobContainerRef.current && !isCompleting.current) {
+          const words = blobContainerRef.current.querySelectorAll('.splash-word');
+          if (words.length > 0) {
+            const firstWordOpacity = window.getComputedStyle(words[0]).opacity;
+            if (parseFloat(firstWordOpacity) < 0.5) {
+              gsap.to(words, {
+                opacity: 1,
+                duration: 0.5,
+                stagger: 0.05,
+                ease: 'power2.out',
+              });
+            }
+          }
+        }
+      }
+    }, 10000);
+
     return () => {
+      if (fallbackTimeoutRef.current) clearTimeout(fallbackTimeoutRef.current);
+      if (absoluteTimeoutRef.current) clearTimeout(absoluteTimeoutRef.current);
+      clearTimeout(mobileRevealTimeout);
       if (timelineRef.current) {
         timelineRef.current.kill();
         timelineRef.current = null;
       }
-      
-      if (wordAnimationRef.current) {
-        wordAnimationRef.current.kill();
-        wordAnimationRef.current = null;
+      if (observerRef.current) {
+        observerRef.current.kill();
+        observerRef.current = null;
       }
-      
-      // Restore scroll
-      document.body.style.overflow = originalOverflow;
-      document.documentElement.style.overflow = originalOverflowHtml;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run once on mount
+
+  // Handle scroll to reveal words
+  const handleScrollReveal = useCallback(() => {
+    if (!blobContainerRef.current) return;
+    
+    const now = Date.now();
+    if (now - lastScrollTimeRef.current < scrollCooldown) return;
+    lastScrollTimeRef.current = now;
+
+    const words = blobContainerRef.current.querySelectorAll('.splash-word');
+    if (words.length === 0) return;
+
+    const currentIndex = currentWordIndexRef.current;
+    const endIndex = Math.min(currentIndex + wordsPerScroll, words.length);
+
+    // Reveal the next batch of words
+    for (let i = currentIndex; i < endIndex; i++) {
+      gsap.to(words[i], {
+        opacity: 1,
+        duration: 0.3,
+        ease: 'power2.out',
+      });
+    }
+
+    currentWordIndexRef.current = endIndex;
+
+    // Check if all words are revealed
+    if (currentWordIndexRef.current >= words.length) {
+      setWordsComplete(true);
+      setSequenceComplete(true); // Mark sequence as complete to prevent resets
+      // Brief pause then signal completion
+      setTimeout(() => {
+        if (!isCompleting.current) {
+          isCompleting.current = true;
+          if (fallbackTimeoutRef.current) clearTimeout(fallbackTimeoutRef.current);
+          if (absoluteTimeoutRef.current) clearTimeout(absoluteTimeoutRef.current);
+          onCompleteSafe();
+        }
+      }, 400);
+    }
   }, [onCompleteSafe]);
 
+  // Setup GSAP Observer when blob is ready (and not yet complete)
+  useEffect(() => {
+    if (!blobReady || wordsComplete || typeof window === 'undefined') return;
+
+    // Create Observer for scroll-based word reveal
+    observerRef.current = Observer.create({
+      type: 'wheel,touch,pointer',
+      wheelSpeed: -1,
+      tolerance: 30,
+      preventDefault: true,
+      onDown: () => {}, // Scroll up does nothing during word reveal
+      onUp: () => handleScrollReveal(), // Scroll down reveals words
+    });
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.kill();
+        observerRef.current = null;
+      }
+    };
+  }, [blobReady, wordsComplete, handleScrollReveal]);
+
   // Handle Lottie animation complete - this triggers the rest of the sequence
-  const handleLottieComplete = () => {
-    if (!spiralContainerRef.current || !blobContainerRef.current) return;
+  const handleLottieComplete = useCallback(() => {
+    if (lottieCompletedRef.current) {
+      return; // Prevent double execution
+    }
+    
+    lottieCompletedRef.current = true;
+
+    // Clear fallback timeout if it exists
+    if (fallbackTimeoutRef.current) {
+      clearTimeout(fallbackTimeoutRef.current);
+      fallbackTimeoutRef.current = null;
+    }
+
+    if (!spiralContainerRef.current || !blobContainerRef.current) {
+      return;
+    }
+
+    // Kill any existing timeline to prevent conflicts
+    if (timelineRef.current) {
+      timelineRef.current.kill();
+    }
 
     // Create the automatic transition timeline
     const tl = gsap.timeline();
@@ -118,86 +271,49 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
         duration: 0.8,
         ease: 'power2.inOut',
         onComplete: () => {
-          // Start word-by-word animation after blob is visible
+          // Setup scroll-based word reveal after blob is visible
           if (blobContainerRef.current) {
             const words = blobContainerRef.current.querySelectorAll('.splash-word');
+            totalWordsRef.current = words.length;
+            currentWordIndexRef.current = 0;
+
             if (words.length > 0) {
-              // Kill any existing word animation
-              if (wordAnimationRef.current) {
-                wordAnimationRef.current.kill();
+              // Enable scroll-based reveal
+              setBlobReady(true);
+            } else {
+              // No words, just complete
+              if (!isCompleting.current) {
+                isCompleting.current = true;
+                onCompleteSafe();
               }
-              
-              // Create word-by-word reveal animation (comfortable reading pace)
-              wordAnimationRef.current = gsap.timeline({
-                onComplete: () => {
-                  // Brief pause after text completes, then finish splash
-                  gsap.delayedCall(0.8, finishSplash);
-                }
-              });
-              wordAnimationRef.current.to(words, {
-                opacity: 1,
-                duration: 0.5,
-                stagger: 0.22,
-                ease: 'power2.out',
-              });
+            }
+          } else {
+            if (!isCompleting.current) {
+              isCompleting.current = true;
+              onCompleteSafe();
             }
           }
         },
       },
       '-=0.4'
     );
+  }, [onCompleteSafe]);
 
-    const finishSplash = () => {
-      if (isCompleting.current) return;
-      isCompleting.current = true;
-      
-      // Restore scroll
-      document.body.style.overflow = '';  
-      document.documentElement.style.overflow = '';
-      
-      // Disable pointer events
-      if (containerRef.current) {
-        containerRef.current.style.pointerEvents = 'none';
-      }
-      
-      // Fade out splash screen smoothly
-      gsap.to(containerRef.current, {
-        opacity: 0,
-        duration: 0.6,
-        ease: 'power2.inOut',
-        onComplete: () => {
-          if (containerRef.current) {
-            containerRef.current.style.display = 'none';
-          }
-          onCompleteSafe();
-        },
-      });
-    };
-  };
 
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 z-[100] bg-[#6a3f33]"
-      style={{
-        width: '100vw',
-        height: '100vh',
-        pointerEvents: 'auto',
-      }}
+      className="relative w-full h-full bg-[#6a3f33] overflow-hidden"
+      style={{ minHeight: '100%', opacity: 1 }}
     >
       {/* Spiral Lottie Animation */}
       <div
         ref={spiralContainerRef}
         className="absolute inset-0 flex items-center justify-center p-4 md:p-12 lg:p-16"
+        style={{ opacity: sequenceComplete ? 0 : 1 }}
       >
         <div
-          className="block"
-          style={{
-            width: '100%',
-            height: '100%',
-            maxWidth: 'min(100%, 100vh)',
-            maxHeight: 'min(100%, 100vh)',
-          }}
+          className="block w-full h-full max-w-[min(90vw,90vh)] max-h-[min(90vw,90vh)]"
         >
           <Lottie
             lottieRef={lottieRef}
@@ -209,6 +325,10 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
               height: '100%',
             }}
             onComplete={handleLottieComplete}
+            rendererSettings={{
+              preserveAspectRatio: 'xMidYMid meet',
+              progressiveLoad: true,
+            }}
           />
         </div>
       </div>
@@ -216,13 +336,14 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
       {/* Blob message (full-screen moment; blob itself centered) */}
       <div
         ref={blobContainerRef}
-        className="absolute inset-0 flex items-center justify-center"
+        className="absolute inset-0 flex items-center justify-center p-4"
+        style={{ opacity: sequenceComplete ? 1 : 0 }}
       >
         <div
-          className="relative"
+          className="relative w-full h-full max-w-[760px] max-h-[760px]"
           style={{
-            width: 'clamp(380px, 60vmin, 760px)',
-            height: 'clamp(380px, 60vmin, 760px)',
+            minWidth: 'min(320px, 90vw)',
+            minHeight: 'min(320px, 90vh)',
           }}
         >
           {/* Organic Blob Shape - SVG */}

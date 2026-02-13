@@ -20,8 +20,9 @@ if (typeof window !== 'undefined') {
   gsap.registerPlugin(Observer);
 }
 
-// Section configuration
-const SECTIONS: { id: string; type: 'static' | 'journey-scroll' | 'cards-scroll' | 'carousel-scroll' | 'footer'; themeId: SectionId }[] = [
+// Section configuration - splash is first section, then journey, etc.
+const SECTIONS: { id: string; type: 'splash' | 'static' | 'journey-scroll' | 'cards-scroll' | 'carousel-scroll' | 'footer'; themeId: SectionId }[] = [
+  { id: 'splash', type: 'splash', themeId: 'hero' },
   { id: 'journey', type: 'journey-scroll', themeId: 'journey' },
   { id: 'journey-cta', type: 'static', themeId: 'journey' },
   { id: 'work-together', type: 'cards-scroll', themeId: 'work-together' },
@@ -31,8 +32,8 @@ const SECTIONS: { id: string; type: 'static' | 'journey-scroll' | 'cards-scroll'
 ];
 
 export default function Home() {
-  // Splash and modal state
-  const [splashComplete, setSplashComplete] = useState(false);
+  // Splash interaction complete = blob animation done, user can scroll to next section
+  const [splashInteractionComplete, setSplashInteractionComplete] = useState(false);
   const [showGuidedJourney, setShowGuidedJourney] = useState(false);
   const setGlobalSplashComplete = useUiStore((state) => state.setSplashComplete);
   const setTheme = useThemeStore((state) => state.setTheme);
@@ -101,11 +102,13 @@ export default function Home() {
 
     // Also set after a short delay to catch any browser chrome adjustments
     const timeoutId = setTimeout(setVh, 100);
+    const delayedTimeout = setTimeout(setVh, 500);
 
     return () => {
       window.removeEventListener('resize', setVh);
       window.removeEventListener('orientationchange', setVh);
       clearTimeout(timeoutId);
+      clearTimeout(delayedTimeout);
     };
   }, []);
 
@@ -189,11 +192,13 @@ export default function Home() {
     const now = Date.now();
     if (now - lastScrollTimeRef.current < sectionScrollCooldown) return;
 
-    if (edge === 'end') {
+    if (edge === 'start') {
+      // Move to previous section (Splash)
+      goToSection(currentSectionRef.current - 1, 'up');
+    } else if (edge === 'end') {
       // Move to next section (Journey CTA)
       goToSection(currentSectionRef.current + 1, 'down');
     }
-    // Journey is the first section, so 'start' edge has nowhere to go
   }, [goToSection]);
 
   const handleCardsEdgeReached = useCallback((edge: 'start' | 'end') => {
@@ -232,6 +237,14 @@ export default function Home() {
 
     const section = SECTIONS[currentSectionRef.current];
 
+    // Splash section: only advance to journey when blob interaction is complete
+    if (section.type === 'splash') {
+      if (direction === 'down' && splashInteractionComplete) {
+        goToSection(1, 'down');
+      }
+      return;
+    }
+
     // Delegate to internal scroll handlers if active
     if (section.type === 'journey-scroll' && isJourneyScrollActive) return;
     if (section.type === 'cards-scroll' && isCardsScrollActive) return;
@@ -247,7 +260,7 @@ export default function Home() {
         goToSection(currentSectionRef.current - 1, 'up');
       }
     }
-  }, [isAnimating, isReady, isJourneyScrollActive, isCardsScrollActive, isCarouselScrollActive, goToSection]);
+  }, [isAnimating, isReady, splashInteractionComplete, isJourneyScrollActive, isCardsScrollActive, isCarouselScrollActive, goToSection]);
 
   // Setup GSAP Observer for global scroll handling
   useLayoutEffect(() => {
@@ -272,23 +285,14 @@ export default function Home() {
     };
   }, [isReady, handleScroll]);
 
-  // Initialize after splash completes
+  // Initialize on mount: lock body scroll, start at section 0 (splash) with hero theme
   useEffect(() => {
-    if (!splashComplete) return;
-
-    // Lock body scroll since we use fixed container
     document.body.style.overflow = 'hidden';
     document.documentElement.style.overflow = 'hidden';
 
-    // Start at section 0 with journey scroll active
     const initTimeout = setTimeout(() => {
       setIsReady(true);
-      setTheme(SECTIONS[0].themeId);
-      
-      // Activate journey scroll after a short delay
-      setTimeout(() => {
-        setIsJourneyScrollActive(true);
-      }, 500);
+      setTheme('hero');
     }, 100);
 
     return () => {
@@ -296,12 +300,12 @@ export default function Home() {
       document.body.style.overflow = '';
       document.documentElement.style.overflow = '';
     };
-  }, [splashComplete, setTheme]);
+  }, [setTheme]);
 
-  const handleSplashComplete = () => {
-    setSplashComplete(true);
+  const handleSplashInteractionComplete = () => {
+    setSplashInteractionComplete(true);
     setGlobalSplashComplete(true);
-    
+
     // Show guided journey modal after a short delay (desktop only)
     setTimeout(() => {
       const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
@@ -368,42 +372,41 @@ export default function Home() {
       `}</style>
 
       <main className="relative">
-        {/* Splash Screen - Fixed overlay that fades out on scroll */}
-        <SplashScreen onComplete={handleSplashComplete} />
-
-        {/* Guided Journey Modal - Shows after splash completes */}
+        {/* Guided Journey Modal - Shows after splash interaction completes */}
         <GuidedJourneyModal isOpen={showGuidedJourney} onClose={handleCloseGuidedJourney} />
 
-        {/* Fixed Container - visible after splash */}
-        <div
-          className="main-container overflow-hidden bg-[#f6edd0] z-[30]"
-          style={{
-            opacity: splashComplete ? 1 : 0,
-            pointerEvents: splashComplete ? 'auto' : 'none',
-          }}
-        >
-        <div ref={containerRef} className="will-change-transform">
-          {/* Section 1: Journey */}
-          <div 
-            ref={(el) => { if (el) sectionsRef.current[0] = el; }} 
-            className="section-height"
-          >
-            <TheJourney
-              isActive={isJourneyScrollActive}
-              onEdgeReached={handleJourneyEdgeReached}
-              resetToStart={journeyResetToStart}
-              resetToEnd={journeyResetToEnd}
-            />
-          </div>
+        {/* Fixed Container - scrolls through sections */}
+        <div className="main-container overflow-hidden bg-[#f6edd0] z-10">
+          <div ref={containerRef} className="will-change-transform">
+            {/* Section 0: Splash */}
+            <div
+              ref={(el) => { if (el) sectionsRef.current[0] = el; }}
+              className="section-height"
+            >
+              <SplashScreen onComplete={handleSplashInteractionComplete} />
+            </div>
 
-          {/* Section 2: Journey CTA */}
-          <div 
-            ref={(el) => { if (el) sectionsRef.current[1] = el; }} 
-            className="section-height"
-          >
-            <div className="relative w-full h-full bg-[#f6edd0] flex items-center justify-center p-4 sm:px-6 lg:px-8">
-              <div className="w-full h-full sm:h-auto sm:max-w-[calc(100vw-64px)] lg:max-w-[1177px] flex items-center justify-center">
-                <div className="w-full h-full sm:h-auto rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#9ac1bf] p-6 sm:p-8 lg:p-10 text-center flex flex-col justify-center">
+            {/* Section 1: Journey */}
+            <div
+              ref={(el) => { if (el) sectionsRef.current[1] = el; }}
+              className="section-height"
+            >
+              <TheJourney
+                isActive={isJourneyScrollActive}
+                onEdgeReached={handleJourneyEdgeReached}
+                resetToStart={journeyResetToStart}
+                resetToEnd={journeyResetToEnd}
+              />
+            </div>
+
+            {/* Section 2: Journey CTA */}
+            <div
+              ref={(el) => { if (el) sectionsRef.current[2] = el; }}
+              className="section-height"
+            >
+              <div className="relative w-full h-full bg-[#f6edd0] flex items-center justify-center p-4 sm:px-6 lg:px-8">
+                <div className="w-full h-full sm:h-auto sm:max-w-[calc(100vw-64px)] lg:max-w-[1177px] flex items-center justify-center">
+                  <div className="w-full h-full sm:h-auto rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#9ac1bf] p-6 sm:p-8 lg:p-10 text-center flex flex-col justify-center">
                   <div className="mb-6 sm:mb-8 lg:mb-10">
                     <p
                       className="mb-2 sm:mb-2.5 lg:mb-3 text-[24px] sm:text-[30px] lg:text-[36px] leading-[1.0] text-[#354443]"
@@ -442,54 +445,54 @@ export default function Home() {
                     mode="dark"
                     onClick={() => setShowGuidedJourney(true)}
                   />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Section 3: WeWorkTogether */}
-          <div 
-            ref={(el) => { if (el) sectionsRef.current[2] = el; }} 
-            className="section-height"
-          >
-            <WeWorkTogether
-              isActive={isCardsScrollActive}
-              onEdgeReached={handleCardsEdgeReached}
-              resetToStart={cardsResetToStart}
-              resetToEnd={cardsResetToEnd}
-            />
-          </div>
+            {/* Section 3: WeWorkTogether */}
+            <div
+              ref={(el) => { if (el) sectionsRef.current[3] = el; }}
+              className="section-height"
+            >
+              <WeWorkTogether
+                isActive={isCardsScrollActive}
+                onEdgeReached={handleCardsEdgeReached}
+                resetToStart={cardsResetToStart}
+                resetToEnd={cardsResetToEnd}
+              />
+            </div>
 
-          {/* Section 4: VoicesOfTransformation */}
-          <div 
-            ref={(el) => { if (el) sectionsRef.current[3] = el; }} 
-            className="section-height"
-          >
-            <VoicesOfTransformation
-              isActive={isCarouselScrollActive}
-              onEdgeReached={handleCarouselEdgeReached}
-              resetToStart={carouselResetToStart}
-              resetToEnd={carouselResetToEnd}
-            />
-          </div>
+            {/* Section 4: VoicesOfTransformation */}
+            <div
+              ref={(el) => { if (el) sectionsRef.current[4] = el; }}
+              className="section-height"
+            >
+              <VoicesOfTransformation
+                isActive={isCarouselScrollActive}
+                onEdgeReached={handleCarouselEdgeReached}
+                resetToStart={carouselResetToStart}
+                resetToEnd={carouselResetToEnd}
+              />
+            </div>
 
-          {/* Section 5: ReadyToBegin */}
-          <div 
-            ref={(el) => { if (el) sectionsRef.current[4] = el; }} 
-            className="section-height"
-          >
-            <ReadyToBegin onBeginJourney={() => setShowGuidedJourney(true)} />
-          </div>
+            {/* Section 5: ReadyToBegin */}
+            <div
+              ref={(el) => { if (el) sectionsRef.current[5] = el; }}
+              className="section-height"
+            >
+              <ReadyToBegin onBeginJourney={() => setShowGuidedJourney(true)} />
+            </div>
 
-          {/* Section 6: Footer */}
-          <div 
-            ref={(el) => { if (el) sectionsRef.current[5] = el; }} 
-            className="section-height"
-          >
-            <Footer />
+            {/* Section 6: Footer */}
+            <div
+              ref={(el) => { if (el) sectionsRef.current[6] = el; }}
+              className="section-height"
+            >
+              <Footer />
+            </div>
           </div>
         </div>
-      </div>
     </main>
     </>
   );

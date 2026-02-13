@@ -55,23 +55,25 @@ export default function GuidedJourneyModal({ isOpen, onClose, startAt = 'welcome
 
   // Prevent body scroll when modal is open, always restore on close/unmount
   useEffect(() => {
+    if (!isOpen) return;
+
     const body = document.body;
     const html = document.documentElement;
     const originalBodyOverflow = body.style.overflow;
     const originalHtmlOverflow = html.style.overflow;
 
-    if (isOpen) {
-      body.style.overflow = 'hidden';
-      html.style.overflow = 'hidden';
-    } else {
-      body.style.overflow = '';
-      html.style.overflow = '';
-    }
+    body.style.overflow = 'hidden';
+    html.style.overflow = 'hidden';
 
-      return () => {
-      body.style.overflow = originalBodyOverflow;
-      html.style.overflow = originalHtmlOverflow;
-      };
+    return () => {
+      // Only restore if we're the ones who set it
+      if (body.style.overflow === 'hidden') {
+        body.style.overflow = originalBodyOverflow;
+      }
+      if (html.style.overflow === 'hidden') {
+        html.style.overflow = originalHtmlOverflow;
+      }
+    };
   }, [isOpen]);
 
   const handleStartGuidedFlow = () => {
@@ -160,6 +162,9 @@ export default function GuidedJourneyModal({ isOpen, onClose, startAt = 'welcome
   };
 
   const currentQuestionNumber = getCurrentQuestionNumber();
+
+  // Don't render anything if modal is not open
+  if (!isOpen) return null;
 
   return (
     <AnimatePresence>
