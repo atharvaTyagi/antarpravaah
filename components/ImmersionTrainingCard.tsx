@@ -132,8 +132,10 @@ function CtaButton({ text, onClick, singleLine = false }: { text: string; onClic
 }
 
 export interface ImmersionData {
-  id: string;
+  _id?: string;           // Sanity document ID
+  id?: string;            // Legacy ID for backwards compatibility
   title: string;
+  slug?: string;          // URL slug from Sanity
   type: 'immersion' | 'workshop';
   duration: string;
   language: string;
@@ -141,13 +143,17 @@ export interface ImmersionData {
   format: string;
   about: string;
   whatToExpect: string[];
-  image: string;
+  image?: string;         // Cloudinary URL (legacy)
+  imageUrl?: string;      // Sanity image URL
   ctaText: string;
+  order?: number;
 }
 
 export interface TrainingData {
-  id: string;
+  _id?: string;           // Sanity document ID
+  id?: string;            // Legacy ID for backwards compatibility
   title: string;
+  slug?: string;          // URL slug from Sanity
   duration: string;
   prerequisites: string;
   format: string;
@@ -155,6 +161,7 @@ export interface TrainingData {
   overview: string;
   whatYoullLearn: string[];
   ctaText: string;
+  order?: number;
 }
 
 interface ImmersionCardProps {
@@ -284,15 +291,17 @@ export function ImmersionCard({ data, isMobile = false, onExpandedChange, onBook
             </div>
 
             <div className="flex-1 min-h-[160px] lg:min-h-[180px]">
-              <Image
-                src={data.image}
-                alt={data.title}
-                width={400}
-                height={250}
-                quality={85}
-                loading="lazy"
-                className="h-full w-full rounded-2xl object-cover"
-              />
+              {(data.imageUrl || data.image) && (
+                <Image
+                  src={data.imageUrl || data.image || ''}
+                  alt={data.title}
+                  width={400}
+                  height={250}
+                  quality={85}
+                  loading="lazy"
+                  className="h-full w-full rounded-2xl object-cover"
+                />
+              )}
             </div>
           </div>
 
@@ -387,17 +396,19 @@ export function ImmersionCard({ data, isMobile = false, onExpandedChange, onBook
           </div>
 
           {/* Image */}
-          <div className="flex-1 min-h-0 mb-4">
-            <Image
-              src={data.image}
-              alt={data.title}
-              width={333}
-              height={150}
-              quality={85}
-              loading="lazy"
-              className="h-full w-full rounded-2xl object-cover"
-            />
-          </div>
+          {(data.imageUrl || data.image) && (
+            <div className="flex-1 min-h-0 mb-4">
+              <Image
+                src={data.imageUrl || data.image || ''}
+                alt={data.title}
+                width={333}
+                height={150}
+                quality={85}
+                loading="lazy"
+                className="h-full w-full rounded-2xl object-cover"
+              />
+            </div>
+          )}
 
           {/* Read More CTA */}
           <div className="flex justify-center shrink-0">

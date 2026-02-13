@@ -35,6 +35,7 @@ const SECTIONS_DESKTOP: { id: string; type: 'static' | 'blob-scroll' | 'footer';
 export default function AboutPage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const sectionsRef = useRef<HTMLDivElement[]>([]);
+  const imageRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const setTheme = useThemeStore((state) => state.setTheme);
 
@@ -162,6 +163,39 @@ export default function AboutPage() {
     }
   }, [isAnimating, currentSection, goToSection]);
 
+  // Handle paragraph change in blob scroll (desktop only)
+  const handleParagraphChange = useCallback((paragraphIndex: number) => {
+    if (isMobile) return; // Only sync on desktop
+    
+    const images = imageRefs.current.filter(Boolean) as HTMLDivElement[];
+    if (images.length === 0) return;
+
+    // Map paragraph index to image index
+    // Paragraph 0 -> Image 0 (first image already visible)
+    // Paragraph 1 -> Image 1
+    // Paragraph 2 -> Image 2
+    // Paragraph 3 -> Image 3
+    // Paragraph 4 -> Image 4
+    // We have 6 images total, so paragraph 4 can reveal both image 4 and 5
+    
+    if (paragraphIndex === 0) {
+      // First paragraph - show first image
+      gsap.to(images[0], { autoAlpha: 1, duration: 0.5, ease: 'power2.out' });
+    } else if (paragraphIndex === 1) {
+      // Second paragraph - show second image
+      gsap.to(images[1], { autoAlpha: 1, duration: 0.5, ease: 'power2.out' });
+    } else if (paragraphIndex === 2) {
+      // Third paragraph - show third and fourth images
+      gsap.to([images[2], images[3]], { autoAlpha: 1, duration: 0.5, ease: 'power2.out', stagger: 0.15 });
+    } else if (paragraphIndex === 3) {
+      // Fourth paragraph - show fifth image
+      gsap.to(images[4], { autoAlpha: 1, duration: 0.5, ease: 'power2.out' });
+    } else if (paragraphIndex === 4) {
+      // Fifth paragraph - show sixth image
+      gsap.to(images[5], { autoAlpha: 1, duration: 0.5, ease: 'power2.out' });
+    }
+  }, [isMobile]);
+
   // Handle scroll input
   const handleScroll = useCallback((deltaY: number) => {
     if (isAnimating) return;
@@ -202,6 +236,36 @@ export default function AboutPage() {
       window.removeEventListener('orientationchange', setViewportHeight);
     };
   }, []);
+
+  // Initialize images on desktop - hide all except first
+  useEffect(() => {
+    if (isMobile) return; // Only on desktop
+    
+    const images = imageRefs.current.filter(Boolean) as HTMLDivElement[];
+    if (images.length === 0) return;
+
+    // Set initial state: first image visible, rest hidden
+    gsap.set(images[0], { autoAlpha: 1 });
+    gsap.set(images.slice(1), { autoAlpha: 0 });
+  }, [isMobile, isReady]);
+
+  // Handle blob reset states for images
+  useEffect(() => {
+    if (isMobile) return;
+    if (!blobResetToStart && !blobResetToEnd) return;
+
+    const images = imageRefs.current.filter(Boolean) as HTMLDivElement[];
+    if (images.length === 0) return;
+
+    if (blobResetToStart) {
+      // Reset to start: only first image visible
+      gsap.set(images[0], { autoAlpha: 1 });
+      gsap.set(images.slice(1), { autoAlpha: 0 });
+    } else if (blobResetToEnd) {
+      // Reset to end: all images visible
+      gsap.set(images, { autoAlpha: 1 });
+    }
+  }, [blobResetToStart, blobResetToEnd, isMobile]);
 
   // Setup wheel/touch event handlers
   useLayoutEffect(() => {
@@ -332,9 +396,7 @@ export default function AboutPage() {
                     className="text-[16px] leading-[24px] text-[#474e3a] text-center"
                     style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
                   >
-                    Founder of Antar Pravaah |<br />
-                    Healer &amp; Facilitator |<br />
-                    Host at Aalayam, Himachal Pradesh
+                    Founder of Antar Pravaah | Healer &amp; Facilitator | Host at Aalayam, Himachal Pradesh
                   </p>
                 </div>
               </div>
@@ -346,30 +408,33 @@ export default function AboutPage() {
               >
                 <div className="relative w-[353px] h-[320px]">
                   {/* Bottom left */}
-                  <div className="absolute left-0 bottom-0 h-[130px] w-[125px] overflow-hidden rounded-full">
+                  <div className="absolute left-0 bottom-0 h-[152px] w-[146px] overflow-hidden rounded-full">
                     <FadeInImage 
                       src={getCloudinaryUrl('antarpravaah/about/namita_one')} 
                       alt="Namita" 
-                      width={125} height={130}
-                      className="h-full w-full object-cover" 
+                      width={146} height={152}
+                      className="h-full w-full object-cover"
+                      delayMs={200}
                     />
                   </div>
                   {/* Top center */}
-                  <div className="absolute left-1/2 -translate-x-1/2 top-0 h-[189px] w-[181px] overflow-hidden rounded-full">
+                  <div className="absolute left-1/2 -translate-x-1/2 top-0 h-[221px] w-[212px] overflow-hidden rounded-full">
                     <FadeInImage 
                       src={getCloudinaryUrl('antarpravaah/about/namita_two')} 
                       alt="Namita" 
-                      width={181} height={189}
-                      className="h-full w-full object-cover" 
+                      width={212} height={221}
+                      className="h-full w-full object-cover"
+                      delayMs={400}
                     />
                   </div>
                   {/* Bottom right */}
-                  <div className="absolute right-0 bottom-[15px] h-[105px] w-[100px] overflow-hidden rounded-full">
+                  <div className="absolute right-0 bottom-[15px] h-[123px] w-[117px] overflow-hidden rounded-full">
                     <FadeInImage 
                       src={getCloudinaryUrl('antarpravaah/about/namita_three')} 
                       alt="Namita" 
-                      width={100} height={105}
-                      className="h-full w-full object-cover" 
+                      width={117} height={123}
+                      className="h-full w-full object-cover"
+                      delayMs={600}
                     />
                   </div>
                 </div>
@@ -401,30 +466,33 @@ export default function AboutPage() {
                 </div>
                 <div className="relative w-[300px] h-[320px] z-10">
                   {/* Top left */}
-                  <div className="absolute left-[11px] top-[38px] h-[111px] w-[106px] overflow-hidden rounded-full">
+                  <div className="absolute left-[11px] top-[38px] h-[130px] w-[124px] overflow-hidden rounded-full">
                     <FadeInImage 
                       src={getCloudinaryUrl('antarpravaah/about/namita_four')} 
                       alt="Namita" 
-                      width={106} height={111}
-                      className="h-full w-full object-cover" 
+                      width={124} height={130}
+                      className="h-full w-full object-cover"
+                      delayMs={200}
                     />
                   </div>
                   {/* Bottom center */}
-                  <div className="absolute left-[64px] bottom-0 h-[174px] w-[166px] overflow-hidden rounded-full">
+                  <div className="absolute left-[64px] bottom-0 h-[203px] w-[194px] overflow-hidden rounded-full">
                     <FadeInImage 
                       src={getCloudinaryUrl('antarpravaah/about/namita_five')} 
                       alt="Namita" 
-                      width={166} height={174}
-                      className="h-full w-full object-cover" 
+                      width={194} height={203}
+                      className="h-full w-full object-cover"
+                      delayMs={400}
                     />
                   </div>
                   {/* Top right */}
-                  <div className="absolute right-[10px] top-0 h-[136px] w-[130px] overflow-hidden rounded-full">
+                  <div className="absolute right-[10px] top-0 h-[159px] w-[152px] overflow-hidden rounded-full">
                     <FadeInImage 
                       src={getCloudinaryUrl('antarpravaah/about/namita_six')} 
                       alt="Namita" 
-                      width={130} height={136}
-                      className="h-full w-full object-cover" 
+                      width={152} height={159}
+                      className="h-full w-full object-cover"
+                      delayMs={600}
                     />
                   </div>
                 </div>
@@ -517,44 +585,62 @@ export default function AboutPage() {
 
                 <div className="relative z-10 w-full h-full flex items-center justify-center">
                   {/* Upper-left image */}
-                  <div className="absolute top-[20%] left-[22%] sm:top-[22%] sm:left-[26%] lg:top-[20%] lg:left-[28%]">
-                    <div className="h-[110px] w-[105px] lg:h-[150px] lg:w-[143px] overflow-hidden rounded-full">
-                      <FadeInImage src={getCloudinaryUrl('antarpravaah/about/namita_one')} alt="Namita" width={143} height={150} className="h-full w-full object-cover" />
+                  <div 
+                    ref={(el) => { imageRefs.current[0] = el; }}
+                    className="absolute top-[18%] left-[16%] sm:top-[20%] sm:left-[20%] lg:top-[18%] lg:left-[22%]"
+                  >
+                    <div className="h-[150px] w-[143px] lg:h-[200px] lg:w-[191px] overflow-hidden rounded-full">
+                      <img src={getCloudinaryUrl('antarpravaah/about/namita_one')} alt="Namita" className="h-full w-full object-cover" />
                     </div>
                   </div>
 
                   {/* Upper-right image */}
-                  <div className="absolute top-[18%] right-[24%] sm:top-[20%] sm:right-[28%] lg:top-[18%] lg:right-[30%]">
-                    <div className="h-[100px] w-[96px] lg:h-[130px] lg:w-[124px] overflow-hidden rounded-full">
-                      <FadeInImage src={getCloudinaryUrl('antarpravaah/about/namita_two')} alt="Namita" width={124} height={130} className="h-full w-full object-cover" />
+                  <div 
+                    ref={(el) => { imageRefs.current[1] = el; }}
+                    className="absolute top-[16%] right-[18%] sm:top-[18%] sm:right-[22%] lg:top-[16%] lg:right-[24%]"
+                  >
+                    <div className="h-[136px] w-[130px] lg:h-[180px] lg:w-[172px] overflow-hidden rounded-full">
+                      <img src={getCloudinaryUrl('antarpravaah/about/namita_two')} alt="Namita" className="h-full w-full object-cover" />
                     </div>
                   </div>
 
                   {/* Left-middle image */}
-                  <div className="absolute top-[38%] left-[12%] sm:top-[40%] sm:left-[16%] lg:top-[38%] lg:left-[18%]">
-                    <div className="h-[120px] w-[115px] lg:h-[160px] lg:w-[153px] overflow-hidden rounded-full">
-                      <FadeInImage src={getCloudinaryUrl('antarpravaah/about/namita_three')} alt="Namita" width={153} height={160} className="h-full w-full object-cover" />
+                  <div 
+                    ref={(el) => { imageRefs.current[2] = el; }}
+                    className="absolute top-[38%] left-[8%] sm:top-[40%] sm:left-[10%] lg:top-[38%] lg:left-[12%]"
+                  >
+                    <div className="h-[164px] w-[157px] lg:h-[218px] lg:w-[208px] overflow-hidden rounded-full">
+                      <img src={getCloudinaryUrl('antarpravaah/about/namita_three')} alt="Namita" className="h-full w-full object-cover" />
                     </div>
                   </div>
 
                   {/* Right-middle image */}
-                  <div className="absolute top-[36%] right-[12%] sm:top-[38%] sm:right-[16%] lg:top-[36%] lg:right-[18%]">
-                    <div className="h-[110px] w-[105px] lg:h-[145px] lg:w-[138px] overflow-hidden rounded-full">
-                      <FadeInImage src={getCloudinaryUrl('antarpravaah/about/namita_four')} alt="Namita" width={138} height={145} className="h-full w-full object-cover" />
+                  <div 
+                    ref={(el) => { imageRefs.current[3] = el; }}
+                    className="absolute top-[36%] right-[8%] sm:top-[38%] sm:right-[10%] lg:top-[36%] lg:right-[12%]"
+                  >
+                    <div className="h-[150px] w-[143px] lg:h-[200px] lg:w-[191px] overflow-hidden rounded-full">
+                      <img src={getCloudinaryUrl('antarpravaah/about/namita_four')} alt="Namita" className="h-full w-full object-cover" />
                     </div>
                   </div>
 
                   {/* Lower-left image */}
-                  <div className="absolute bottom-[20%] left-[24%] sm:bottom-[22%] sm:left-[28%] lg:bottom-[20%] lg:left-[30%]">
-                    <div className="h-[105px] w-[100px] lg:h-[140px] lg:w-[134px] overflow-hidden rounded-full">
-                      <FadeInImage src={getCloudinaryUrl('antarpravaah/about/namita_five')} alt="Namita" width={134} height={140} className="h-full w-full object-cover" />
+                  <div 
+                    ref={(el) => { imageRefs.current[4] = el; }}
+                    className="absolute bottom-[18%] left-[18%] sm:bottom-[20%] sm:left-[22%] lg:bottom-[18%] lg:left-[24%]"
+                  >
+                    <div className="h-[143px] w-[136px] lg:h-[191px] lg:w-[182px] overflow-hidden rounded-full">
+                      <img src={getCloudinaryUrl('antarpravaah/about/namita_five')} alt="Namita" className="h-full w-full object-cover" />
                     </div>
                   </div>
 
                   {/* Lower-right image */}
-                  <div className="absolute bottom-[18%] right-[22%] sm:bottom-[20%] sm:right-[26%] lg:bottom-[18%] lg:right-[28%]">
-                    <div className="h-[115px] w-[110px] lg:h-[155px] lg:w-[148px] overflow-hidden rounded-full">
-                      <FadeInImage src={getCloudinaryUrl('antarpravaah/about/namita_six')} alt="Namita" width={148} height={155} className="h-full w-full object-cover" />
+                  <div 
+                    ref={(el) => { imageRefs.current[5] = el; }}
+                    className="absolute bottom-[16%] right-[16%] sm:bottom-[18%] sm:right-[20%] lg:bottom-[16%] lg:right-[22%]"
+                  >
+                    <div className="h-[157px] w-[150px] lg:h-[209px] lg:w-[200px] overflow-hidden rounded-full">
+                      <img src={getCloudinaryUrl('antarpravaah/about/namita_six')} alt="Namita" className="h-full w-full object-cover" />
                     </div>
                   </div>
 
@@ -563,6 +649,7 @@ export default function AboutPage() {
                     onEdgeReached={handleBlobEdgeReached}
                     resetToStart={blobResetToStart}
                     resetToEnd={blobResetToEnd}
+                    onParagraphChange={handleParagraphChange}
                   />
                 </div>
               </div>

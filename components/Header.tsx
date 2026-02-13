@@ -63,13 +63,12 @@ export default function Header() {
 
   return (
     <header
-      className="fixed top-0 left-0 right-0 w-full py-3 sm:py-4 lg:py-6 transition-all duration-500"
+      className="fixed top-0 left-0 right-0 z-[60] w-full py-3 sm:py-4 lg:py-6 transition-all duration-500"
       style={{
         opacity: isVisible ? 1 : 0,
         pointerEvents: isVisible ? 'auto' : 'none',
         visibility: isVisible ? 'visible' : 'hidden',
         backgroundColor: headerOuterBg,
-        zIndex: 50,
       }}
     >
       <div className="w-full px-2 sm:px-4 md:px-6">

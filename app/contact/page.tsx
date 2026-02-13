@@ -5,6 +5,7 @@ import Section from '@/components/Section';
 import Button from '@/components/Button';
 import FaqItem from '@/components/FaqItem';
 import PageEndBlob from '@/components/PageEndBlob';
+import Footer from '@/components/Footer';
 import { faqSections } from '@/data/faqContent';
 
 // Contact page button colors
@@ -14,11 +15,11 @@ const contactButtonColors = {
   bgHover: '#474e3a', // Dark green background on hover
 };
 
-// Button colors for the green card section
+// Button colors for the green card section (Schedule a Free Consultation)
 const cardButtonColors = {
-  fg: '#f6edd0',      // Light cream text in non-hovered state
-  fgHover: '#93a378', // Green text on hover
-  bgHover: '#f6edd0', // Light cream background on hover
+  fg: '#474e3a',      // Dark green text in non-hovered state
+  fgHover: '#93a378', // Sage green text on hover
+  bgHover: '#474e3a', // Dark green background on hover
 };
 
 export default function ContactPage() {
@@ -55,14 +56,14 @@ export default function ContactPage() {
       </Section>
 
       {/* Contact Info & Map Section */}
-      <Section id="contact-info" className="relative z-10 w-full px-8 pb-24">
+      <Section id="contact-info" className="relative z-10 w-full px-4 sm:px-8 pb-24">
         <div className="max-w-[1347px] mx-auto">
-          <div className="bg-[#93a378] rounded-[24px] p-10 flex flex-col lg:flex-row gap-10 items-stretch">
+          <div className="bg-[#93a378] rounded-[24px] p-6 sm:p-8 lg:p-10 flex flex-col lg:flex-row gap-0 lg:gap-10 items-stretch">
             {/* Contact Information */}
-            <div className="flex-1 flex flex-col gap-4 p-5">
-              <div className="mb-2">
+            <div className="flex-1 flex flex-col gap-3 sm:gap-4 lg:p-5">
+              <div className="mb-1">
                 <p
-                  className="text-[24px] leading-normal text-[#474e3a]"
+                  className="text-[18px] sm:text-[20px] lg:text-[24px] leading-normal text-[#474e3a]"
                   style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
                 >
                   Get In Touch
@@ -70,7 +71,7 @@ export default function ContactPage() {
               </div>
 
               <h2
-                className="text-[36px] leading-normal text-[#474e3a] mb-2"
+                className="text-[28px] sm:text-[32px] lg:text-[36px] leading-normal text-[#474e3a] mb-1 sm:mb-2"
                 style={{ fontFamily: 'var(--font-saphira), serif' }}
               >
                 Antar Pravaah
@@ -81,9 +82,9 @@ export default function ContactPage() {
                 className="text-[#474e3a]"
                 style={{ fontFamily: 'var(--font-graphik), sans-serif' }}
               >
-                <p className="text-[16px] leading-[24px] mb-0" style={{ fontWeight: 500 }}>Address</p>
-                <p className="text-[16px] leading-[24px] mb-0" style={{ fontWeight: 400 }}>Chittaranjan Park,</p>
-                <p className="text-[16px] leading-[24px]" style={{ fontWeight: 400 }}>New Delhi, India</p>
+                <p className="text-[14px] sm:text-[15px] lg:text-[16px] leading-[20px] sm:leading-[22px] lg:leading-[24px] mb-0" style={{ fontWeight: 500 }}>Address</p>
+                <p className="text-[14px] sm:text-[15px] lg:text-[16px] leading-[20px] sm:leading-[22px] lg:leading-[24px] mb-0" style={{ fontWeight: 400 }}>Chittaranjan Park,</p>
+                <p className="text-[14px] sm:text-[15px] lg:text-[16px] leading-[20px] sm:leading-[22px] lg:leading-[24px]" style={{ fontWeight: 400 }}>New Delhi, India</p>
               </div>
 
               {/* Phone */}
@@ -91,8 +92,8 @@ export default function ContactPage() {
                 className="text-[#474e3a]"
                 style={{ fontFamily: 'var(--font-graphik), sans-serif' }}
               >
-                <p className="text-[16px] leading-[24px] mb-0" style={{ fontWeight: 500 }}>Contact Number</p>
-                <p className="text-[16px] leading-[24px]" style={{ fontWeight: 400 }}>+91 98765 43210</p>
+                <p className="text-[14px] sm:text-[15px] lg:text-[16px] leading-[20px] sm:leading-[22px] lg:leading-[24px] mb-0" style={{ fontWeight: 500 }}>Contact Number</p>
+                <p className="text-[14px] sm:text-[15px] lg:text-[16px] leading-[20px] sm:leading-[22px] lg:leading-[24px]" style={{ fontWeight: 400 }}>+91 98765 43210</p>
               </div>
 
               {/* Email */}
@@ -100,8 +101,8 @@ export default function ContactPage() {
                 className="text-[#474e3a]"
                 style={{ fontFamily: 'var(--font-graphik), sans-serif' }}
               >
-                <p className="text-[16px] leading-[24px] mb-0" style={{ fontWeight: 500 }}>Email</p>
-                <p className="text-[16px] leading-[24px]" style={{ fontWeight: 400 }}>hello@antarpravaah.com</p>
+                <p className="text-[14px] sm:text-[15px] lg:text-[16px] leading-[20px] sm:leading-[22px] lg:leading-[24px] mb-0" style={{ fontWeight: 500 }}>Email</p>
+                <p className="text-[14px] sm:text-[15px] lg:text-[16px] leading-[20px] sm:leading-[22px] lg:leading-[24px]" style={{ fontWeight: 400 }}>hello@antarpravaah.com</p>
               </div>
 
               {/* Hours - Monday to Friday */}
@@ -109,8 +110,8 @@ export default function ContactPage() {
                 className="text-[#474e3a]"
                 style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
               >
-                <p className="text-[16px] leading-[24px] mb-0">Monday - Friday</p>
-                <p className="text-[16px] leading-[24px]">10:00 AM - 7:00 PM</p>
+                <p className="text-[14px] sm:text-[15px] lg:text-[16px] leading-[20px] sm:leading-[22px] lg:leading-[24px] mb-0">Monday - Friday</p>
+                <p className="text-[14px] sm:text-[15px] lg:text-[16px] leading-[20px] sm:leading-[22px] lg:leading-[24px]">10:00 AM - 7:00 PM</p>
               </div>
 
               {/* Hours - Saturday */}
@@ -118,12 +119,12 @@ export default function ContactPage() {
                 className="text-[#474e3a]"
                 style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
               >
-                <p className="text-[16px] leading-[24px] mb-0">Saturday</p>
-                <p className="text-[16px] leading-[24px]">10:00 AM - 5:00 PM</p>
+                <p className="text-[14px] sm:text-[15px] lg:text-[16px] leading-[20px] sm:leading-[22px] lg:leading-[24px] mb-0">Saturday</p>
+                <p className="text-[14px] sm:text-[15px] lg:text-[16px] leading-[20px] sm:leading-[22px] lg:leading-[24px]">10:00 AM - 5:00 PM</p>
               </div>
 
               {/* CTA Button */}
-              <div className="mt-auto pt-4">
+              <div className="mt-4 sm:mt-6 lg:mt-auto pt-2 sm:pt-4 flex justify-center lg:justify-start">
                 <Button
                   text="Schedule a Free Consultation"
                   size="medium"
@@ -133,7 +134,7 @@ export default function ContactPage() {
             </div>
 
             {/* Map */}
-            <div className="flex-1 min-h-[400px] lg:min-h-[600px] rounded-[24px] overflow-hidden">
+            <div className="flex-1 mt-6 lg:mt-0 h-[280px] sm:h-[350px] lg:min-h-[600px] rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] overflow-hidden">
               <iframe
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14022.234567890123!2d77.2500!3d28.5355!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ce3e564c2e5e5%3A0x1234567890abcdef!2sChittaranjan%20Park%2C%20New%20Delhi%2C%20Delhi!5e0!3m2!1sen!2sin!4v1234567890123!5m2!1sen!2sin"
                 width="100%"
@@ -219,7 +220,7 @@ export default function ContactPage() {
       </Section>
 
       {/* Final CTA Section */}
-      <Section id="contact-cta" className="relative z-10 w-full px-8 pb-24">
+      <Section id="contact-cta" className="relative z-10 w-full px-8 pb-12">
         <div className="max-w-[840px] mx-auto text-center flex flex-col gap-8 items-center">
           <h2
             className="text-[36px] leading-normal text-[#93a378]"
@@ -238,6 +239,11 @@ export default function ContactPage() {
             <Button text="Book your first session" size="large" colors={contactButtonColors} />
           </div>
         </div>
+      </Section>
+
+      {/* Footer */}
+      <Section id="contact-footer" className="relative z-10 w-full">
+        <Footer />
       </Section>
     </main>
   );

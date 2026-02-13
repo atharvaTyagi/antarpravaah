@@ -28,7 +28,7 @@ const SECTIONS: { id: string; type: 'splash' | 'static' | 'journey-scroll' | 'ca
   { id: 'work-together', type: 'cards-scroll', themeId: 'work-together' },
   { id: 'voices', type: 'carousel-scroll', themeId: 'voices' },
   { id: 'ready-to-begin', type: 'static', themeId: 'ready-to-begin' },
-  { id: 'footer', type: 'footer', themeId: 'journey-footer' },
+  { id: 'footer', type: 'footer', themeId: 'voices-footer' },
 ];
 
 export default function Home() {
@@ -376,7 +376,7 @@ export default function Home() {
         <GuidedJourneyModal isOpen={showGuidedJourney} onClose={handleCloseGuidedJourney} />
 
         {/* Fixed Container - scrolls through sections */}
-        <div className="main-container overflow-hidden bg-[#f6edd0] z-10">
+        <div className="main-container overflow-hidden bg-[#f6edd0] z-[30]">
           <div ref={containerRef} className="will-change-transform">
             {/* Section 0: Splash */}
             <div

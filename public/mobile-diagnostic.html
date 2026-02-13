@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mobile Diagnostic</title>
+  <style>
+    body {
+      font-family: monospace;
+      padding: 20px;
+      background: #f0f0f0;
+    }
+    .info {
+      background: white;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .label {
+      font-weight: bold;
+      color: #333;
+    }
+    .value {
+      color: #0066cc;
+      margin-left: 10px;
+    }
+    .error {
+      color: red;
+    }
+    .success {
+      color: green;
+    }
+  </style>
+</head>
+<body>
+  <h1>Mobile Viewport Diagnostic</h1>
+  <div id="output"></div>
+
+  <script>
+    const output = document.getElementById('output');
+    
+    function addInfo(label, value, isError = false) {
+      const div = document.createElement('div');
+      div.className = 'info';
+      div.innerHTML = `<span class="label">${label}:</span><span class="value ${isError ? 'error' : ''}">${value}</span>`;
+      output.appendChild(div);
+    }
+
+    // Wait for page to fully load
+    setTimeout(() => {
+      // Basic viewport info
+      addInfo('Window Width', window.innerWidth + 'px');
+      addInfo('Window Height', window.innerHeight + 'px');
+      addInfo('Device Pixel Ratio', window.devicePixelRatio);
+      addInfo('User Agent', navigator.userAgent);
+      
+      // CSS Variables
+      const root = document.documentElement;
+      const computedStyle = getComputedStyle(root);
+      const vh = computedStyle.getPropertyValue('--vh');
+      const headerHeight = computedStyle.getPropertyValue('--header-height');
+      
+      addInfo('--vh CSS Variable', vh || 'NOT SET', !vh);
+      addInfo('--header-height CSS Variable', headerHeight || 'NOT SET', !headerHeight);
+      
+      // Check for main elements
+      addInfo('100vh in pixels', window.innerHeight + 'px');
+      addInfo('100dvh supported', CSS.supports('height', '100dvh') ? 'YES' : 'NO');
+      
+      // Simulate the app's vh calculation
+      const calculatedVh = window.innerHeight * 0.01;
+      addInfo('Calculated --vh (should be)', calculatedVh + 'px');
+      
+      // Calculate expected heights
+      const headerHeightNum = 90; // mobile default
+      const expectedMainContainerHeight = window.innerHeight - headerHeightNum;
+      addInfo('Expected .main-container height', expectedMainContainerHeight + 'px');
+      addInfo('Expected .section-height', expectedMainContainerHeight + 'px');
+      
+      // Touch support
+      addInfo('Touch Support', 'ontouchstart' in window ? 'YES' : 'NO');
+      addInfo('Max Touch Points', navigator.maxTouchPoints);
+      
+      // Orientation
+      addInfo('Orientation', screen.orientation?.type || 'unknown');
+      
+    }, 500);
+  </script>
+</body>
+</html>

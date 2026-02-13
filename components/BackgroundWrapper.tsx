@@ -11,14 +11,13 @@ export default function BackgroundWrapper({ children }: { children: React.ReactN
     <>
       {/* Fixed background that transitions */}
       <div
-        className="fixed inset-0 transition-colors duration-1000 ease-in-out"
-        style={{ backgroundColor: bgColor, zIndex: -1 }}
+        className="fixed inset-0 -z-10 transition-colors duration-1000 ease-in-out"
+        style={{ backgroundColor: bgColor }}
       />
       {/* Scrolling content */}
-      <div className="relative" style={{ zIndex: 1 }}>
+      <div className="relative z-0">
         {children}
       </div>
     </>
   );
 }
-

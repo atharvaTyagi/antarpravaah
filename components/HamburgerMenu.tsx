@@ -77,8 +77,8 @@ export default function HamburgerMenu({
       {/* Fullscreen Menu */}
       {isOpen && (
         <div
-          className="fixed inset-0 flex flex-col animate-in fade-in duration-300"
-          style={{ backgroundColor: headerBg, zIndex: 60 }}
+          className="fixed inset-0 z-[70] flex flex-col animate-in fade-in duration-300"
+          style={{ backgroundColor: headerBg }}
         >
           {/* Header section with logo and close button */}
           <div className="flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5">

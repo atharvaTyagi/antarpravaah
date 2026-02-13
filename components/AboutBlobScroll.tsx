@@ -26,9 +26,10 @@ interface AboutBlobScrollProps {
   onEdgeReached?: (edge: 'start' | 'end') => void;
   resetToStart?: boolean;
   resetToEnd?: boolean;
+  onParagraphChange?: (index: number) => void;
 }
 
-export default function AboutBlobScroll({ isActive = false, onEdgeReached, resetToStart, resetToEnd }: AboutBlobScrollProps) {
+export default function AboutBlobScroll({ isActive = false, onEdgeReached, resetToStart, resetToEnd, onParagraphChange }: AboutBlobScrollProps) {
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const blobContainerRef = useRef<HTMLDivElement | null>(null);
   const activeIndexRef = useRef(0);
@@ -59,6 +60,7 @@ export default function AboutBlobScroll({ isActive = false, onEdgeReached, reset
     gsap.set(paragraphs[0], { autoAlpha: 1, y: 0 });
     activeIndexRef.current = 0;
     lastScrollTimeRef.current = Date.now();
+    onParagraphChange?.(0);
   }, [resetToStart, isClient]);
 
   // Handle reset to end
@@ -77,6 +79,7 @@ export default function AboutBlobScroll({ isActive = false, onEdgeReached, reset
     gsap.set(paragraphs[lastIndex], { autoAlpha: 1, y: 0 });
     activeIndexRef.current = lastIndex;
     lastScrollTimeRef.current = Date.now();
+    onParagraphChange?.(lastIndex);
   }, [resetToEnd, isClient]);
 
   // Enable/disable observer based on isActive prop
@@ -109,6 +112,9 @@ export default function AboutBlobScroll({ isActive = false, onEdgeReached, reset
     // Initialize: show first paragraph, hide others
     gsap.set(paragraphs, { autoAlpha: 0, y: 20 });
     gsap.set(paragraphs[0], { autoAlpha: 1, y: 0 });
+    
+    // Notify initial paragraph
+    onParagraphChange?.(0);
 
     const animateToIndex = (newIndex: number, callback?: () => void) => {
       if (newIndex < 0 || newIndex >= paragraphs.length) return;
@@ -146,6 +152,11 @@ export default function AboutBlobScroll({ isActive = false, onEdgeReached, reset
         { autoAlpha: 1, y: 0, duration: time * 0.5, ease: 'power2.out' },
         '-=0.1'
       );
+
+      // Notify parent of paragraph change
+      tl.call(() => {
+        onParagraphChange?.(newIndex);
+      }, [], '-=0.3'); // Call slightly before paragraph fully fades in
     };
 
     const handleScroll = (direction: 'up' | 'down') => {

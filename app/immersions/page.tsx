@@ -12,6 +12,7 @@ import { getCloudinaryUrl } from '@/lib/cloudinary';
 import { ImmersionCard, TrainingCard, type ImmersionData, type TrainingData } from '@/components/ImmersionTrainingCard';
 import { useThemeStore } from '@/lib/stores/useThemeStore';
 import { SectionId } from '@/lib/themeConfig';
+import { useImmersions, useTrainings } from '@/sanity/lib/queries';
 
 // Immersions data
 const immersionsData: ImmersionData[] = [
@@ -138,6 +139,47 @@ function ImmersionsPageContent() {
   const searchParams = useSearchParams();
   
   const setTheme = useThemeStore((state) => state.setTheme);
+  
+  // Fetch data from Sanity
+  const { immersions: sanityImmersions, isLoading: immersionsLoading } = useImmersions();
+  const { trainings: sanityTrainings, isLoading: trainingsLoading } = useTrainings();
+  
+  // Use Sanity data if available, otherwise fall back to hardcoded data
+  const activeImmersions: ImmersionData[] = sanityImmersions.length > 0 
+    ? sanityImmersions.map(item => ({
+        _id: item._id,
+        id: item._id,
+        title: item.title,
+        slug: item.slug,
+        type: item.type,
+        duration: item.duration,
+        language: item.language,
+        prerequisite: item.prerequisite,
+        format: item.format,
+        about: item.about,
+        whatToExpect: item.whatToExpect,
+        imageUrl: item.imageUrl,  // Use processed image URL from Sanity
+        ctaText: item.ctaText,
+        order: item.order,
+      }))
+    : immersionsData;
+    
+  const activeTrainings: TrainingData[] = sanityTrainings.length > 0 
+    ? sanityTrainings.map(item => ({
+        _id: item._id,
+        id: item._id,
+        title: item.title,
+        slug: item.slug,
+        duration: item.duration,
+        prerequisites: item.prerequisites,
+        format: item.format,
+        language: item.language,
+        overview: item.overview,
+        whatYoullLearn: item.whatYoullLearn,
+        ctaText: item.ctaText,
+        order: item.order,
+      }))
+    : trainingsData;
   
   const [isMobile, setIsMobile] = useState(false);
   const [isCardExpanded, setIsCardExpanded] = useState(false);
@@ -615,14 +657,14 @@ function ImmersionsPageContent() {
             </div>
 
             {/* Carousel */}
-            <div className="flex-1 flex items-center overflow-hidden px-4 sm:px-6 lg:px-16 py-4">
+            <div className="flex-1 flex items-center overflow-hidden px-4 sm:px-6 lg:px-8 py-4">
               <div
                 ref={immersionsCarouselRef}
-                className="flex gap-4 sm:gap-6 will-change-transform h-full"
+                className="flex gap-4 will-change-transform h-full"
               >
-                {immersionsData.map((immersion) => (
+                {activeImmersions.map((immersion) => (
                   <div
-                    key={immersion.id}
+                    key={immersion._id || immersion.id}
                     className="carousel-card shrink-0 h-full"
                     style={{ width: isMobile ? 'calc(100vw - 32px)' : desktopCardWidth }}
                   >
@@ -783,16 +825,16 @@ function ImmersionsPageContent() {
             </div>
 
             {/* Carousel */}
-            <div className="flex-1 flex items-center overflow-hidden px-4 sm:px-6 lg:px-16 py-4">
+            <div className="flex-1 flex items-center overflow-hidden px-4 sm:px-6 lg:px-8 py-4">
               <div
                 ref={trainingsCarouselRef}
-                className="flex gap-4 sm:gap-6 will-change-transform h-full"
+                className="flex gap-3 will-change-transform h-full"
               >
-                {trainingsData.map((training) => (
+                {activeTrainings.map((training) => (
                   <div
-                    key={training.id}
+                    key={training._id || training.id}
                     className="carousel-card shrink-0 h-full"
-                    style={{ width: isMobile ? 'calc(100vw - 32px)' : desktopCardWidth }}
+                    style={{ width: isMobile ? 'calc(100vw - 32px)' : 'auto' }}
                   >
                     <TrainingCard
                       data={training}

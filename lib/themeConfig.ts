@@ -34,6 +34,7 @@ export type SectionId =
   | 'contact'
   | 'contact-info'
   | 'contact-cta'
+  | 'contact-footer'
   | 'faq';
 
 export interface Theme {
@@ -116,6 +117,8 @@ export const SECTION_THEMES: Record<SectionId, Theme> = {
     accent: '#d6c68e', // Card background
     headerBg: '#645c42', // Dark brown header
     headerOuterBg: '#f6edd0', // Light beige outer
+    headerText: '#e9d89e', // Light gold nav text and logo
+    logoColor: '#e9d89e', // Light gold logo color
   },
   'therapies-intro': {
     bg: '#f6edd0', // Light beige
@@ -123,6 +126,8 @@ export const SECTION_THEMES: Record<SectionId, Theme> = {
     accent: '#d6c68e', // Card background
     headerBg: '#645c42', // Dark brown header
     headerOuterBg: '#f6edd0', // Light beige outer
+    headerText: '#e9d89e', // Light gold nav text and logo
+    logoColor: '#e9d89e', // Light gold logo color
   },
   'therapies-asp': {
     bg: '#f6edd0', // Light beige
@@ -130,6 +135,8 @@ export const SECTION_THEMES: Record<SectionId, Theme> = {
     accent: '#d6c68e', // Card background
     headerBg: '#645c42', // Dark brown header
     headerOuterBg: '#f6edd0', // Light beige outer
+    headerText: '#e9d89e', // Light gold nav text and logo
+    logoColor: '#e9d89e', // Light gold logo color
   },
   'therapies-modalities': {
     bg: '#f6edd0', // Light beige
@@ -137,6 +144,8 @@ export const SECTION_THEMES: Record<SectionId, Theme> = {
     accent: '#d6c68e', // Card background
     headerBg: '#645c42', // Dark brown header
     headerOuterBg: '#f6edd0', // Light beige outer
+    headerText: '#e9d89e', // Light gold nav text and logo
+    logoColor: '#e9d89e', // Light gold logo color
   },
   'therapies-not-sure': {
     bg: '#f6edd0', // Light beige
@@ -144,6 +153,8 @@ export const SECTION_THEMES: Record<SectionId, Theme> = {
     accent: '#d6c68e', // Card background
     headerBg: '#645c42', // Dark brown header
     headerOuterBg: '#f6edd0', // Light beige outer
+    headerText: '#e9d89e', // Light gold nav text and logo
+    logoColor: '#e9d89e', // Light gold logo color
   },
   'therapies-come-find-me': {
     bg: '#f6edd0', // Light beige
@@ -151,14 +162,17 @@ export const SECTION_THEMES: Record<SectionId, Theme> = {
     accent: '#d6c68e', // Card background
     headerBg: '#645c42', // Dark brown header
     headerOuterBg: '#f6edd0', // Light beige outer
+    headerText: '#e9d89e', // Light gold nav text and logo
+    logoColor: '#e9d89e', // Light gold logo color
   },
   'therapies-footer': {
     bg: '#645c42', // Dark brown background (footer bg)
-    text: '#d6c68e', // Light gold text
+    text: '#e9d89e', // Light gold text
     accent: '#f6edd0', // Light beige accent
-    headerBg: '#d6c68e', // Light gold header (light on dark section)
+    headerBg: '#e9d89e', // Light gold header (light on dark section)
     headerOuterBg: '#645c42', // Dark brown outer (matches footer bg)
     headerText: '#645c42', // Dark brown text on light header
+    logoColor: '#645c42', // Dark brown logo on light header
   },
   approach: {
     bg: '#f6edd0', // Base White (from Figma)
@@ -166,6 +180,8 @@ export const SECTION_THEMES: Record<SectionId, Theme> = {
     accent: '#9ac1bf', // B500 Teal (from Figma)
     headerBg: '#354443', // Dark teal header (from Figma)
     headerOuterBg: '#f6edd0', // Light beige outer
+    headerText: '#9ac1bf', // Light teal nav text and logo
+    logoColor: '#9ac1bf', // Light teal logo color
   },
   'approach-cta': {
     bg: '#f6edd0', // Base White
@@ -173,6 +189,8 @@ export const SECTION_THEMES: Record<SectionId, Theme> = {
     accent: '#9ac1bf', // Teal accent
     headerBg: '#354443', // Dark teal header (from Figma)
     headerOuterBg: '#f6edd0', // Light beige outer
+    headerText: '#9ac1bf', // Light teal nav text and logo
+    logoColor: '#9ac1bf', // Light teal logo color
   },
   'approach-footer': {
     bg: '#354443', // Dark teal background (footer bg)
@@ -181,6 +199,7 @@ export const SECTION_THEMES: Record<SectionId, Theme> = {
     headerBg: '#9ac1bf', // Light teal header (light on dark section)
     headerOuterBg: '#354443', // Dark teal outer (matches footer bg)
     headerText: '#354443', // Dark text on light header
+    logoColor: '#354443', // Dark teal logo
   },
   pathways: {
     bg: '#354443', // Dark teal background
@@ -188,7 +207,8 @@ export const SECTION_THEMES: Record<SectionId, Theme> = {
     accent: '#9ac1bf', // Teal accent
     headerBg: '#9ac1bf', // Teal inner container (inverted for dark section)
     headerOuterBg: '#354443', // Dark teal outer area (matches section bg)
-    headerText: '#354443', // Dark text on teal header
+    headerText: '#354443', // Dark teal nav text and logo
+    logoColor: '#354443', // Dark teal logo color
   },
   thoughts: {
     bg: '#f6edd0', // Base White
@@ -196,52 +216,71 @@ export const SECTION_THEMES: Record<SectionId, Theme> = {
     accent: '#9ac1bf', // Teal accent
     headerBg: '#354443', // Dark teal header (from Figma)
     headerOuterBg: '#f6edd0', // Light beige outer
+    headerText: '#9ac1bf', // Light teal nav text and logo
+    logoColor: '#9ac1bf', // Light teal logo color
   },
   immersions: {
     bg: '#f6edd0', // Base White (from Figma)
     text: '#6a3f33', // O800 Dark Brown (from Figma)
     accent: '#d58761', // O500 Accent (from Figma)
     headerBg: '#6a3f33', // Dark Brown Header (from Figma)
+    headerOuterBg: '#f6edd0', // Light beige outer
+    headerText: '#d58761', // Orange nav text and logo
+    logoColor: '#d58761', // Orange logo
   },
   'immersions-intro': {
     bg: '#f6edd0', // Base White
     text: '#6a3f33', // Dark Brown
     accent: '#d58761', // Accent
     headerBg: '#6a3f33', // Dark Brown Header
+    headerOuterBg: '#f6edd0', // Light beige outer
+    headerText: '#d58761', // Orange nav text and logo
+    logoColor: '#d58761', // Orange logo
   },
   'immersions-listings': {
     bg: '#6a3f33', // Dark Brown
     text: '#d58761', // Accent
     accent: '#f6edd0', // Light
-    headerBg: '#f6edd0', // Light beige inner container (inverted)
-    headerOuterBg: '#6a3f33', // Dark brown outer area (inverted)
+    headerBg: '#d58761', // Orange header background
+    headerOuterBg: '#6a3f33', // Dark brown outer area
+    headerText: '#6a3f33', // Dark brown nav text and logo
+    logoColor: '#6a3f33', // Dark brown logo
   },
   'trainings-intro': {
     bg: '#f6edd0', // Base White
     text: '#000000', // Black
     accent: '#d58761', // Accent
     headerBg: '#6a3f33', // Dark Brown Header
+    headerOuterBg: '#f6edd0', // Light beige outer
+    headerText: '#d58761', // Orange nav text and logo (light color)
+    logoColor: '#d58761', // Orange logo
   },
   'trainings-listings': {
     bg: '#6a3f33', // Dark Brown
     text: '#d58761', // Accent
     accent: '#f6edd0', // Light
-    headerBg: '#f6edd0', // Light beige inner container (inverted)
-    headerOuterBg: '#6a3f33', // Dark brown outer area (inverted)
+    headerBg: '#d58761', // Orange header background
+    headerOuterBg: '#6a3f33', // Dark brown outer area
+    headerText: '#6a3f33', // Dark brown nav text and logo
+    logoColor: '#6a3f33', // Dark brown logo
   },
   cta: {
     bg: '#f6edd0', // Light beige background
     text: '#d58761', // Orange text
     accent: '#6a3f33', // Dark brown accent
     headerBg: '#6a3f33', // Dark Brown header (matches immersions theme)
+    headerOuterBg: '#f6edd0', // Light beige outer
+    headerText: '#d58761', // Orange nav text and logo (light color)
+    logoColor: '#d58761', // Orange logo
   },
   'immersions-footer': {
     bg: '#6a3f33', // Dark brown background (footer bg)
     text: '#d58761', // Orange text
     accent: '#f6edd0', // Light beige accent
-    headerBg: '#f6edd0', // Light beige header (light on dark section)
+    headerBg: '#d58761', // Orange header (light on dark section)
     headerOuterBg: '#6a3f33', // Dark brown outer (matches footer bg)
-    headerText: '#6a3f33', // Dark brown text on light header
+    headerText: '#6a3f33', // Dark brown nav text and logo (dark background, light options theme)
+    logoColor: '#6a3f33', // Dark brown logo
   },
   about: {
     // Figma About page
@@ -257,6 +296,8 @@ export const SECTION_THEMES: Record<SectionId, Theme> = {
     accent: '#93a378', // Soft green accent
     headerBg: '#474e3a', // Deep green header
     headerOuterBg: '#f6edd0', // Light beige outer
+    headerText: '#93a378', // Soft green nav text and logo
+    logoColor: '#93a378', // Soft green logo
   },
   'about-body': {
     bg: '#474e3a', // Deep green background
@@ -264,7 +305,8 @@ export const SECTION_THEMES: Record<SectionId, Theme> = {
     accent: '#93a378', // Soft green accent
     headerBg: '#93a378', // Soft green header (inverted)
     headerOuterBg: '#474e3a', // Deep green outer
-    headerText: '#474e3a', // Dark text on light header
+    headerText: '#474e3a', // Dark green nav text and logo
+    logoColor: '#474e3a', // Dark green logo
   },
   'about-cta': {
     bg: '#f6edd0', // Base white
@@ -272,6 +314,8 @@ export const SECTION_THEMES: Record<SectionId, Theme> = {
     accent: '#474e3a', // Deep green accent
     headerBg: '#474e3a', // Deep green header
     headerOuterBg: '#f6edd0', // Light beige outer
+    headerText: '#93a378', // Soft green nav text and logo
+    logoColor: '#93a378', // Soft green logo
   },
   'about-footer': {
     bg: '#474e3a', // Deep green background (footer bg)
@@ -279,7 +323,8 @@ export const SECTION_THEMES: Record<SectionId, Theme> = {
     accent: '#f6edd0', // Light beige accent
     headerBg: '#93a378', // Light green header (light on dark section)
     headerOuterBg: '#474e3a', // Deep green outer (matches footer bg)
-    headerText: '#474e3a', // Dark green text on light header
+    headerText: '#474e3a', // Dark green nav text and logo (follows blob section theme)
+    logoColor: '#474e3a', // Dark green logo (follows blob section theme)
   },
   inspiration: {
     bg: '#f6edd0', // Base white (section bg, card is green)
@@ -287,6 +332,8 @@ export const SECTION_THEMES: Record<SectionId, Theme> = {
     accent: '#93a378', // Soft green accent
     headerBg: '#474e3a', // Deep green header
     headerOuterBg: '#f6edd0', // Light beige outer
+    headerText: '#93a378', // Soft green nav text and logo
+    logoColor: '#93a378', // Soft green logo
   },
   contact: {
     bg: '#f6edd0', // Base White/Cream (from Figma)
@@ -294,6 +341,8 @@ export const SECTION_THEMES: Record<SectionId, Theme> = {
     accent: '#93a378', // G500 Soft Green (from Figma)
     headerBg: '#474e3a', // Dark green header (from Figma)
     headerOuterBg: '#f6edd0', // Light beige outer
+    headerText: '#93a378', // Sage green nav text and logo
+    logoColor: '#93a378', // Sage green logo
   },
   'contact-info': {
     bg: '#f6edd0', // Base White/Cream
@@ -301,6 +350,8 @@ export const SECTION_THEMES: Record<SectionId, Theme> = {
     accent: '#93a378', // G500 Soft Green
     headerBg: '#474e3a', // Dark green header
     headerOuterBg: '#f6edd0', // Light beige outer
+    headerText: '#93a378', // Sage green nav text and logo
+    logoColor: '#93a378', // Sage green logo
   },
   'contact-cta': {
     bg: '#f6edd0', // Base White/Cream
@@ -308,6 +359,8 @@ export const SECTION_THEMES: Record<SectionId, Theme> = {
     accent: '#93a378', // G500 Soft Green
     headerBg: '#474e3a', // Dark green header
     headerOuterBg: '#f6edd0', // Light beige outer
+    headerText: '#93a378', // Sage green nav text and logo
+    logoColor: '#93a378', // Sage green logo
   },
   faq: {
     bg: '#f6edd0', // Base White/Cream
@@ -315,6 +368,17 @@ export const SECTION_THEMES: Record<SectionId, Theme> = {
     accent: '#93a378', // G500 Soft Green
     headerBg: '#474e3a', // Dark green header
     headerOuterBg: '#f6edd0', // Light beige outer
+    headerText: '#93a378', // Sage green nav text and logo
+    logoColor: '#93a378', // Sage green logo
+  },
+  'contact-footer': {
+    bg: '#474e3a', // Dark green background (footer bg)
+    text: '#93a378', // Sage green text
+    accent: '#93a378', // Sage green accent
+    headerBg: '#93a378', // Sage green header (light on dark section)
+    headerOuterBg: '#474e3a', // Dark green outer (matches footer bg)
+    headerText: '#474e3a', // Dark green nav text and logo
+    logoColor: '#474e3a', // Dark green logo
   },
 };
 

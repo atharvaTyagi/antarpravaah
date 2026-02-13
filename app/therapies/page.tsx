@@ -63,6 +63,7 @@ export default function TherapiesPage() {
   const [aspScrolledToEnd, setAspScrolledToEnd] = useState(false);
   const [isBlobScrollActive, setIsBlobScrollActive] = useState(false);
   const [isDesktopBlobActive, setIsDesktopBlobActive] = useState(false);
+  const [isBlobScrollLocked, setIsBlobScrollLocked] = useState(false);
 
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -182,7 +183,7 @@ export default function TherapiesPage() {
         setIsAnimating(false);
       },
     });
-  }, [isAnimating, SECTIONS, setTheme, isMobile, aspCardVisible]);
+  }, [isAnimating, SECTIONS, setTheme, isMobile, aspCardVisible, isBlobScrollLocked]);
 
   // Handle modalities scroll edge reached
   const handleModalitiesEdgeReached = useCallback((edge: 'start' | 'end') => {
@@ -224,6 +225,24 @@ export default function TherapiesPage() {
     setAspScrolledToEnd(true);
   }, []);
 
+  // Handle blob scroll lock state change
+  const handleBlobScrollLockChange = useCallback((locked: boolean) => {
+    setIsBlobScrollLocked(locked);
+  }, []);
+
+  // Handle desktop blob edge reached
+  const handleDesktopBlobEdgeReached = useCallback((edge: 'start' | 'end') => {
+    if (isAnimating) return;
+    const now = Date.now();
+    if (now - lastScrollTimeRef.current < sectionScrollCooldown) return;
+
+    if (edge === 'end') {
+      goToSection(currentSection + 1, 'down');
+    } else if (edge === 'start') {
+      goToSection(currentSection - 1, 'up');
+    }
+  }, [isAnimating, currentSection, goToSection]);
+
   // Handle scroll input
   const handleScroll = useCallback((deltaY: number) => {
     if (isAnimating || isCardExpanded) return;
@@ -233,6 +252,9 @@ export default function TherapiesPage() {
     // Skip if internal scroll handlers are active
     if (section.type === 'modalities-scroll' && isModalitiesScrollActive) return;
     if (section.type === 'blob-scroll' && isBlobScrollActive) return;
+    
+    // CRITICAL: Block all scroll if blob scroll is locked (desktop)
+    if (isBlobScrollLocked) return;
 
     // Require minimum scroll threshold to prevent oversensitive scrolling
     const minDelta = 30;
@@ -293,7 +315,7 @@ export default function TherapiesPage() {
     } else {
       goToSection(currentSection - 1, 'up');
     }
-  }, [isAnimating, isCardExpanded, currentSection, SECTIONS, isModalitiesScrollActive, isBlobScrollActive, isMobile, aspScrolledToEnd, currentModalityIndex, goToSection]);
+  }, [isAnimating, isCardExpanded, currentSection, SECTIONS, isModalitiesScrollActive, isBlobScrollActive, isMobile, aspScrolledToEnd, currentModalityIndex, goToSection, isBlobScrollLocked]);
 
   // Handle mobile viewport height (accounts for browser toolbar)
   useEffect(() => {
@@ -326,6 +348,8 @@ export default function TherapiesPage() {
       const section = SECTIONS[currentSection];
       if (section.type === 'modalities-scroll' && isModalitiesScrollActive) return;
       if (section.type === 'blob-scroll' && isBlobScrollActive) return;
+      // CRITICAL: Block wheel events if blob scroll is locked
+      if (isBlobScrollLocked) return;
       e.preventDefault();
       handleScroll(e.deltaY);
     };
@@ -339,6 +363,8 @@ export default function TherapiesPage() {
       const section = SECTIONS[currentSection];
       if (section.type === 'modalities-scroll' && isModalitiesScrollActive) return;
       if (section.type === 'blob-scroll' && isBlobScrollActive) return;
+      // CRITICAL: Block touch events if blob scroll is locked
+      if (isBlobScrollLocked) return;
       e.preventDefault();
       const currentY = e.touches[0].clientY;
       const deltaY = lastTouchY - currentY;
@@ -356,7 +382,7 @@ export default function TherapiesPage() {
       window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchmove', handleTouchMove);
     };
-  }, [isReady, currentSection, SECTIONS, isModalitiesScrollActive, isBlobScrollActive, isCardExpanded, handleScroll]);
+  }, [isReady, currentSection, SECTIONS, isModalitiesScrollActive, isBlobScrollActive, isCardExpanded, handleScroll, isBlobScrollLocked]);
 
   // Get Antar Smaran Process for featured section
   const antarSmaranProcess = therapies.find((t) => t.id === 'antar-smaran-process');
@@ -670,6 +696,7 @@ export default function TherapiesPage() {
                   resetToStart={blobResetToStart}
                   resetToEnd={blobResetToEnd}
                   onCtaClick={handleOpenModalInitial}
+                  onScrollLockChange={handleBlobScrollLockChange}
                 />
               </div>
 
@@ -804,7 +831,9 @@ export default function TherapiesPage() {
               >
                 <TherapiesBlobScroll
                   isActive={isDesktopBlobActive}
+                  onEdgeReached={handleDesktopBlobEdgeReached}
                   onCtaClick={handleOpenModalInitial}
+                  onScrollLockChange={handleBlobScrollLockChange}
                 />
               </div>
 

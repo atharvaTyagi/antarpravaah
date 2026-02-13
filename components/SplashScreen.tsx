@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, useCallback } from 'react';
 import gsap from 'gsap';
 import { Observer } from 'gsap/dist/Observer';
 import Lottie, { LottieRefCurrentProps } from 'lottie-react';
@@ -50,18 +50,18 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
   const fallbackTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const absoluteTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Scroll-based word reveal state
+  // React state for phase tracking - controls what RENDERS, not styles
+  const [phase, setPhase] = useState<'spiral' | 'blob' | 'done'>('spiral');
   const [blobReady, setBlobReady] = useState(false);
   const [wordsComplete, setWordsComplete] = useState(false);
-  const [sequenceComplete, setSequenceComplete] = useState(false); // Prevents resets after completion
   const observerRef = useRef<Observer | null>(null);
   const currentWordIndexRef = useRef(0);
   const totalWordsRef = useRef(0);
   const lastScrollTimeRef = useRef(0);
-  const scrollCooldown = 80; // ms between word reveals
-  const wordsPerScroll = 3; // Reveal multiple words per scroll for smoother reading
+  const scrollCooldown = 80;
+  const wordsPerScroll = 3;
 
-  // Set --vh CSS variable for mobile viewport height (handles mobile browser UI)
+  // Set --vh CSS variable for mobile viewport height
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
@@ -71,10 +71,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
     };
 
     setVh();
-    
-    // Set after a delay to ensure DOM is ready
     const timeoutId = setTimeout(setVh, 100);
-    
     window.addEventListener('resize', setVh);
     window.addEventListener('orientationchange', setVh);
 
@@ -85,46 +82,33 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
     };
   }, []);
 
-  // Separate effect for sequence complete state
-  useEffect(() => {
-    if (!sequenceComplete) return;
-    if (!containerRef.current || !spiralContainerRef.current || !blobContainerRef.current) return;
-
-    gsap.set(spiralContainerRef.current, { opacity: 0, display: 'none' });
-    gsap.set(blobContainerRef.current, { opacity: 1, display: 'flex' });
-    gsap.set(containerRef.current, { opacity: 1 });
-    const words = blobContainerRef.current.querySelectorAll('.splash-word');
-    gsap.set(words, { opacity: 1 });
-  }, [sequenceComplete]);
-
-  // Main initialization effect - only runs once
-  useEffect(() => {
-    if (!containerRef.current || !spiralContainerRef.current || !blobContainerRef.current) return;
+  // Use useLayoutEffect for initial GSAP setup - runs BEFORE browser paint
+  // This prevents FOUC without needing React inline styles
+  useLayoutEffect(() => {
+    if (!spiralContainerRef.current || !blobContainerRef.current) return;
     
-    // Skip if already complete
-    if (sequenceComplete) return;
+    // Set initial visibility before browser paints
+    gsap.set(spiralContainerRef.current, { opacity: 1 });
+    gsap.set(blobContainerRef.current, { opacity: 0 });
+  }, []);
 
-    // Set initial states - only on first mount
-    gsap.set(spiralContainerRef.current, { opacity: 1, display: 'flex' });
-    gsap.set(blobContainerRef.current, { opacity: 0, display: 'flex' });
-    gsap.set(containerRef.current, { opacity: 1 });
-
-    // Fallback: if Lottie doesn't complete within 6 seconds, skip to blob
+  // Main initialization effect - timeouts and fallbacks
+  useEffect(() => {
+    // Lottie fallback: skip to blob after timeout
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+    const fallbackDelay = isMobile ? 2000 : 6000;
+    
     fallbackTimeoutRef.current = setTimeout(() => {
       if (!lottieCompletedRef.current) {
         handleLottieComplete();
       }
-    }, 6000);
+    }, fallbackDelay);
 
     // Absolute safety timeout: force splash completion after 30 seconds
     absoluteTimeoutRef.current = setTimeout(() => {
       if (!isCompleting.current) {
-        if (blobContainerRef.current) {
-          const words = blobContainerRef.current.querySelectorAll('.splash-word');
-          gsap.set(words, { opacity: 1 });
-        }
+        setPhase('done');
         setWordsComplete(true);
-        setSequenceComplete(true);
         isCompleting.current = true;
         onCompleteSafe();
       }
@@ -164,7 +148,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Only run once on mount
+  }, []);
 
   // Handle scroll to reveal words
   const handleScrollReveal = useCallback(() => {
@@ -180,7 +164,6 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
     const currentIndex = currentWordIndexRef.current;
     const endIndex = Math.min(currentIndex + wordsPerScroll, words.length);
 
-    // Reveal the next batch of words
     for (let i = currentIndex; i < endIndex; i++) {
       gsap.to(words[i], {
         opacity: 1,
@@ -191,11 +174,9 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
 
     currentWordIndexRef.current = endIndex;
 
-    // Check if all words are revealed
     if (currentWordIndexRef.current >= words.length) {
       setWordsComplete(true);
-      setSequenceComplete(true); // Mark sequence as complete to prevent resets
-      // Brief pause then signal completion
+      setPhase('done');
       setTimeout(() => {
         if (!isCompleting.current) {
           isCompleting.current = true;
@@ -207,18 +188,17 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
     }
   }, [onCompleteSafe]);
 
-  // Setup GSAP Observer when blob is ready (and not yet complete)
+  // Setup GSAP Observer when blob is ready
   useEffect(() => {
     if (!blobReady || wordsComplete || typeof window === 'undefined') return;
 
-    // Create Observer for scroll-based word reveal
     observerRef.current = Observer.create({
       type: 'wheel,touch,pointer',
       wheelSpeed: -1,
       tolerance: 30,
       preventDefault: true,
-      onDown: () => {}, // Scroll up does nothing during word reveal
-      onUp: () => handleScrollReveal(), // Scroll down reveals words
+      onDown: () => {},
+      onUp: () => handleScrollReveal(),
     });
 
     return () => {
@@ -229,41 +209,42 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
     };
   }, [blobReady, wordsComplete, handleScrollReveal]);
 
-  // Handle Lottie animation complete - this triggers the rest of the sequence
+  // Handle Lottie animation complete
   const handleLottieComplete = useCallback(() => {
-    if (lottieCompletedRef.current) {
-      return; // Prevent double execution
-    }
-    
+    if (lottieCompletedRef.current) return;
     lottieCompletedRef.current = true;
 
-    // Clear fallback timeout if it exists
     if (fallbackTimeoutRef.current) {
       clearTimeout(fallbackTimeoutRef.current);
       fallbackTimeoutRef.current = null;
     }
 
-    if (!spiralContainerRef.current || !blobContainerRef.current) {
-      return;
-    }
+    // Transition to blob phase via React state
+    // This ensures React renders the correct visibility
+    setPhase('blob');
+  }, []);
 
-    // Kill any existing timeline to prevent conflicts
+  // When phase changes to 'blob', animate the transition
+  useEffect(() => {
+    if (phase !== 'blob') return;
+    if (!spiralContainerRef.current || !blobContainerRef.current) return;
+
+    // Kill any existing timeline
     if (timelineRef.current) {
       timelineRef.current.kill();
     }
 
-    // Create the automatic transition timeline
     const tl = gsap.timeline();
     timelineRef.current = tl;
 
-    // Phase 1: Fade out spiral
+    // Fade out spiral
     tl.to(spiralContainerRef.current, {
       opacity: 0,
       duration: 0.7,
       ease: 'power2.inOut',
     });
 
-    // Phase 2: Fade in blob (overlaps with spiral fade out)
+    // Fade in blob
     tl.to(
       blobContainerRef.current,
       {
@@ -271,50 +252,49 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
         duration: 0.8,
         ease: 'power2.inOut',
         onComplete: () => {
-          // Setup scroll-based word reveal after blob is visible
+          // Setup scroll-based word reveal
           if (blobContainerRef.current) {
             const words = blobContainerRef.current.querySelectorAll('.splash-word');
             totalWordsRef.current = words.length;
             currentWordIndexRef.current = 0;
 
             if (words.length > 0) {
-              // Enable scroll-based reveal
               setBlobReady(true);
             } else {
-              // No words, just complete
               if (!isCompleting.current) {
                 isCompleting.current = true;
                 onCompleteSafe();
               }
-            }
-          } else {
-            if (!isCompleting.current) {
-              isCompleting.current = true;
-              onCompleteSafe();
             }
           }
         },
       },
       '-=0.4'
     );
-  }, [onCompleteSafe]);
+  }, [phase, onCompleteSafe]);
 
+  // When phase changes to 'done', ensure final state
+  useEffect(() => {
+    if (phase !== 'done') return;
+    if (!spiralContainerRef.current || !blobContainerRef.current) return;
+
+    gsap.set(spiralContainerRef.current, { opacity: 0 });
+    gsap.set(blobContainerRef.current, { opacity: 1 });
+    const words = blobContainerRef.current.querySelectorAll('.splash-word');
+    gsap.set(words, { opacity: 1 });
+  }, [phase]);
 
   return (
     <div
       ref={containerRef}
       className="relative w-full h-full bg-[#6a3f33] overflow-hidden"
-      style={{ minHeight: '100%', opacity: 1 }}
     >
-      {/* Spiral Lottie Animation */}
+      {/* Spiral Lottie Animation - NO React inline style for opacity */}
       <div
         ref={spiralContainerRef}
         className="absolute inset-0 flex items-center justify-center p-4 md:p-12 lg:p-16"
-        style={{ opacity: sequenceComplete ? 0 : 1 }}
       >
-        <div
-          className="block w-full h-full max-w-[min(90vw,90vh)] max-h-[min(90vw,90vh)]"
-        >
+        <div className="block w-full h-full max-w-[min(90vw,90vh)] max-h-[min(90vw,90vh)]">
           <Lottie
             lottieRef={lottieRef}
             animationData={animationData}
@@ -333,17 +313,16 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
         </div>
       </div>
 
-      {/* Blob message (full-screen moment; blob itself centered) */}
+      {/* Blob message - NO React inline style for opacity */}
       <div
         ref={blobContainerRef}
-        className="absolute inset-0 flex items-center justify-center p-4"
-        style={{ opacity: sequenceComplete ? 1 : 0 }}
+        className="absolute inset-0 flex items-center justify-center"
       >
         <div
-          className="relative w-full h-full max-w-[760px] max-h-[760px]"
+          className="relative"
           style={{
-            minWidth: 'min(320px, 90vw)',
-            minHeight: 'min(320px, 90vh)',
+            width: 'clamp(280px, 60vmin, 760px)',
+            height: 'clamp(280px, 60vmin, 760px)',
           }}
         >
           {/* Organic Blob Shape - SVG */}
