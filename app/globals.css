@@ -225,6 +225,15 @@ body {
   display: none; /* Chrome/Safari */
 }
 
+/* iOS Safari border-radius fix for elements inside transformed parents.
+   WebKit fails to clip border-radius + overflow:hidden when a parent has
+   will-change:transform or an active CSS transform. Adding a mask-image
+   forces a proper compositing mask that respects the radius. */
+.ios-radius-fix {
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+  mask-image: radial-gradient(white, black);
+}
+
 /* Next.js portal positioning */
 nextjs-portal {
   left: 1px;

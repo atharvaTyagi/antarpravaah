@@ -180,18 +180,18 @@ export default function GuidedJourneyModal({ isOpen, onClose, startAt = 'welcome
           />
 
           {/* Modal Container */}
-          <div className="fixed inset-0 z-[201] flex items-center justify-center p-4 md:p-8 pointer-events-none">
+          <div className="fixed inset-0 z-[201] flex items-center justify-center p-0 md:p-8 pointer-events-none">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.2, ease: 'easeOut' }}
-              className="relative w-full max-w-[1097px] max-h-[90vh] min-h-[650px] overflow-hidden rounded-[24px] shadow-2xl pointer-events-auto"
+              className="relative w-full h-full md:h-auto md:max-w-[1097px] md:max-h-[90vh] md:min-h-[650px] overflow-hidden rounded-none md:rounded-[24px] shadow-2xl pointer-events-auto bg-[#3e3629]"
               onClick={(e) => e.stopPropagation()}
             >
           <div className="h-full overflow-y-auto no-scrollbar">
             {/* Render current step - Smooth content transitions only */}
-            <AnimatePresence mode="sync" initial={false}>
+            <AnimatePresence mode="sync">
             {currentStep === 'welcome' && (
               <WelcomeScreen
                 key="welcome"

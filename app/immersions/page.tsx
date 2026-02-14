@@ -234,11 +234,11 @@ function ImmersionsPageContent() {
     const calculateMaxScroll = () => {
       if (immersionsCarouselRef.current) {
         const containerWidth = immersionsCarouselRef.current.parentElement?.clientWidth || window.innerWidth;
-        immersionsMaxScroll.current = Math.max(0, immersionsCarouselRef.current.scrollWidth - containerWidth + 32);
+        immersionsMaxScroll.current = Math.max(0, immersionsCarouselRef.current.scrollWidth - containerWidth);
       }
       if (trainingsCarouselRef.current) {
         const containerWidth = trainingsCarouselRef.current.parentElement?.clientWidth || window.innerWidth;
-        trainingsMaxScroll.current = Math.max(0, trainingsCarouselRef.current.scrollWidth - containerWidth + 32);
+        trainingsMaxScroll.current = Math.max(0, trainingsCarouselRef.current.scrollWidth - containerWidth);
       }
     };
 
@@ -657,10 +657,10 @@ function ImmersionsPageContent() {
             </div>
 
             {/* Carousel */}
-            <div className="flex-1 flex items-center overflow-hidden px-4 sm:px-6 lg:px-8 py-4">
+            <div className="flex-1 flex items-center overflow-hidden">
               <div
                 ref={immersionsCarouselRef}
-                className="flex gap-4 will-change-transform h-full"
+                className="flex gap-4 sm:gap-5 lg:gap-6 will-change-transform h-full pl-4 sm:pl-6 lg:pl-8 pr-4 sm:pr-6 lg:pr-8 py-4"
               >
                 {activeImmersions.map((immersion) => (
                   <div
@@ -825,10 +825,10 @@ function ImmersionsPageContent() {
             </div>
 
             {/* Carousel */}
-            <div className="flex-1 flex items-center overflow-hidden px-4 sm:px-6 lg:px-8 py-4">
+            <div className="flex-1 flex items-center overflow-hidden">
               <div
                 ref={trainingsCarouselRef}
-                className="flex gap-3 will-change-transform h-full"
+                className="flex gap-4 sm:gap-5 lg:gap-6 will-change-transform h-full pl-4 sm:pl-6 lg:pl-8 pr-4 sm:pr-6 lg:pr-8 py-4"
               >
                 {activeTrainings.map((training) => (
                   <div
@@ -875,55 +875,26 @@ function ImmersionsPageContent() {
               </p>
 
               <div className="flex flex-col items-center gap-3 w-full sm:w-auto">
-                {isMobile ? (
-                  <>
-                    <button
-                      onClick={() => goToSection(2, 'down')}
-                      className="flex items-center justify-center gap-2 p-3 text-[#6a3f33] hover:opacity-80 transition-opacity"
-                      style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
-                    >
-                      <span className="text-center text-[18px] tracking-[2.88px] uppercase leading-tight px-2 py-1">
-                        <span className="block">Explore</span>
-                        <span className="block">our Upcoming</span>
-                        <span className="block">Immersions</span>
-                      </span>
-                    </button>
-                    <button
-                      onClick={() => goToSection(4, 'down')}
-                      className="flex items-center justify-center gap-2 p-3 text-[#6a3f33] hover:opacity-80 transition-opacity"
-                      style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
-                    >
-                      <span className="text-center text-[18px] tracking-[2.88px] uppercase leading-tight px-2 py-1">
-                        <span className="block">View</span>
-                        <span className="block">our Training</span>
-                        <span className="block">Programs</span>
-                      </span>
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <Button
-                      text="Explore Upcoming Immersions"
-                      size="large"
-                      onClick={() => goToSection(2, 'down')}
-                      colors={{
-                        fg: '#6a3f33',
-                        fgHover: '#d58761',
-                        bgHover: '#6a3f33',
-                      }}
-                    />
-                    <Button
-                      text="View Training Programs"
-                      size="large"
-                      onClick={() => goToSection(4, 'down')}
-                      colors={{
-                        fg: '#6a3f33',
-                        fgHover: '#d58761',
-                        bgHover: '#6a3f33',
-                      }}
-                    />
-                  </>
-                )}
+                <Button
+                  text="Explore Upcoming Immersions"
+                  size="large"
+                  onClick={() => goToSection(2, 'down')}
+                  colors={{
+                    fg: '#6a3f33',
+                    fgHover: '#d58761',
+                    bgHover: '#6a3f33',
+                  }}
+                />
+                <Button
+                  text="View Training Programs"
+                  size="large"
+                  onClick={() => goToSection(4, 'down')}
+                  colors={{
+                    fg: '#6a3f33',
+                    fgHover: '#d58761',
+                    bgHover: '#6a3f33',
+                  }}
+                />
               </div>
             </div>
           </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useLayoutEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import gsap from 'gsap';
 import { Observer } from 'gsap/dist/Observer';
 import Lottie, { LottieRefCurrentProps } from 'lottie-react';
@@ -50,8 +50,8 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
   const fallbackTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const absoluteTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // React state for phase tracking - controls what RENDERS, not styles
-  const [phase, setPhase] = useState<'spiral' | 'blob' | 'done'>('spiral');
+  // React state for phase tracking — controls visibility via inline styles
+  const [phase, setPhase] = useState<'spiral' | 'transitioning' | 'blob' | 'done'>('spiral');
   const [blobReady, setBlobReady] = useState(false);
   const [wordsComplete, setWordsComplete] = useState(false);
   const observerRef = useRef<Observer | null>(null);
@@ -82,21 +82,11 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
     };
   }, []);
 
-  // Use useLayoutEffect for initial GSAP setup - runs BEFORE browser paint
-  // This prevents FOUC without needing React inline styles
-  useLayoutEffect(() => {
-    if (!spiralContainerRef.current || !blobContainerRef.current) return;
-    
-    // Set initial visibility before browser paints
-    gsap.set(spiralContainerRef.current, { opacity: 1 });
-    gsap.set(blobContainerRef.current, { opacity: 0 });
-  }, []);
-
   // Main initialization effect - timeouts and fallbacks
   useEffect(() => {
     // Lottie fallback: skip to blob after timeout
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-    const fallbackDelay = isMobile ? 2000 : 6000;
+    const fallbackDelay = isMobile ? 3000 : 6000;
     
     fallbackTimeoutRef.current = setTimeout(() => {
       if (!lottieCompletedRef.current) {
@@ -104,17 +94,17 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
       }
     }, fallbackDelay);
 
-    // Absolute safety timeout: force splash completion after 30 seconds
+    // Absolute safety timeout: force splash completion after 15 seconds
     absoluteTimeoutRef.current = setTimeout(() => {
       if (!isCompleting.current) {
+        isCompleting.current = true;
         setPhase('done');
         setWordsComplete(true);
-        isCompleting.current = true;
         onCompleteSafe();
       }
-    }, 30000);
+    }, 15000);
     
-    // Mobile safety: auto-reveal words after 10 seconds if stuck
+    // Mobile safety: auto-reveal words after 8 seconds if stuck in blob phase
     const mobileRevealTimeout = setTimeout(() => {
       if (typeof window !== 'undefined' && window.innerWidth < 768) {
         if (blobContainerRef.current && !isCompleting.current) {
@@ -132,7 +122,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
           }
         }
       }
-    }, 10000);
+    }, 8000);
 
     return () => {
       if (fallbackTimeoutRef.current) clearTimeout(fallbackTimeoutRef.current);
@@ -219,14 +209,14 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
       fallbackTimeoutRef.current = null;
     }
 
-    // Transition to blob phase via React state
-    // This ensures React renders the correct visibility
-    setPhase('blob');
+    // Start transition: set phase to 'transitioning' so both are rendered,
+    // then animate with GSAP
+    setPhase('transitioning');
   }, []);
 
-  // When phase changes to 'blob', animate the transition
+  // When phase changes to 'transitioning', animate spiral out and blob in
   useEffect(() => {
-    if (phase !== 'blob') return;
+    if (phase !== 'transitioning') return;
     if (!spiralContainerRef.current || !blobContainerRef.current) return;
 
     // Kill any existing timeline
@@ -237,21 +227,24 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
     const tl = gsap.timeline();
     timelineRef.current = tl;
 
-    // Fade out spiral
+    // Fade out spiral, fade in blob
     tl.to(spiralContainerRef.current, {
       opacity: 0,
       duration: 0.7,
       ease: 'power2.inOut',
     });
 
-    // Fade in blob
-    tl.to(
+    tl.fromTo(
       blobContainerRef.current,
+      { opacity: 0 },
       {
         opacity: 1,
         duration: 0.8,
         ease: 'power2.inOut',
         onComplete: () => {
+          // Transition done — switch to blob phase
+          setPhase('blob');
+
           // Setup scroll-based word reveal
           if (blobContainerRef.current) {
             const words = blobContainerRef.current.querySelectorAll('.splash-word');
@@ -276,98 +269,108 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
   // When phase changes to 'done', ensure final state
   useEffect(() => {
     if (phase !== 'done') return;
-    if (!spiralContainerRef.current || !blobContainerRef.current) return;
+    if (!blobContainerRef.current) return;
 
-    gsap.set(spiralContainerRef.current, { opacity: 0 });
-    gsap.set(blobContainerRef.current, { opacity: 1 });
+    // Ensure all words are visible
     const words = blobContainerRef.current.querySelectorAll('.splash-word');
-    gsap.set(words, { opacity: 1 });
+    words.forEach((word) => {
+      (word as HTMLElement).style.opacity = '1';
+    });
   }, [phase]);
+
+  // Derive visibility from React state — no GSAP for initial render
+  const showSpiral = phase === 'spiral' || phase === 'transitioning';
+  const showBlob = phase === 'transitioning' || phase === 'blob' || phase === 'done';
 
   return (
     <div
       ref={containerRef}
       className="relative w-full h-full bg-[#6a3f33] overflow-hidden"
     >
-      {/* Spiral Lottie Animation - NO React inline style for opacity */}
-      <div
-        ref={spiralContainerRef}
-        className="absolute inset-0 flex items-center justify-center p-4 md:p-12 lg:p-16"
-      >
-        <div className="block w-full h-full max-w-[min(90vw,90vh)] max-h-[min(90vw,90vh)]">
-          <Lottie
-            lottieRef={lottieRef}
-            animationData={animationData}
-            loop={false}
-            autoplay={true}
-            style={{
-              width: '100%',
-              height: '100%',
-            }}
-            onComplete={handleLottieComplete}
-            rendererSettings={{
-              preserveAspectRatio: 'xMidYMid meet',
-              progressiveLoad: true,
-            }}
-          />
-        </div>
-      </div>
-
-      {/* Blob message - NO React inline style for opacity */}
-      <div
-        ref={blobContainerRef}
-        className="absolute inset-0 flex items-center justify-center"
-      >
+      {/* Spiral Lottie Animation — visibility controlled by React state */}
+      {showSpiral && (
         <div
-          className="relative"
-          style={{
-            width: 'clamp(280px, 60vmin, 760px)',
-            height: 'clamp(280px, 60vmin, 760px)',
-          }}
+          ref={spiralContainerRef}
+          className="absolute inset-0 flex items-center justify-center p-4 md:p-12 lg:p-16"
+          style={{ opacity: phase === 'spiral' ? 1 : undefined }}
         >
-          {/* Organic Blob Shape - SVG */}
+          <div className="block w-full h-full max-w-[min(90vw,90vh)] max-h-[min(90vw,90vh)]">
+            <Lottie
+              lottieRef={lottieRef}
+              animationData={animationData}
+              loop={false}
+              autoplay={true}
+              renderer="svg"
+              style={{
+                width: '100%',
+                height: '100%',
+              }}
+              onComplete={handleLottieComplete}
+              rendererSettings={{
+                preserveAspectRatio: 'xMidYMid meet',
+                progressiveLoad: true,
+              }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Blob message — visibility controlled by React state */}
+      {showBlob && (
+        <div
+          ref={blobContainerRef}
+          className="absolute inset-0 flex items-center justify-center"
+          style={{ opacity: phase === 'transitioning' ? 0 : 1 }}
+        >
           <div
-            className="w-full h-full relative"
+            className="relative"
             style={{
-              backgroundImage: 'url(/splash_blob.svg)',
-              backgroundSize: 'contain',
-              backgroundPosition: 'center',
-              backgroundRepeat: 'no-repeat',
+              width: 'clamp(280px, 60vmin, 760px)',
+              height: 'clamp(280px, 60vmin, 760px)',
             }}
           >
-            {/* Text Content */}
-            <div
-              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-left z-10"
-              style={{
-                width: '80%',
-                maxHeight: '85%',
-                padding: 'clamp(28px, 10%, 72px)',
-                overflow: 'hidden',
-              }}
-            >
-              <AnimatedText
-                text="If we only remembered who we are, and why we are here, then life and everything that has happened in it, would make sense. We will no longer be lost or alone. We were, are and shall always be whole."
-                className="leading-[1.3] text-[#4a3833] mb-3"
-                style={{ 
-                  fontFamily: 'var(--font-saphira), serif',
-                  fontWeight: 400,
-                  fontSize: 'clamp(14px, 2.6vmin, 24px)',
-                  marginBottom: 'clamp(8px, 2vw, 16px)',
-                }}
+            {/* Organic Blob Shape - SVG */}
+            <div className="w-full h-full relative">
+              <img
+                src="/splash_blob.svg"
+                alt=""
+                className="absolute inset-0 w-full h-full object-contain"
+                aria-hidden="true"
               />
-              <AnimatedText
-                text="That is the Antar Smaran Process."
-                className="leading-[1.3] text-[#4a3833]"
-                style={{ 
-                  fontFamily: 'var(--font-saphira), serif',
-                  fontWeight: 400,
-                  fontSize: 'clamp(14px, 2.6vmin, 24px)',
+              {/* Text Content */}
+              <div
+                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-left z-10"
+                style={{
+                  width: '80%',
+                  maxHeight: '85%',
+                  padding: 'clamp(28px, 10%, 72px)',
+                  overflow: 'hidden',
                 }}
-              />
+              >
+                <AnimatedText
+                  text="If we only remembered who we are, and why we are here, then life and everything that has happened in it, would make sense. We will no longer be lost or alone. We were, are and shall always be whole."
+                  className="leading-[1.3] text-[#4a3833] mb-3"
+                  style={{ 
+                    fontFamily: 'var(--font-saphira), serif',
+                    fontWeight: 400,
+                    fontSize: 'clamp(14px, 2.6vmin, 24px)',
+                    marginBottom: 'clamp(8px, 2vw, 16px)',
+                  }}
+                />
+                <AnimatedText
+                  text="That is the Antar Smaran Process."
+                  className="leading-[1.3] text-[#4a3833]"
+                  style={{ 
+                    fontFamily: 'var(--font-saphira), serif',
+                    fontWeight: 400,
+                    fontSize: 'clamp(14px, 2.6vmin, 24px)',
+                  }}
+                />
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

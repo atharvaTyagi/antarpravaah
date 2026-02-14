@@ -6,7 +6,7 @@
 
 import { client } from './client'
 import { urlFor } from './image'
-import type { SanityImageSource } from '@sanity/image-url/lib/types/types'
+import type { SanityImageSource } from '@sanity/image-url'
 
 // =============================================================================
 // Types

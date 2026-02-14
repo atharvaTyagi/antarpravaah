@@ -415,7 +415,7 @@ export default function VoicesOfTransformation({
             {testimonials.map((t) => (
               <div
                 key={t._id}
-                className="voice-card shrink-0 rounded-[24px] bg-[#474e3a] p-8 sm:p-8 lg:p-10 flex flex-col gap-6 sm:gap-8 lg:gap-10 justify-start w-[calc(100vw-32px)] sm:w-[calc(100vw-48px)] lg:w-[calc(100vw-80px)] h-[calc(100%-8px)] sm:h-[clamp(300px,45vh,450px)] overflow-hidden"
+                className="voice-card shrink-0 rounded-[24px] bg-[#474e3a] p-8 sm:p-8 lg:p-10 flex flex-col gap-6 sm:gap-8 lg:gap-10 justify-start w-[calc(100vw-32px)] sm:w-[calc(100vw-48px)] lg:w-[calc(100vw-80px)] h-[calc(100%-8px)] sm:h-[clamp(300px,45vh,450px)] overflow-hidden ios-radius-fix"
               >
                 <div className="flex-1 overflow-y-auto overflow-x-hidden hide-scrollbar pr-1">
                   <p

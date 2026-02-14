@@ -137,9 +137,9 @@ function ThoughtCard({ thought }: ThoughtCardProps) {
         bg-[#9ac1bf]
       "
     >
-      {/* Image (if available) - takes ~55% of card height */}
+      {/* Image (if available) - takes up to 45% of card, shrinks to fit */}
       {hasImage && (
-        <div className="relative w-full h-[55%] min-h-[100px] overflow-hidden">
+        <div className="relative w-full shrink-0 overflow-hidden" style={{ height: '40%', minHeight: '80px' }}>
           <Image
             src={imageUrl}
             alt=""
@@ -151,15 +151,12 @@ function ThoughtCard({ thought }: ThoughtCardProps) {
         </div>
       )}
       
-      {/* Content - fills remaining space */}
+      {/* Content - fills remaining space, no truncation */}
       <div
-        className={`
-          flex items-center justify-center p-3 sm:p-4 lg:p-5 overflow-hidden
-          ${hasImage ? 'h-[45%]' : 'flex-1'}
-        `}
+        className="flex-1 flex items-center justify-center p-3 sm:p-4 lg:p-5 overflow-hidden"
       >
         <p
-          className={`text-center ${getTextSize()} leading-snug text-[#354443] line-clamp-6`}
+          className={`text-center ${getTextSize()} leading-snug text-[#354443]`}
           style={{ fontFamily: 'var(--font-saphira), serif' }}
         >
           {content}
@@ -337,6 +334,15 @@ export default function ThoughtsAndPonderings() {
   // ==========================================================================
   // DESKTOP VIEW: CSS Grid layout
   // ==========================================================================
+  
+  // Card layout calculations
+  const cardCount = thoughts.length;
+  
+  // Number of columns: for <=4 cards use 1 row, 5-6 use 3 cols, 7-8 use 4 cols
+  const colCount = cardCount <= 4 ? cardCount : (cardCount <= 6 ? 3 : 4);
+  // Single row for <=4 cards, two rows otherwise
+  const isSingleRow = cardCount <= 4;
+  
   return (
     <div className="w-full h-full flex flex-col gap-6 sm:gap-8">
       {/* Title - fixed height */}
@@ -347,23 +353,31 @@ export default function ThoughtsAndPonderings() {
         Thoughts & Ponderings
       </h2>
 
-      {/* Grid Container - fills remaining height */}
+      {/* Grid Container - fills remaining height, centered */}
       <div
         className={`
-          flex-1 min-h-0
+          flex-1 min-h-0 flex items-center justify-center
           ${needsHorizontalScroll ? 'overflow-x-auto overflow-y-hidden pb-2' : ''}
         `}
       >
         {/* CSS Grid Layout */}
         <div
           className={`
-            grid gap-4 sm:gap-5 lg:gap-6 h-full
+            grid gap-4 sm:gap-5 lg:gap-6
             ${needsHorizontalScroll 
-              ? 'grid-flow-col auto-cols-[minmax(280px,320px)] grid-rows-2' 
-              : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 grid-rows-2'
+              ? 'grid-flow-col auto-cols-[minmax(280px,320px)] grid-rows-2 h-full' 
+              : `${isSingleRow ? 'grid-rows-1' : 'grid-rows-2'} justify-items-center`
             }
           `}
-          style={needsHorizontalScroll ? { width: 'max-content' } : undefined}
+          style={{
+            ...(needsHorizontalScroll ? { width: 'max-content' } : {
+              gridTemplateColumns: `repeat(${colCount}, 1fr)`,
+              maxWidth: `${colCount * 320}px`,
+              width: '100%',
+              height: isSingleRow ? '55%' : '100%',
+              maxHeight: isSingleRow ? '420px' : undefined,
+            }),
+          }}
         >
           {thoughts.map((thought) => (
             <ThoughtCard

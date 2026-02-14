@@ -35,7 +35,11 @@
       "Bash(node -e:*)",
       "Bash(node scripts/invalidate-cloudinary-cache.js:*)",
       "Bash(git checkout:*)",
-      "Bash(git restore:*)"
+      "Bash(git restore:*)",
+      "Bash(npm install:*)",
+      "Bash(node scripts/check-sanity-data.js:*)",
+      "Bash(node scripts/test-queries.js:*)",
+      "Bash(node scripts/check-dataset-visibility.js:*)"
     ]
   }
 }

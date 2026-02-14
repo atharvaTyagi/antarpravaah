@@ -196,7 +196,7 @@ export default function PathwayCard({ pathway, isMobile = false, onExpandedChang
   if (!isMobile) {
     return (
       <div
-        className="relative flex items-end overflow-hidden rounded-[12px] sm:rounded-[16px] lg:rounded-[24px] border-[4px] sm:border-[8px] lg:border-[12px] border-[#9ac1bf] w-full h-full"
+        className="relative flex items-end overflow-hidden ios-radius-fix rounded-[12px] sm:rounded-[16px] lg:rounded-[24px] border-[4px] sm:border-[8px] lg:border-[12px] border-[#9ac1bf] w-full h-full"
       >
         {/* Background Image with blur */}
         <div className="absolute inset-0 -z-10">
@@ -283,7 +283,7 @@ export default function PathwayCard({ pathway, isMobile = false, onExpandedChang
   // Mobile layout - collapsed/expanded states
   return (
     <div
-      className="relative flex flex-col overflow-hidden rounded-[24px] border-[16px] border-[#9ac1bf] w-full h-full"
+      className="relative flex flex-col overflow-hidden ios-radius-fix rounded-[24px] border-[16px] border-[#9ac1bf] w-full h-full"
     >
       {/* Background Image with blur */}
       <div className="absolute inset-0 -z-10">

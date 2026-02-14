@@ -30,10 +30,10 @@ export default function QuestionScreen({ questionNumber, onAnswer, onBack, onClo
       animate={{ y: 0 }}
       exit={{ y: 0 }}
       transition={{ duration: 0.3, ease: 'easeInOut' }}
-      className="relative w-full p-10 bg-[#f6edd0] min-h-[650px]"
+      className="relative w-full h-full md:h-auto p-6 md:p-10 bg-[#f6edd0] md:min-h-[650px] overflow-y-auto"
     >
       {/* Navigation */}
-      <div className="flex items-center justify-between mb-10">
+      <div className="flex items-center justify-between mb-6 md:mb-10">
         {/* Progress Bar */}
         <div className="flex-1 max-w-[913px] h-2 rounded-full overflow-hidden relative">
           <motion.div
@@ -47,7 +47,7 @@ export default function QuestionScreen({ questionNumber, onAnswer, onBack, onClo
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="ml-8 flex h-6 w-6 items-center justify-center text-[#3e3629] hover:opacity-70 transition-opacity"
+          className="ml-4 md:ml-8 flex h-6 w-6 items-center justify-center text-[#3e3629] hover:opacity-70 transition-opacity"
           aria-label="Close modal"
         >
           <img
@@ -62,16 +62,16 @@ export default function QuestionScreen({ questionNumber, onAnswer, onBack, onClo
       </div>
 
       {/* Question */}
-      <div className="max-w-[1017px] mx-auto text-center mb-12">
+      <div className="max-w-[1017px] mx-auto text-center mb-8 md:mb-12">
         <h2
-          className="text-[48px] leading-[58px] text-[#3e3629] mb-4"
+          className="text-[28px] md:text-[48px] leading-[1.2] md:leading-[58px] text-[#3e3629] mb-3 md:mb-4"
           style={{ fontFamily: 'var(--font-saphira), serif' }}
         >
           {question.title}
         </h2>
         {question.subtitle && (
           <p
-            className="text-[16px] leading-[29px] text-[#3e3629]"
+            className="text-[14px] md:text-[16px] leading-[22px] md:leading-[29px] text-[#3e3629]"
             style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
           >
             {question.subtitle}
@@ -80,7 +80,7 @@ export default function QuestionScreen({ questionNumber, onAnswer, onBack, onClo
       </div>
 
       {/* Answer Options */}
-      <div className="max-w-[1017px] mx-auto flex flex-col items-center gap-3 mb-12">
+      <div className="max-w-[1017px] mx-auto flex flex-col items-center gap-2 md:gap-3 mb-8 md:mb-12">
         {question.options.map((option, index) => (
           <motion.button
             key={index}
@@ -88,7 +88,7 @@ export default function QuestionScreen({ questionNumber, onAnswer, onBack, onClo
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.08 }}
             onClick={() => onAnswer(questionNumber, option.text)}
-            className="px-6 py-2 text-[12px] leading-[20px] text-[#3e3629] cursor-pointer uppercase tracking-[1.5px] rounded-full transition-all duration-300 hover:bg-[#3e3629]/10"
+            className="px-5 md:px-6 py-2 text-[11px] md:text-[12px] leading-[20px] text-[#3e3629] cursor-pointer uppercase tracking-[1.5px] rounded-full transition-all duration-300 hover:bg-[#3e3629]/10"
             style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
           >
             {option.text}
@@ -101,7 +101,7 @@ export default function QuestionScreen({ questionNumber, onAnswer, onBack, onClo
         <img
           src="/page_end_blob.svg"
           alt=""
-          className="h-[41px] w-auto"
+          className="h-[30px] md:h-[41px] w-auto"
           style={{
             filter: 'brightness(0) saturate(100%) invert(19%) sepia(11%) saturate(1214%) hue-rotate(359deg) brightness(96%) contrast(91%)',
           }}
@@ -109,7 +109,7 @@ export default function QuestionScreen({ questionNumber, onAnswer, onBack, onClo
       </div>
 
       {/* Skip to Booking */}
-      <div className="flex items-center justify-center">
+      <div className="flex items-center justify-center pb-4 md:pb-0">
         <Button
           text="I know what I need"
           size="small"

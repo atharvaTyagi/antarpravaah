@@ -659,7 +659,7 @@ export default function AboutPage() {
                 ref={(el) => { if (el) sectionsRef.current[2] = el; }}
                 className={`relative flex items-center justify-center px-4 sm:px-6 lg:px-8 bg-[#f6edd0] ${sectionClass}`}
               >
-                <div className="w-full h-[85%] sm:h-[80%] lg:h-[85%] max-w-[calc(100vw-32px)] sm:max-w-[calc(100vw-48px)] lg:max-w-[calc(100vw-64px)] bg-[#93a378] rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] px-6 sm:px-12 lg:px-20 py-8 sm:py-12 lg:py-16 flex items-center justify-center">
+                <div className="w-full h-[85%] sm:h-[80%] lg:h-[85%] max-w-[calc(100vw-32px)] sm:max-w-[calc(100vw-48px)] lg:max-w-[calc(100vw-64px)] bg-[#93a378] rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] overflow-hidden ios-radius-fix px-6 sm:px-12 lg:px-20 py-8 sm:py-12 lg:py-16 flex items-center justify-center">
                   <div className="flex flex-col gap-6 sm:gap-8 lg:gap-10 items-center justify-center text-[#474e3a] text-center max-w-[900px]">
                     <h2
                       className="text-[40px] lg:text-[56px] leading-[1.0]"

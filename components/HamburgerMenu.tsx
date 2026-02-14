@@ -57,21 +57,24 @@ export default function HamburgerMenu({
 
   return (
     <div className="relative">
-      {/* Hamburger Button - Using new icon_menu.svg */}
+      {/* Hamburger Button */}
       <button
         onClick={toggleMenu}
         className="flex items-center justify-center w-10 h-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#9ac1bf]"
         aria-label="Toggle menu"
         aria-expanded={isOpen}
       >
-        <img
-          src="/icon_menu.svg"
-          alt="Menu"
-          className="w-[25px] h-[12px] transition-[filter] duration-500"
-          style={{
-            filter: isLightHeader ? 'brightness(0) sepia(1) saturate(5) hue-rotate(-15deg)' : 'none',
-          }}
-        />
+        <svg
+          width="25"
+          height="12"
+          viewBox="0 0 25 12"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-[25px] h-[12px] transition-[fill] duration-500"
+        >
+          <rect width="24.8571" height="4.28571" rx="1.71429" fill={navTextColor} />
+          <rect y="7.71484" width="24.8571" height="4.28571" rx="1.71429" fill={navTextColor} />
+        </svg>
       </button>
 
       {/* Fullscreen Menu */}

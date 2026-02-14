@@ -337,7 +337,7 @@ export default function WeWorkTogether({
             >
               {/* Intro Card */}
               <div 
-                className="work-card absolute inset-0 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d6c68e] p-6 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex flex-col items-center justify-center gap-6 sm:gap-8 lg:gap-10"
+                className="work-card absolute inset-0 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] overflow-hidden ios-radius-fix bg-[#d6c68e] p-6 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex flex-col items-center justify-center gap-6 sm:gap-8 lg:gap-10"
               >
                 <div className="flex items-center justify-center">
                   <Image
@@ -366,7 +366,7 @@ export default function WeWorkTogether({
                 return (
                   <div
                     key={index}
-                    className="work-card absolute inset-0 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d6c68e] p-6 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex items-center justify-center"
+                    className="work-card absolute inset-0 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] overflow-hidden ios-radius-fix bg-[#d6c68e] p-6 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex items-center justify-center"
                   >
                     <div
                       className={`flex flex-col items-center gap-6 sm:gap-8 lg:gap-10 w-full h-full justify-center ${
@@ -398,7 +398,7 @@ export default function WeWorkTogether({
               {/* CTA Card */}
               <Link
                 href="/approach"
-                className="work-card absolute inset-0 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#645c42] p-6 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex items-center justify-center cursor-pointer hover:bg-[#555141] transition-colors duration-300 group"
+                className="work-card absolute inset-0 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] overflow-hidden ios-radius-fix bg-[#645c42] p-6 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex items-center justify-center cursor-pointer hover:bg-[#555141] transition-colors duration-300 group"
               >
                 <div className="pointer-events-none">
                   <Button text="Explore Our Approach" size="large" mode="light" />

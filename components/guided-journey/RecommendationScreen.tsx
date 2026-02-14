@@ -25,10 +25,10 @@ export default function RecommendationScreen({ path, onScheduleCall, onClose }: 
       animate={{ y: 0 }}
       exit={{ y: 0 }}
       transition={{ duration: 0.3, ease: 'easeInOut' }}
-      className="relative w-full p-10 bg-[#3e3629] min-h-[765px]"
+      className="relative w-full h-full md:h-auto p-6 md:p-10 bg-[#3e3629] md:min-h-[765px] overflow-y-auto"
     >
       {/* Close Button */}
-      <div className="flex items-center justify-end mb-10">
+      <div className="flex items-center justify-end mb-6 md:mb-10">
         <button
           onClick={onClose}
           className="flex h-6 w-6 items-center justify-center text-[#f6edd0] hover:opacity-70 transition-opacity"
@@ -46,25 +46,25 @@ export default function RecommendationScreen({ path, onScheduleCall, onClose }: 
       </div>
 
       {/* Logo/Symbol */}
-      <div className="flex items-center justify-center mb-10">
+      <div className="flex items-center justify-center mb-6 md:mb-10">
         <img 
           src="/logo_small.svg" 
           alt="Antar Pravaah" 
-          className="h-[186px] w-auto"
+          className="h-[120px] md:h-[186px] w-auto"
           style={{ filter: 'brightness(0) saturate(100%) invert(95%) sepia(8%) saturate(435%) hue-rotate(357deg) brightness(103%) contrast(92%)' }}
         />
       </div>
 
       {/* Content */}
-      <div className="max-w-[1017px] mx-auto text-center mb-12">
+      <div className="max-w-[1017px] mx-auto text-center mb-8 md:mb-12">
         <h2
-          className="text-[48px] leading-[58px] text-[#f6edd0] mb-6"
+          className="text-[32px] md:text-[48px] leading-[1.2] md:leading-[58px] text-[#f6edd0] mb-4 md:mb-6"
           style={{ fontFamily: 'var(--font-saphira), serif' }}
         >
           {recommendation.title}
         </h2>
         <p
-          className="text-[16px] leading-[28px] text-[#f6edd0] whitespace-pre-line"
+          className="text-[14px] md:text-[16px] leading-[24px] md:leading-[28px] text-[#f6edd0] whitespace-pre-line px-2"
           style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
         >
           {recommendation.message}
@@ -72,7 +72,7 @@ export default function RecommendationScreen({ path, onScheduleCall, onClose }: 
       </div>
 
       {/* CTAs */}
-      <div className="max-w-[505px] mx-auto flex flex-col items-center gap-4">
+      <div className="max-w-[505px] mx-auto flex flex-col items-center gap-4 pb-4 md:pb-0">
         {/* Primary CTA */}
         <Button
           text={recommendation.primaryCta}

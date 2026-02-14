@@ -264,7 +264,7 @@ export default function ModalitiesScrollCard({
       {/* Static Card Container - centered with max width */}
       <div
         ref={cardRef}
-        className="relative w-full max-w-[1200px] flex-1 max-h-[700px] bg-[#d6c68e] rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] overflow-hidden"
+        className="relative w-full max-w-[1200px] flex-1 max-h-[700px] bg-[#d6c68e] rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] overflow-hidden ios-radius-fix"
       >
         <div 
           ref={contentRef}

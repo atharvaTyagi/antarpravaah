@@ -251,7 +251,7 @@ export default function TherapyCard({ therapy, isVisible = false, isMobile = fal
     return (
       <div 
         ref={cardRef} 
-        className="w-full h-full bg-[#d6c68e] rounded-[24px] p-[40px] flex flex-col"
+        className="w-full h-full bg-[#d6c68e] rounded-[24px] overflow-hidden ios-radius-fix p-[40px] flex flex-col"
       >
         {/* Icon centered at top */}
         <div className="w-full flex justify-center shrink-0 mb-4">
@@ -332,7 +332,7 @@ export default function TherapyCard({ therapy, isVisible = false, isMobile = fal
   if (isCenter) {
     // Special layout for ASP (centered) - larger card with more padding (Desktop)
     return (
-      <div ref={cardRef} className="w-full min-h-[600px] sm:min-h-[700px] lg:min-h-[840px] bg-[#d6c68e] rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] p-8 sm:p-12 lg:p-20 flex flex-col items-center justify-center gap-8 sm:gap-10 lg:gap-12 shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
+      <div ref={cardRef} className="w-full min-h-[600px] sm:min-h-[700px] lg:min-h-[840px] bg-[#d6c68e] rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] overflow-hidden ios-radius-fix p-8 sm:p-12 lg:p-20 flex flex-col items-center justify-center gap-8 sm:gap-10 lg:gap-12 shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
         {/* Icon centered at top */}
         <div ref={iconRef} className="w-full flex justify-center">
           <img
@@ -366,7 +366,7 @@ export default function TherapyCard({ therapy, isVisible = false, isMobile = fal
 
   // Standard layout - Figma design: Icon top-right, content on left
   return (
-    <div ref={cardRef} className="w-full bg-[#d6c68e] rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] shadow-[0_10px_30px_rgba(0,0,0,0.12)] p-4 sm:p-6 lg:p-8">
+    <div ref={cardRef} className="w-full bg-[#d6c68e] rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] overflow-hidden ios-radius-fix shadow-[0_10px_30px_rgba(0,0,0,0.12)] p-4 sm:p-6 lg:p-8">
       <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 lg:gap-8">
         {/* Content - takes most of the space */}
         <div className="flex-1 flex flex-col gap-2 sm:gap-3">

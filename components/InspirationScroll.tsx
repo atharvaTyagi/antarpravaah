@@ -192,7 +192,7 @@ export default function InspirationScroll({ isActive = false, onEdgeReached, res
   return (
     <div 
       ref={containerRef}
-      className="w-full h-full bg-[#93a378] rounded-[24px] px-4 py-10 flex flex-col items-center justify-center"
+      className="w-full h-full bg-[#93a378] rounded-[24px] overflow-hidden ios-radius-fix px-4 py-10 flex flex-col items-center justify-center"
     >
       {/* Static title */}
       <h2
