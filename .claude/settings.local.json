@@ -40,7 +40,8 @@
       "Bash(node scripts/check-sanity-data.js:*)",
       "Bash(node scripts/test-queries.js:*)",
       "Bash(node scripts/check-dataset-visibility.js:*)",
-      "Bash(npx sanity:*)"
+      "Bash(npx sanity:*)",
+      "Bash(python:*)"
     ]
   }
 }
