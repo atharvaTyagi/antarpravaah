@@ -153,13 +153,13 @@ export default function MobileModalityCard({
   // Collapsed State - Default view with icon, title, subtitle, Read More
   if (!isExpanded) {
     return (
-      <div className="bg-[#d6c68e] flex flex-col h-[560px] w-[353px] rounded-[24px] overflow-hidden ios-radius-fix px-[40px] py-[27px]">
+      <div className="bg-[#d6c68e] flex flex-col h-[540px] w-[340px] rounded-[24px] overflow-hidden ios-radius-fix px-[32px] py-[24px]">
         {/* Icon at top - takes flex-1 */}
-        <div className="flex-1 flex items-center justify-center">
+        <div className="flex-1 flex items-center justify-center min-h-0">
           <img
             src={data.iconSrc}
             alt={data.title}
-            className="w-[280px] h-auto max-h-[261px] object-contain"
+            className="w-[75%] max-w-[260px] h-auto max-h-[240px] object-contain"
           />
         </div>
 
@@ -189,7 +189,7 @@ export default function MobileModalityCard({
 
   // Expanded State - Title + Close + scrollable content
   return (
-    <div className="bg-[#d6c68e] flex flex-col h-[560px] w-[353px] rounded-[24px] overflow-hidden ios-radius-fix px-[40px] py-[27px]">
+    <div className="bg-[#d6c68e] flex flex-col h-[540px] w-[340px] rounded-[24px] overflow-hidden ios-radius-fix px-[32px] py-[24px]">
       {/* Header with Title and Close Button */}
       <div className="flex items-start justify-between mb-4 shrink-0">
         <h3

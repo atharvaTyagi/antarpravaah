@@ -1,14 +1,14 @@
 {
   "version": 3,
-  "createdAt": "2026-02-14T03:49:07.223Z",
+  "createdAt": "2026-02-16T16:07:58.318Z",
   "workspaces": [
     {
       "name": "antar-pravaah-studio",
       "title": "Antar Pravaah CMS",
       "basePath": "/",
-      "projectId": "31nfdrj2",
+      "projectId": "w9hoo18a",
       "dataset": "production",
-      "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 32 32\"><rect width=\"32\" height=\"32\" rx=\"2\" fill=\"#fa6400\"></rect><text x=\"50%\" y=\"50%\" text-anchor=\"middle\" alignment-baseline=\"middle\" fill=\"hsla(24, 100%, 9%, 1)\" style=\"font-family:Inter, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, &quot;Liberation Sans&quot;, Helvetica, Arial, system-ui, sans-serif;font-weight:500;font-size:13px;transform:translateY(1px)\">AP</text></svg>",
+      "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 32 32\"><rect width=\"32\" height=\"32\" rx=\"2\" fill=\"#653a0b\"></rect><text x=\"50%\" y=\"50%\" text-anchor=\"middle\" alignment-baseline=\"middle\" fill=\"hsla(31, 80%, 62%, 1)\" style=\"font-family:Inter, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, &quot;Liberation Sans&quot;, Helvetica, Arial, system-ui, sans-serif;font-weight:500;font-size:13px;transform:translateY(1px)\">AP</text></svg>",
       "mediaLibrary": {
         "enabled": false,
         "__internal": {}

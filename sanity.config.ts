@@ -15,7 +15,7 @@ import { schema } from './sanity/schemaTypes'
 import { structure } from './sanity/structure'
 
 // Default values for development - these will be overridden by env vars in production
-const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || '31nfdrj2'
+const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'w9hoo18a'
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production'
 
 export default defineConfig({

@@ -603,7 +603,7 @@ export default function TherapiesPage() {
                 </div>
 
                 {/* Carousel Container */}
-                <div className="flex-1 flex items-center overflow-hidden px-5 py-6">
+                <div className="flex-1 flex items-center overflow-hidden px-5 py-8">
                   <div
                     ref={modalitiesCarouselRef}
                     className="flex gap-4 will-change-transform"

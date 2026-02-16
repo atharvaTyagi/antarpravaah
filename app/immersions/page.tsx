@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useCallback, useLayoutEffect, Suspense } f
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import { gsap } from 'gsap';
+import { Observer } from 'gsap/dist/Observer';
 import Button from '@/components/Button';
 import PageEndBlob from '@/components/PageEndBlob';
 import Footer from '@/components/Footer';
@@ -13,6 +14,11 @@ import { ImmersionCard, TrainingCard, type ImmersionData, type TrainingData } fr
 import { useThemeStore } from '@/lib/stores/useThemeStore';
 import { SectionId } from '@/lib/themeConfig';
 import { useImmersions, useTrainings } from '@/sanity/lib/queries';
+
+// Register GSAP plugins
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(Observer);
+}
 
 // Immersions data
 const immersionsData: ImmersionData[] = [
@@ -188,15 +194,23 @@ function ImmersionsPageContent() {
   const [isReady, setIsReady] = useState(false);
   const [hasScrolledToTarget, setHasScrolledToTarget] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
-  // Carousel scroll positions (in pixels)
+
+  // Carousel scroll positions (in pixels for desktop, card index for mobile snap)
   const immersionsScrollX = useRef(0);
   const trainingsScrollX = useRef(0);
   const immersionsMaxScroll = useRef(0);
   const trainingsMaxScroll = useRef(0);
-  
+
+  // Mobile snap carousel state
+  const immersionsCardIndex = useRef(0);
+  const trainingsCardIndex = useRef(0);
+  const immersionsObserverRef = useRef<Observer | null>(null);
+  const trainingsObserverRef = useRef<Observer | null>(null);
+  const carouselAnimatingRef = useRef(false);
+
   const lastScrollTimeRef = useRef<number>(0);
   const sectionScrollCooldown = 800; // ms cooldown for section changes
+  const carouselScrollCooldown = 400; // ms cooldown for carousel card changes
 
   // Get header height based on screen size
   const getHeaderHeight = useCallback(() => {
@@ -287,16 +301,38 @@ function ImmersionsPageContent() {
         const section = SECTIONS[index];
         if (section.type === 'carousel') {
           if (section.id === 'immersions-carousel') {
-            const targetX = direction === 'down' ? 0 : immersionsMaxScroll.current;
-            immersionsScrollX.current = targetX;
-            if (immersionsCarouselRef.current) {
-              gsap.set(immersionsCarouselRef.current, { x: -targetX });
+            if (isMobile) {
+              // Mobile snap: reset to first or last card
+              const targetIndex = direction === 'down' ? 0 : activeImmersions.length - 1;
+              immersionsCardIndex.current = targetIndex;
+              const cardWidth = getCardWidth('immersions');
+              if (immersionsCarouselRef.current && cardWidth > 0) {
+                gsap.set(immersionsCarouselRef.current, { x: -targetIndex * cardWidth });
+              }
+            } else {
+              // Desktop: reset scroll position
+              const targetX = direction === 'down' ? 0 : immersionsMaxScroll.current;
+              immersionsScrollX.current = targetX;
+              if (immersionsCarouselRef.current) {
+                gsap.set(immersionsCarouselRef.current, { x: -targetX });
+              }
             }
           } else if (section.id === 'trainings-carousel') {
-            const targetX = direction === 'down' ? 0 : trainingsMaxScroll.current;
-            trainingsScrollX.current = targetX;
-            if (trainingsCarouselRef.current) {
-              gsap.set(trainingsCarouselRef.current, { x: -targetX });
+            if (isMobile) {
+              // Mobile snap: reset to first or last card
+              const targetIndex = direction === 'down' ? 0 : activeTrainings.length - 1;
+              trainingsCardIndex.current = targetIndex;
+              const cardWidth = getCardWidth('trainings');
+              if (trainingsCarouselRef.current && cardWidth > 0) {
+                gsap.set(trainingsCarouselRef.current, { x: -targetIndex * cardWidth });
+              }
+            } else {
+              // Desktop: reset scroll position
+              const targetX = direction === 'down' ? 0 : trainingsMaxScroll.current;
+              trainingsScrollX.current = targetX;
+              if (trainingsCarouselRef.current) {
+                gsap.set(trainingsCarouselRef.current, { x: -targetX });
+              }
             }
           }
         }
@@ -333,19 +369,32 @@ function ImmersionsPageContent() {
     }
   }, [isReady, hasScrolledToTarget, searchParams, currentSection, goToSection]);
 
+  // Get card width for snap scrolling (mobile)
+  const getCardWidth = useCallback((carouselType: 'immersions' | 'trainings') => {
+    const carouselRef = carouselType === 'immersions' ? immersionsCarouselRef : trainingsCarouselRef;
+    if (!carouselRef.current) return 0;
+
+    const cards = carouselRef.current.querySelectorAll('.carousel-card');
+    if (cards.length === 0) return 0;
+
+    const firstCard = cards[0] as HTMLElement;
+    const gap = 16; // 4 * 4px = 16px on mobile (gap-4)
+    return firstCard.offsetWidth + gap;
+  }, []);
+
   // Update carousel position smoothly
   const updateCarouselPosition = useCallback((carouselType: 'immersions' | 'trainings', delta: number) => {
     const carouselRef = carouselType === 'immersions' ? immersionsCarouselRef : trainingsCarouselRef;
     const scrollXRef = carouselType === 'immersions' ? immersionsScrollX : trainingsScrollX;
     const maxScroll = carouselType === 'immersions' ? immersionsMaxScroll.current : trainingsMaxScroll.current;
-    
+
     if (!carouselRef.current) return { atStart: false, atEnd: false };
-    
+
     // Calculate new position
     const scrollSpeed = isMobile ? 1.5 : 2;
     const newX = Math.max(0, Math.min(maxScroll, scrollXRef.current + delta * scrollSpeed));
     scrollXRef.current = newX;
-    
+
     // Animate to new position
     gsap.to(carouselRef.current, {
       x: -newX,
@@ -353,47 +402,129 @@ function ImmersionsPageContent() {
       ease: 'power2.out',
       overwrite: true,
     });
-    
+
     return {
       atStart: newX <= 0,
       atEnd: newX >= maxScroll,
     };
   }, [isMobile]);
 
+  // Handle mobile snap carousel scrolling
+  const handleCarouselSnap = useCallback((carouselType: 'immersions' | 'trainings', direction: 'up' | 'down') => {
+    const now = Date.now();
+    if (now - lastScrollTimeRef.current < carouselScrollCooldown) return 'blocked';
+    if (carouselAnimatingRef.current) return 'blocked';
+
+    const carouselRef = carouselType === 'immersions' ? immersionsCarouselRef : trainingsCarouselRef;
+    const cardIndexRef = carouselType === 'immersions' ? immersionsCardIndex : trainingsCardIndex;
+    const itemCount = carouselType === 'immersions' ? activeImmersions.length : activeTrainings.length;
+
+    if (!carouselRef.current || itemCount === 0) return 'blocked';
+
+    const cardWidth = getCardWidth(carouselType);
+    if (cardWidth === 0) return 'blocked';
+
+    const currentIndex = cardIndexRef.current;
+
+    if (direction === 'down') {
+      // Scrolling down = move to next card
+      if (currentIndex < itemCount - 1) {
+        carouselAnimatingRef.current = true;
+        const newIndex = currentIndex + 1;
+        cardIndexRef.current = newIndex;
+
+        gsap.to(carouselRef.current, {
+          x: -newIndex * cardWidth,
+          duration: 0.5,
+          ease: 'power2.out',
+          onComplete: () => {
+            carouselAnimatingRef.current = false;
+            lastScrollTimeRef.current = Date.now();
+          },
+        });
+        return 'handled';
+      } else {
+        // At end, allow section transition
+        return 'edge-end';
+      }
+    } else {
+      // Scrolling up = move to previous card
+      if (currentIndex > 0) {
+        carouselAnimatingRef.current = true;
+        const newIndex = currentIndex - 1;
+        cardIndexRef.current = newIndex;
+
+        gsap.to(carouselRef.current, {
+          x: -newIndex * cardWidth,
+          duration: 0.5,
+          ease: 'power2.out',
+          onComplete: () => {
+            carouselAnimatingRef.current = false;
+            lastScrollTimeRef.current = Date.now();
+          },
+        });
+        return 'handled';
+      } else {
+        // At start, allow section transition
+        return 'edge-start';
+      }
+    }
+  }, [activeImmersions.length, activeTrainings.length, getCardWidth]);
+
   // Handle scroll input
   const handleScroll = useCallback((deltaY: number) => {
     if (isCardExpanded || isAnimating) return;
-    
+
     const section = SECTIONS[currentSection];
     const isScrollingDown = deltaY > 0;
-    
+
     if (section.type === 'carousel') {
-      // In carousel section - scroll horizontally first
       const carouselType = section.id === 'immersions-carousel' ? 'immersions' : 'trainings';
-      const { atStart, atEnd } = updateCarouselPosition(carouselType, deltaY);
-      
-      // Check if we should transition to next/prev section
-      const now = Date.now();
-      const canChangeSection = now - lastScrollTimeRef.current > sectionScrollCooldown;
-      
-      if (isScrollingDown && atEnd && canChangeSection) {
-        goToSection(currentSection + 1, 'down');
-      } else if (!isScrollingDown && atStart && canChangeSection) {
-        goToSection(currentSection - 1, 'up');
+
+      // Mobile: use snap scrolling
+      if (isMobile) {
+        const direction = isScrollingDown ? 'down' : 'up';
+        const result = handleCarouselSnap(carouselType, direction);
+
+        if (result === 'edge-end' && isScrollingDown) {
+          const now = Date.now();
+          if (now - lastScrollTimeRef.current > sectionScrollCooldown) {
+            lastScrollTimeRef.current = now;
+            goToSection(currentSection + 1, 'down');
+          }
+        } else if (result === 'edge-start' && !isScrollingDown) {
+          const now = Date.now();
+          if (now - lastScrollTimeRef.current > sectionScrollCooldown) {
+            lastScrollTimeRef.current = now;
+            goToSection(currentSection - 1, 'up');
+          }
+        }
+      } else {
+        // Desktop: use free scrolling
+        const { atStart, atEnd } = updateCarouselPosition(carouselType, deltaY);
+
+        const now = Date.now();
+        const canChangeSection = now - lastScrollTimeRef.current > sectionScrollCooldown;
+
+        if (isScrollingDown && atEnd && canChangeSection) {
+          goToSection(currentSection + 1, 'down');
+        } else if (!isScrollingDown && atStart && canChangeSection) {
+          goToSection(currentSection - 1, 'up');
+        }
       }
     } else {
       // Static section - change sections with cooldown
       const now = Date.now();
       if (now - lastScrollTimeRef.current < sectionScrollCooldown) return;
       lastScrollTimeRef.current = now;
-      
+
       if (isScrollingDown) {
         goToSection(currentSection + 1, 'down');
       } else {
         goToSection(currentSection - 1, 'up');
       }
     }
-  }, [isCardExpanded, isAnimating, currentSection, updateCarouselPosition, goToSection]);
+  }, [isCardExpanded, isAnimating, currentSection, isMobile, handleCarouselSnap, updateCarouselPosition, goToSection]);
 
   // Setup GSAP Observer for scroll/touch handling
   useLayoutEffect(() => {

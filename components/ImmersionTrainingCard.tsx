@@ -343,7 +343,7 @@ export function ImmersionCard({ data, isMobile = false, onExpandedChange, onBook
       {!isExpanded && (
         <div className="flex flex-col h-full overflow-hidden">
           {/* Info box */}
-          <div className="flex flex-col gap-4 rounded-lg border border-[#6a3f33] p-4 mb-4">
+          <div className="flex flex-col gap-4 rounded-lg border border-[#6a3f33] p-4 flex-1">
             <div className="flex flex-col gap-2">
               <h4
                 className="text-[36px] leading-[1.0] text-[#6a3f33]"
@@ -352,7 +352,7 @@ export function ImmersionCard({ data, isMobile = false, onExpandedChange, onBook
                 {data.title}
               </h4>
               <span
-                className="inline-flex w-fit items-center justify-center rounded-full bg-[#6a3f33] px-2 py-0.5 text-[12px] text-[#d58761]"
+                className="flex items-center justify-start rounded-full bg-[#6a3f33] px-2 py-0.5 text-[12px] text-[#d58761]"
                 style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
               >
                 {data.type === 'immersion' ? 'Immersion' : 'Workshop'}
@@ -395,23 +395,8 @@ export function ImmersionCard({ data, isMobile = false, onExpandedChange, onBook
             </div>
           </div>
 
-          {/* Image */}
-          {(data.imageUrl || data.image) && (
-            <div className="flex-1 min-h-0 mb-4">
-              <Image
-                src={data.imageUrl || data.image || ''}
-                alt={data.title}
-                width={333}
-                height={150}
-                quality={85}
-                loading="lazy"
-                className="h-full w-full rounded-2xl object-cover"
-              />
-            </div>
-          )}
-
           {/* Read More CTA */}
-          <div className="flex justify-center shrink-0">
+          <div className="flex justify-center shrink-0 mt-4">
             <CtaButton text="Read More" onClick={handleExpand} />
           </div>
         </div>
@@ -421,35 +406,35 @@ export function ImmersionCard({ data, isMobile = false, onExpandedChange, onBook
       {isExpanded && (
         <div className="flex flex-col h-full">
           {/* Header with Title and Close Button */}
-          <div className="flex items-start justify-between mb-4 shrink-0">
-            <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 mb-4 shrink-0">
+            <div className="flex items-start justify-between">
               <h4
-                className="text-[24px] leading-[1.0] text-[#6a3f33]"
+                className="text-[24px] leading-[1.0] text-[#6a3f33] flex-1"
                 style={{ fontFamily: 'var(--font-saphira), serif' }}
               >
                 {data.title}
               </h4>
-              <span
-                className="inline-flex w-fit items-center justify-center rounded-full bg-[#6a3f33] px-2 py-0.5 text-[12px] text-[#d58761]"
-                style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
+              <button
+                onClick={handleClose}
+                className="flex-shrink-0 w-6 h-6 flex items-center justify-center text-[#6a3f33] hover:opacity-70 transition-opacity ml-4"
+                aria-label="Close details"
               >
-                {data.type === 'immersion' ? 'Immersion' : 'Workshop'}
-              </span>
+                <img
+                  src="/Icon - Close.svg"
+                  alt="Close"
+                  className="h-6 w-6"
+                  style={{
+                    filter: 'brightness(0) saturate(100%) invert(24%) sepia(15%) saturate(1476%) hue-rotate(336deg) brightness(96%) contrast(87%)',
+                  }}
+                />
+              </button>
             </div>
-            <button
-              onClick={handleClose}
-              className="flex-shrink-0 w-6 h-6 flex items-center justify-center text-[#6a3f33] hover:opacity-70 transition-opacity ml-4"
-              aria-label="Close details"
+            <span
+              className="flex items-center justify-start rounded-full bg-[#6a3f33] px-2 py-0.5 text-[12px] text-[#d58761]"
+              style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
             >
-              <img
-                src="/Icon - Close.svg"
-                alt="Close"
-                className="h-6 w-6"
-                style={{
-                  filter: 'brightness(0) saturate(100%) invert(24%) sepia(15%) saturate(1476%) hue-rotate(336deg) brightness(96%) contrast(87%)',
-                }}
-              />
-            </button>
+              {data.type === 'immersion' ? 'Immersion' : 'Workshop'}
+            </span>
           </div>
 
           {/* Scrollable Content Area */}
@@ -467,6 +452,21 @@ export function ImmersionCard({ data, isMobile = false, onExpandedChange, onBook
                 {data.about}
               </p>
             </div>
+
+            {/* Image */}
+            {(data.imageUrl || data.image) && (
+              <div className="mb-4">
+                <Image
+                  src={data.imageUrl || data.image || ''}
+                  alt={data.title}
+                  width={333}
+                  height={200}
+                  quality={85}
+                  loading="lazy"
+                  className="w-full rounded-2xl object-cover"
+                />
+              </div>
+            )}
 
             {/* What To Expect */}
             <div className="mb-4 text-[#6a3f33]" style={{ lineHeight: '24px' }}>
