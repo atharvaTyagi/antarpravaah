@@ -276,24 +276,22 @@ export default function TherapiesBlobScroll({
           {/* Text content overlay */}
           <div className="absolute inset-0 flex items-center justify-center px-[12%] sm:px-[14%] lg:px-[15%] py-[8%] sm:py-[9%] lg:py-[10%]">
             <div className="flex flex-col items-center justify-center text-center max-w-[95%] sm:max-w-[92%] lg:max-w-[90%] gap-[clamp(6px,1.2vh,16px)]">
-              {/* Opening Title */}
+              {/* Opening Title - mobile: match splash blob size; desktop: original larger size */}
               <AnimatedText
                 text={blobContent.opening}
-                className="leading-[1.3] text-[#645c42]"
+                className="leading-[1.3] text-[#645c42] text-[clamp(16px,3.8vw,24px)] sm:text-[clamp(24px,4vmin,42px)]"
                 style={{ 
                   fontFamily: 'var(--font-saphira), serif',
                   fontWeight: 400,
-                  fontSize: 'clamp(16px, 3.8vw, 24px)',
                 }}
               />
 
-              {/* Text Lines */}
+              {/* Text Lines - mobile: match splash blob size; desktop: original smaller body text */}
               <div
-                className="leading-[1.3] text-[#645c42]"
+                className="leading-[1.3] text-[#645c42] text-[clamp(16px,3.8vw,24px)] sm:text-[clamp(12px,1.8vmin,18px)]"
                 style={{ 
                   fontFamily: 'var(--font-saphira), serif',
                   fontWeight: 400,
-                  fontSize: 'clamp(16px, 3.8vw, 24px)',
                 }}
               >
                 {blobContent.lines.map((line, index) => (
@@ -304,14 +302,13 @@ export default function TherapiesBlobScroll({
                 ))}
               </div>
 
-              {/* Closing Title */}
+              {/* Closing Title - mobile: match splash blob size; desktop: original mid-size */}
               <AnimatedText
                 text={blobContent.closing}
-                className="leading-[1.3] text-[#645c42] mt-[clamp(6px, 2vw, 16px)]"
+                className="leading-[1.3] text-[#645c42] mt-[clamp(6px, 2vw, 16px)] text-[clamp(16px,3.8vw,24px)] sm:text-[clamp(20px,3.5vmin,36px)]"
                 style={{ 
                   fontFamily: 'var(--font-saphira), serif',
                   fontWeight: 400,
-                  fontSize: 'clamp(16px, 3.8vw, 24px)',
                 }}
               />
 
