@@ -45,8 +45,8 @@ export default function ContactPage() {
             We're here to support your journey
           </h1>
           <p
-            className="text-[24px] leading-normal text-[#474e3a]"
-            style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
+            className="text-[14px] sm:text-[15px] lg:text-[16px] leading-normal text-[#6a3f33] tracking-[2.5px] sm:tracking-[3px] lg:tracking-[2.56px]"
+            style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
           >
             Whether you have questions about our approach, need guidance choosing the right therapy,
             or want to learn more about upcoming immersions and trainings, we're here to help. Your

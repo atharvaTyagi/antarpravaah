@@ -124,6 +124,8 @@ export default function Header() {
               headerBg={headerBg}
               navTextColor={navTextColor}
               isLightHeader={isLightHeader}
+              logoColor={theme.logoColor}
+              logoFilter={theme.logoFilter}
             />
           </div>
         </div>

@@ -16,7 +16,7 @@ import { SectionId } from '@/lib/themeConfig';
 // Section configuration - different for mobile vs desktop
 const SECTIONS_MOBILE: { id: string; type: 'static' | 'blob-scroll' | 'inspiration-scroll' | 'footer'; themeId: SectionId }[] = [
   { id: 'about-intro', type: 'static', themeId: 'about-intro' },
-  { id: 'about-photos-1', type: 'static', themeId: 'about-intro' },
+  { id: 'about-photos-1', type: 'static', themeId: 'about-body' },
   { id: 'about-body', type: 'blob-scroll', themeId: 'about-body' },
   { id: 'about-photos-2', type: 'static', themeId: 'about-body' },
   { id: 'inspiration', type: 'inspiration-scroll', themeId: 'inspiration' },
@@ -36,6 +36,10 @@ export default function AboutPage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const sectionsRef = useRef<HTMLDivElement[]>([]);
   const imageRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const mobilePhotos1Ref = useRef<(HTMLDivElement | null)[]>([]);
+  const mobilePhotos1Revealed = useRef(false);
+  const mobilePhotos2Ref = useRef<(HTMLDivElement | null)[]>([]);
+  const mobilePhotos2Revealed = useRef(false);
 
   const setTheme = useThemeStore((state) => state.setTheme);
 
@@ -267,6 +271,66 @@ export default function AboutPage() {
     }
   }, [blobResetToStart, blobResetToEnd, isMobile]);
 
+  // Staggered reveal for mobile Photo Cluster 1 when section becomes active
+  useEffect(() => {
+    if (!isMobile) return;
+    if (currentSection !== 1) {
+      // Reset when leaving the section so it can replay on re-entry
+      mobilePhotos1Revealed.current = false;
+      const photos = mobilePhotos1Ref.current.filter(Boolean) as HTMLDivElement[];
+      if (photos.length > 0) {
+        gsap.set(photos, { autoAlpha: 0 });
+      }
+      return;
+    }
+    // Entering section 1 — reveal images one by one
+    if (mobilePhotos1Revealed.current) return;
+    mobilePhotos1Revealed.current = true;
+
+    const photos = mobilePhotos1Ref.current.filter(Boolean) as HTMLDivElement[];
+    if (photos.length === 0) return;
+
+    // Ensure they start hidden, then stagger in
+    gsap.set(photos, { autoAlpha: 0 });
+    gsap.to(photos, {
+      autoAlpha: 1,
+      duration: 0.6,
+      stagger: 0.35,
+      ease: 'power2.out',
+      delay: 0.2, // small delay after section transition lands
+    });
+  }, [currentSection, isMobile]);
+
+  // Staggered reveal for mobile Photo Cluster 2 when section becomes active
+  useEffect(() => {
+    if (!isMobile) return;
+    if (currentSection !== 3) {
+      // Reset when leaving the section so it can replay on re-entry
+      mobilePhotos2Revealed.current = false;
+      const photos = mobilePhotos2Ref.current.filter(Boolean) as HTMLDivElement[];
+      if (photos.length > 0) {
+        gsap.set(photos, { autoAlpha: 0 });
+      }
+      return;
+    }
+    // Entering section 3 — reveal images one by one
+    if (mobilePhotos2Revealed.current) return;
+    mobilePhotos2Revealed.current = true;
+
+    const photos = mobilePhotos2Ref.current.filter(Boolean) as HTMLDivElement[];
+    if (photos.length === 0) return;
+
+    // Ensure they start hidden, then stagger in
+    gsap.set(photos, { autoAlpha: 0 });
+    gsap.to(photos, {
+      autoAlpha: 1,
+      duration: 0.6,
+      stagger: 0.35,
+      ease: 'power2.out',
+      delay: 0.2, // small delay after section transition lands
+    });
+  }, [currentSection, isMobile]);
+
   // Setup wheel/touch event handlers
   useLayoutEffect(() => {
     if (typeof window === 'undefined') return;
@@ -404,37 +468,46 @@ export default function AboutPage() {
               {/* Section 2: Photo Cluster 1 */}
               <div
                 ref={(el) => { if (el) sectionsRef.current[1] = el; }}
-                className={`relative flex items-center justify-center px-5 bg-[#f6edd0] ${sectionClass}`}
+                className={`relative flex items-center justify-center px-5 bg-[#474e3a] ${sectionClass}`}
               >
-                <div className="relative w-[353px] h-[320px]">
+                <div className="pointer-events-none absolute inset-0 overflow-hidden">
+                  <img src="/about_dashed_background.svg" alt="" className="h-full w-full object-cover" />
+                </div>
+                <div className="relative w-[353px] h-[400px] z-10">
                   {/* Bottom left */}
-                  <div className="absolute left-0 bottom-0 h-[152px] w-[146px] overflow-hidden rounded-full">
-                    <FadeInImage 
-                      src={getCloudinaryUrl('antarpravaah/about/namita_one')} 
-                      alt="Namita" 
-                      width={146} height={152}
+                  <div
+                    ref={(el) => { mobilePhotos1Ref.current[0] = el; }}
+                    className="absolute left-0 bottom-0 h-[152px] w-[146px] overflow-hidden rounded-full"
+                    style={{ visibility: 'hidden' }}
+                  >
+                    <img
+                      src={getCloudinaryUrl('antarpravaah/about/namita_one')}
+                      alt="Namita"
                       className="h-full w-full object-cover"
-                      delayMs={200}
                     />
                   </div>
                   {/* Top center */}
-                  <div className="absolute left-1/2 -translate-x-1/2 top-0 h-[221px] w-[212px] overflow-hidden rounded-full">
-                    <FadeInImage 
-                      src={getCloudinaryUrl('antarpravaah/about/namita_two')} 
-                      alt="Namita" 
-                      width={212} height={221}
+                  <div
+                    ref={(el) => { mobilePhotos1Ref.current[1] = el; }}
+                    className="absolute left-1/2 -translate-x-1/2 top-0 h-[221px] w-[212px] overflow-hidden rounded-full"
+                    style={{ visibility: 'hidden' }}
+                  >
+                    <img
+                      src={getCloudinaryUrl('antarpravaah/about/namita_two')}
+                      alt="Namita"
                       className="h-full w-full object-cover"
-                      delayMs={400}
                     />
                   </div>
                   {/* Bottom right */}
-                  <div className="absolute right-0 bottom-[15px] h-[123px] w-[117px] overflow-hidden rounded-full">
-                    <FadeInImage 
-                      src={getCloudinaryUrl('antarpravaah/about/namita_three')} 
-                      alt="Namita" 
-                      width={117} height={123}
+                  <div
+                    ref={(el) => { mobilePhotos1Ref.current[2] = el; }}
+                    className="absolute right-0 bottom-[10px] h-[123px] w-[117px] overflow-hidden rounded-full"
+                    style={{ visibility: 'hidden' }}
+                  >
+                    <img
+                      src={getCloudinaryUrl('antarpravaah/about/namita_three')}
+                      alt="Namita"
                       className="h-full w-full object-cover"
-                      delayMs={600}
                     />
                   </div>
                 </div>
@@ -445,7 +518,7 @@ export default function AboutPage() {
                 ref={(el) => { if (el) sectionsRef.current[2] = el; }}
                 className={`relative flex items-center justify-center bg-[#474e3a] overflow-hidden ${sectionClass}`}
               >
-                <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-10">
+                <div className="pointer-events-none absolute inset-0 overflow-hidden">
                   <img src="/about_dashed_background.svg" alt="" className="h-full w-full object-cover" />
                 </div>
                 <AboutBlobScroll
@@ -461,38 +534,44 @@ export default function AboutPage() {
                 ref={(el) => { if (el) sectionsRef.current[3] = el; }}
                 className={`relative flex items-center justify-center px-5 bg-[#474e3a] ${sectionClass}`}
               >
-                <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-10">
+                <div className="pointer-events-none absolute inset-0 overflow-hidden">
                   <img src="/about_dashed_background.svg" alt="" className="h-full w-full object-cover" />
                 </div>
-                <div className="relative w-[300px] h-[320px] z-10">
+                <div className="relative w-[353px] h-[400px] z-10">
                   {/* Top left */}
-                  <div className="absolute left-[11px] top-[38px] h-[130px] w-[124px] overflow-hidden rounded-full">
-                    <FadeInImage 
-                      src={getCloudinaryUrl('antarpravaah/about/namita_four')} 
-                      alt="Namita" 
-                      width={124} height={130}
+                  <div
+                    ref={(el) => { mobilePhotos2Ref.current[0] = el; }}
+                    className="absolute left-0 top-[20px] h-[140px] w-[134px] overflow-hidden rounded-full"
+                    style={{ visibility: 'hidden' }}
+                  >
+                    <img
+                      src={getCloudinaryUrl('antarpravaah/about/namita_four')}
+                      alt="Namita"
                       className="h-full w-full object-cover"
-                      delayMs={200}
                     />
                   </div>
                   {/* Bottom center */}
-                  <div className="absolute left-[64px] bottom-0 h-[203px] w-[194px] overflow-hidden rounded-full">
-                    <FadeInImage 
-                      src={getCloudinaryUrl('antarpravaah/about/namita_five')} 
-                      alt="Namita" 
-                      width={194} height={203}
+                  <div
+                    ref={(el) => { mobilePhotos2Ref.current[1] = el; }}
+                    className="absolute left-1/2 -translate-x-1/2 bottom-0 h-[221px] w-[212px] overflow-hidden rounded-full"
+                    style={{ visibility: 'hidden' }}
+                  >
+                    <img
+                      src={getCloudinaryUrl('antarpravaah/about/namita_five')}
+                      alt="Namita"
                       className="h-full w-full object-cover"
-                      delayMs={400}
                     />
                   </div>
                   {/* Top right */}
-                  <div className="absolute right-[10px] top-0 h-[159px] w-[152px] overflow-hidden rounded-full">
-                    <FadeInImage 
-                      src={getCloudinaryUrl('antarpravaah/about/namita_six')} 
-                      alt="Namita" 
-                      width={152} height={159}
+                  <div
+                    ref={(el) => { mobilePhotos2Ref.current[2] = el; }}
+                    className="absolute right-0 top-0 h-[159px] w-[152px] overflow-hidden rounded-full"
+                    style={{ visibility: 'hidden' }}
+                  >
+                    <img
+                      src={getCloudinaryUrl('antarpravaah/about/namita_six')}
+                      alt="Namita"
                       className="h-full w-full object-cover"
-                      delayMs={600}
                     />
                   </div>
                 </div>

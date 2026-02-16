@@ -325,8 +325,8 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
           <div
             className="relative"
             style={{
-              width: 'clamp(280px, 60vmin, 760px)',
-              height: 'clamp(280px, 60vmin, 760px)',
+              width: 'clamp(360px, min(95vw, 75dvh), 760px)',
+              height: 'clamp(360px, min(95vw, 75dvh), 760px)',
             }}
           >
             {/* Organic Blob Shape - SVG */}
@@ -353,7 +353,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
                   style={{ 
                     fontFamily: 'var(--font-saphira), serif',
                     fontWeight: 400,
-                    fontSize: 'clamp(14px, 2.6vmin, 24px)',
+                    fontSize: 'clamp(16px, 3.8vw, 24px)',
                     marginBottom: 'clamp(8px, 2vw, 16px)',
                   }}
                 />
@@ -363,7 +363,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
                   style={{ 
                     fontFamily: 'var(--font-saphira), serif',
                     fontWeight: 400,
-                    fontSize: 'clamp(14px, 2.6vmin, 24px)',
+                    fontSize: 'clamp(16px, 3.8vw, 24px)',
                   }}
                 />
               </div>

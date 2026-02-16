@@ -312,7 +312,7 @@ export default function ThoughtsAndPonderings() {
         
         {/* Scrollable card container - native scroll with containment */}
         <div 
-          className="flex-1 overflow-y-auto overflow-x-hidden px-4 pb-4 min-h-0"
+          className="flex-1 overflow-y-auto overflow-x-hidden px-4 pb-4 min-h-0 scrollbar-hide"
           style={{ 
             overscrollBehavior: 'contain',
             WebkitOverflowScrolling: 'touch',

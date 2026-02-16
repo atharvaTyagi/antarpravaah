@@ -220,7 +220,7 @@ export default function AboutBlobScroll({ isActive = false, onEdgeReached, reset
           <img
             src="/about_text_blob.svg"
             alt=""
-            className="w-[485px] sm:w-[400px] md:w-[480px] lg:w-[560px] h-auto max-w-none"
+            className="w-[640px] sm:w-[400px] md:w-[480px] lg:w-[560px] h-auto max-w-none"
           />
           {/* Text content overlay - absolutely positioned inside the blob */}
           <div className="absolute inset-0 flex items-center justify-center">

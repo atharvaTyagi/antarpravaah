@@ -202,6 +202,25 @@ export default function ApproachPage() {
     }
   }, [isAnimating, currentSection, SECTIONS, isPathwaysScrollActive, goToSection]);
 
+  // Helper to check if element is within a scrollable container
+  const isWithinScrollableContainer = useCallback((target: EventTarget | null): boolean => {
+    if (!target || !(target instanceof Element)) return false;
+    
+    let element: Element | null = target;
+    while (element && element !== document.body) {
+      const style = window.getComputedStyle(element);
+      const overflowY = style.overflowY;
+      
+      // Check if this element is scrollable and has scrollable content
+      if ((overflowY === 'auto' || overflowY === 'scroll') && element.scrollHeight > element.clientHeight) {
+        return true;
+      }
+      
+      element = element.parentElement;
+    }
+    return false;
+  }, []);
+
   // Setup wheel/touch event handlers
   useLayoutEffect(() => {
     if (typeof window === 'undefined') return;
@@ -212,6 +231,12 @@ export default function ApproachPage() {
     const handleWheel = (e: WheelEvent) => {
       const section = SECTIONS[currentSection];
       if (section.type === 'pathways-scroll' && isPathwaysScrollActive) return;
+      
+      // Allow native scroll in thoughts section on mobile
+      if (isMobile && section.id === 'thoughts' && isWithinScrollableContainer(e.target)) {
+        return; // Don't prevent default, allow native scroll
+      }
+      
       e.preventDefault();
       handleScroll(e.deltaY);
     };
@@ -223,6 +248,12 @@ export default function ApproachPage() {
     const handleTouchMove = (e: TouchEvent) => {
       const section = SECTIONS[currentSection];
       if (section.type === 'pathways-scroll' && isPathwaysScrollActive) return;
+      
+      // Allow native scroll in thoughts section on mobile
+      if (isMobile && section.id === 'thoughts' && isWithinScrollableContainer(e.target)) {
+        return; // Don't prevent default, allow native scroll
+      }
+      
       e.preventDefault();
       const currentY = e.touches[0].clientY;
       const deltaY = lastTouchY - currentY;
@@ -240,7 +271,7 @@ export default function ApproachPage() {
       window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchmove', handleTouchMove);
     };
-  }, [isReady, currentSection, SECTIONS, isPathwaysScrollActive, handleScroll]);
+  }, [isReady, currentSection, SECTIONS, isPathwaysScrollActive, handleScroll, isMobile, isWithinScrollableContainer]);
 
   // Section height class name
   const sectionClass = "section-height";

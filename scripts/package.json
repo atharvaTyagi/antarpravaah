@@ -1,0 +1,18 @@
+{
+  "name": "scripts",
+  "version": "1.0.0",
+  "description": "This directory contains scripts to convert large SVG files to optimized WebP format.",
+  "main": "check-dataset-visibility.js",
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "@types/node": "^25.2.3"
+  },
+  "dependencies": {
+    "@sanity/client": "^7.14.1",
+    "dotenv": "^17.3.1"
+  }
+}

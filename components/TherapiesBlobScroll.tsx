@@ -266,7 +266,7 @@ export default function TherapiesBlobScroll({
           <img
             src="/about_text_blob.svg"
             alt=""
-            className="w-[520px] sm:w-[min(90vw,85vh)] lg:w-[min(85vw,80vh)] h-auto max-w-none"
+            className="w-[680px] sm:w-[min(90vw,85vh)] lg:w-[min(85vw,80vh)] h-auto max-w-none"
             style={{
               filter:
                 'brightness(0) saturate(100%) invert(87%) sepia(11%) saturate(939%) hue-rotate(7deg) brightness(102%) contrast(85%)',

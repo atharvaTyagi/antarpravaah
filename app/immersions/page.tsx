@@ -482,8 +482,8 @@ function ImmersionsPageContent() {
                 Immersions & Trainings
               </h1>
               <h2
-                className="text-[14px] sm:text-[15px] lg:text-[16px] leading-normal text-[#6a3f33] uppercase tracking-[2.5px] sm:tracking-[3px] lg:tracking-[2.56px]"
-                style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
+                className="text-[14px] sm:text-[15px] lg:text-[16px] leading-normal text-[#6a3f33] tracking-[2.5px] sm:tracking-[3px] lg:tracking-[2.56px]"
+                style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
               >
                 Gather, Learn, Transform Together
               </h2>
