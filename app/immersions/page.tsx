@@ -520,44 +520,44 @@ function ImmersionsPageContent() {
               />
             </div>
 
-            <div className="relative z-10 mx-auto max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1000px]">
+            <div className="relative z-10 mx-auto flex max-w-full flex-col items-center sm:max-w-[calc(100vw-64px)] lg:max-w-[1000px]">
               {/* Mobile: Cluster images at top */}
               {isMobile && (
-                <div className="relative w-[313px] h-[280px] mx-auto mb-6">
-                  <div className="absolute top-0 left-0 w-[120px] h-[126px]">
-                    <Image
-                      src={getCloudinaryUrl('antarpravaah/immersions/immersion_1')}
-                      alt=""
-                      width={120}
-                      height={126}
-                      quality={85}
-                      loading="lazy"
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-                  <div className="absolute top-[60px] left-[148px] w-[112px] h-[118px]">
-                    <Image
-                      src={getCloudinaryUrl('antarpravaah/immersions/immersion_2')}
-                      alt=""
-                      width={112}
-                      height={118}
-                      quality={85}
-                      loading="lazy"
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-                  <div className="absolute top-[130px] left-[6px] w-[146px] h-[153px]">
-                    <Image
-                      src={getCloudinaryUrl('antarpravaah/immersions/immersion_3')}
-                      alt=""
-                      width={146}
-                      height={153}
-                      quality={85}
-                      loading="lazy"
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
+                <div className="relative w-full max-w-[313px] mx-auto mb-8 aspect-[313/280]">
+                <div className="absolute top-0 left-0 w-[48.3%] h-[45%]">
+                  <Image
+                    src={getCloudinaryUrl('antarpravaah/immersions/immersion_1')}
+                    alt=""
+                    fill
+                    sizes="(max-width: 768px) 40vw, 120px"
+                    quality={85}
+                    loading="lazy"
+                    className="object-contain"
+                  />
                 </div>
+                <div className="absolute top-[21.4%] left-[47.3%] w-[55.8%] h-[42.1%]">
+                  <Image
+                    src={getCloudinaryUrl('antarpravaah/immersions/immersion_2')}
+                    alt=""
+                    fill
+                    sizes="(max-width: 768px) 35vw, 112px"
+                    quality={85}
+                    loading="lazy"
+                    className="object-contain"
+                  />
+                </div>
+                <div className="absolute top-[46.4%] left-[1.9%] w-[66.6%] h-[54.6%]">
+                  <Image
+                    src={getCloudinaryUrl('antarpravaah/immersions/immersion_3')}
+                    alt=""
+                    fill
+                    sizes="(max-width: 768px) 45vw, 146px"
+                    quality={85}
+                    loading="lazy"
+                    className="object-contain"
+                  />
+                </div>
+              </div>
               )}
 
               {/* Three column layout (desktop) */}
@@ -590,7 +590,7 @@ function ImmersionsPageContent() {
                     Transformative Gatherings
                   </h3>
                   <div
-                    className="text-[14px] sm:text-[15px] lg:text-[16px] leading-[24px] text-justify md:text-center"
+                    className="text-[14px] sm:text-[15px] lg:text-[16px] leading-[24px] text-center"
                     style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
                   >
                     <p className="mb-3">
@@ -700,38 +700,38 @@ function ImmersionsPageContent() {
             <div className="relative z-10 mx-auto max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1000px]">
               {/* Mobile: Cluster images at top (inverted layout) */}
               {isMobile && (
-                <div className="relative w-[313px] h-[280px] mx-auto mb-6 transform rotate-180">
-                  <div className="absolute top-0 left-0 w-[120px] h-[126px] transform rotate-180">
+                <div className="relative w-full max-w-[313px] mx-auto mb-8 aspect-[313/280] transform rotate-180">
+                  <div className="absolute top-0 left-0 w-[48.3%] h-[45%] transform rotate-180">
                     <Image
                       src={getCloudinaryUrl('antarpravaah/trainings/training_1')}
                       alt=""
-                      width={120}
-                      height={126}
+                      fill
+                      sizes="(max-width: 768px) 40vw, 120px"
                       quality={85}
                       loading="lazy"
-                      className="w-full h-full object-contain"
+                      className="object-contain"
                     />
                   </div>
-                  <div className="absolute top-[60px] left-[148px] w-[112px] h-[118px] transform rotate-180">
+                  <div className="absolute top-[21.4%] left-[47.3%] w-[55.8%] h-[42.1%] transform rotate-180">
                     <Image
                       src={getCloudinaryUrl('antarpravaah/trainings/training_2')}
                       alt=""
-                      width={112}
-                      height={118}
+                      fill
+                      sizes="(max-width: 768px) 35vw, 112px"
                       quality={85}
                       loading="lazy"
-                      className="w-full h-full object-contain"
+                      className="object-contain"
                     />
                   </div>
-                  <div className="absolute top-[130px] left-[6px] w-[146px] h-[153px] transform rotate-180">
+                  <div className="absolute top-[46.4%] left-[1.9%] w-[66.6%] h-[54.6%] transform rotate-180">
                     <Image
                       src={getCloudinaryUrl('antarpravaah/trainings/training_3')}
                       alt=""
-                      width={146}
-                      height={153}
+                      fill
+                      sizes="(max-width: 768px) 45vw, 146px"
                       quality={85}
                       loading="lazy"
-                      className="w-full h-full object-contain"
+                      className="object-contain"
                     />
                   </div>
                 </div>
