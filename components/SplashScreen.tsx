@@ -285,7 +285,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-full bg-[#6a3f33] overflow-hidden"
+      className={`relative w-full h-full bg-[#6a3f33] overflow-hidden ${showBlob ? 'max-sm:overflow-visible' : ''}`}
     >
       {/* Spiral Lottie Animation — visibility controlled by React state */}
       {showSpiral && (
@@ -323,11 +323,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
           style={{ opacity: phase === 'transitioning' ? 0 : 1 }}
         >
           <div
-            className="relative"
-            style={{
-              width: 'clamp(360px, min(95vw, 75dvh), 760px)',
-              height: 'clamp(360px, min(95vw, 75dvh), 760px)',
-            }}
+            className="relative w-[680px] aspect-square max-w-none sm:w-[clamp(360px,min(95vw,75dvh),760px)] sm:aspect-auto sm:h-[clamp(360px,min(95vw,75dvh),760px)]"
           >
             {/* Organic Blob Shape - SVG */}
             <div className="w-full h-full relative">
@@ -339,7 +335,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
               />
               {/* Text Content */}
               <div
-                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-left z-10"
+                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center z-10"
                 style={{
                   width: '80%',
                   maxHeight: '85%',
