@@ -63,6 +63,7 @@ export default function Home() {
 
   // Refs
   const containerRef = useRef<HTMLDivElement>(null);
+  const mainContainerRef = useRef<HTMLDivElement>(null);
   const sectionsRef = useRef<HTMLDivElement[]>([]);
   const observerRef = useRef<Observer | null>(null);
   const lastScrollTimeRef = useRef<number>(0);
@@ -88,25 +89,25 @@ export default function Home() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    const setVh = () => {
+    const syncVh = () => {
       const vh = window.innerHeight * 0.01;
       document.documentElement.style.setProperty('--vh', `${vh}px`);
     };
 
     // Set immediately
-    setVh();
+    syncVh();
 
     // Update on resize and orientation change
-    window.addEventListener('resize', setVh);
-    window.addEventListener('orientationchange', setVh);
+    window.addEventListener('resize', syncVh);
+    window.addEventListener('orientationchange', syncVh);
 
     // Also set after a short delay to catch any browser chrome adjustments
-    const timeoutId = setTimeout(setVh, 100);
-    const delayedTimeout = setTimeout(setVh, 500);
+    const timeoutId = setTimeout(syncVh, 100);
+    const delayedTimeout = setTimeout(syncVh, 500);
 
     return () => {
-      window.removeEventListener('resize', setVh);
-      window.removeEventListener('orientationchange', setVh);
+      window.removeEventListener('resize', syncVh);
+      window.removeEventListener('orientationchange', syncVh);
       clearTimeout(timeoutId);
       clearTimeout(delayedTimeout);
     };
@@ -266,9 +267,14 @@ export default function Home() {
   useLayoutEffect(() => {
     if (typeof window === 'undefined') return;
     if (!isReady) return;
+    if (!mainContainerRef.current) return;
 
-    // Create Observer for scroll handling
+    // Scope to mainContainerRef (.main-container has touch-action:none in globals.css).
+    // On iOS, non-passive touch listeners are only honoured when the target element opts
+    // out of native touch handling via touch-action:none — using window as target causes
+    // Safari to silently ignore preventDefault and let native scroll escape.
     const pageObserver = Observer.create({
+      target: mainContainerRef.current,
       type: 'wheel,touch,pointer',
       wheelSpeed: -1,
       tolerance: 50,
@@ -322,62 +328,13 @@ export default function Home() {
 
   return (
     <>
-      <style jsx global>{`
-        :root {
-          --header-height: 90px;
-          --vh: 1vh;
-        }
-        @media (min-width: 640px) {
-          :root {
-            --header-height: 108px;
-          }
-        }
-        @media (min-width: 1024px) {
-          :root {
-            --header-height: 148px;
-          }
-        }
-
-        /* Section height classes that work across all mobile browsers */
-        .section-height {
-          height: calc(100vh - var(--header-height, 90px));
-          min-height: calc(100vh - var(--header-height, 90px));
-          height: calc(var(--vh, 1vh) * 100 - var(--header-height, 90px));
-          min-height: calc(var(--vh, 1vh) * 100 - var(--header-height, 90px));
-        }
-
-        @supports (height: 100dvh) {
-          .section-height {
-            height: calc(100dvh - var(--header-height, 90px));
-            min-height: calc(100dvh - var(--header-height, 90px));
-          }
-        }
-
-        /* Main container positioning */
-        .main-container {
-          position: fixed;
-          top: var(--header-height, 90px);
-          left: 0;
-          right: 0;
-          bottom: 0;
-          height: calc(100vh - var(--header-height, 90px));
-          height: calc(var(--vh, 1vh) * 100 - var(--header-height, 90px));
-        }
-
-        @supports (height: 100dvh) {
-          .main-container {
-            height: calc(100dvh - var(--header-height, 90px));
-          }
-        }
-      `}</style>
-
       <main className="relative">
         {/* Guided Journey Modal - Shows after splash interaction completes */}
         <GuidedJourneyModal isOpen={showGuidedJourney} onClose={handleCloseGuidedJourney} />
 
         {/* Fixed Container - scrolls through sections */}
-        <div className="main-container overflow-hidden bg-[#f6edd0] z-[30]">
-          <div ref={containerRef} className="will-change-transform">
+        <div ref={mainContainerRef} className="main-container overflow-hidden bg-[#f6edd0]">
+          <div ref={containerRef}>
             {/* Section 0: Splash */}
             <div
               ref={(el) => { if (el) sectionsRef.current[0] = el; }}

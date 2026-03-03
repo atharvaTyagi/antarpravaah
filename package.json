@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@internationalized/date": "^3.10.1",
+    "@lottiefiles/dotlottie-react": "^0.18.3",
     "@sanity/client": "^7.14.1",
     "@sanity/image-url": "^2.0.3",
     "@sanity/vision": "^5.9.0",
@@ -34,6 +35,7 @@
     "zustand": "^5.0.9"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.2",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "19.2.14",

@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
+import Image from 'next/image';
 import gsap from 'gsap';
 import { Observer } from 'gsap/dist/Observer';
-import Lottie, { LottieRefCurrentProps } from 'lottie-react';
-import animationData from '@/public/spiral_animation.json';
+import { DotLottieReact, type DotLottie } from '@lottiefiles/dotlottie-react';
 
 // Register GSAP plugins
 if (typeof window !== 'undefined') {
@@ -21,13 +21,18 @@ function AnimatedText({
   className?: string; 
   style?: React.CSSProperties;
 }) {
-  const words = text.split(' ');
+  let pos = 0;
+  const wordEntries = text.split(' ').map((word) => {
+    const start = pos;
+    pos += word.length + 1;
+    return { word, start };
+  });
   return (
     <p className={className} style={style}>
-      {words.map((word, index) => (
-        <span key={index} className="splash-word" style={{ opacity: 0.2 }}>
+      {wordEntries.map(({ word, start }, i) => (
+        <span key={start} className="splash-word" style={{ opacity: 0.2 }}>
           {word}
-          {index < words.length - 1 ? ' ' : ''}
+          {i < wordEntries.length - 1 ? ' ' : ''}
         </span>
       ))}
     </p>
@@ -43,7 +48,6 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const spiralContainerRef = useRef<HTMLDivElement>(null);
   const blobContainerRef = useRef<HTMLDivElement>(null);
-  const lottieRef = useRef<LottieRefCurrentProps>(null);
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
   const isCompleting = useRef(false);
   const lottieCompletedRef = useRef(false);
@@ -53,7 +57,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
   // React state for phase tracking — controls visibility via inline styles
   const [phase, setPhase] = useState<'spiral' | 'transitioning' | 'blob' | 'done'>('spiral');
   const [blobReady, setBlobReady] = useState(false);
-  const [wordsComplete, setWordsComplete] = useState(false);
+  const wordsComplete = phase === 'done';
   const observerRef = useRef<Observer | null>(null);
   const currentWordIndexRef = useRef(0);
   const totalWordsRef = useRef(0);
@@ -65,29 +69,32 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    const setVh = () => {
+    const syncVh = () => {
       const vh = window.innerHeight * 0.01;
       document.documentElement.style.setProperty('--vh', `${vh}px`);
     };
 
-    setVh();
-    const timeoutId = setTimeout(setVh, 100);
-    window.addEventListener('resize', setVh);
-    window.addEventListener('orientationchange', setVh);
+    syncVh();
+    const timeoutId = setTimeout(syncVh, 100);
+    window.addEventListener('resize', syncVh);
+    window.addEventListener('orientationchange', syncVh);
 
     return () => {
-      window.removeEventListener('resize', setVh);
-      window.removeEventListener('orientationchange', setVh);
+      window.removeEventListener('resize', syncVh);
+      window.removeEventListener('orientationchange', syncVh);
       clearTimeout(timeoutId);
     };
   }, []);
 
   // Main initialization effect - timeouts and fallbacks
   useEffect(() => {
-    // Lottie fallback: skip to blob after timeout
+    // Lottie fallback: skip to blob if WASM/animation hasn't started within the window.
+    // 8 s on mobile (slow connections + WASM cold-start), 10 s on desktop.
+    // If the dotlottie 'load' event fires before this, the timer is reset to a longer
+    // value so a confirmed-playing animation is never cut short.
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-    const fallbackDelay = isMobile ? 3000 : 6000;
-    
+    const fallbackDelay = isMobile ? 8000 : 10000;
+
     fallbackTimeoutRef.current = setTimeout(() => {
       if (!lottieCompletedRef.current) {
         handleLottieComplete();
@@ -99,7 +106,6 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
       if (!isCompleting.current) {
         isCompleting.current = true;
         setPhase('done');
-        setWordsComplete(true);
         onCompleteSafe();
       }
     }, 15000);
@@ -165,7 +171,6 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
     currentWordIndexRef.current = endIndex;
 
     if (currentWordIndexRef.current >= words.length) {
-      setWordsComplete(true);
       setPhase('done');
       setTimeout(() => {
         if (!isCompleting.current) {
@@ -181,8 +186,14 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
   // Setup GSAP Observer when blob is ready
   useEffect(() => {
     if (!blobReady || wordsComplete || typeof window === 'undefined') return;
+    if (!blobContainerRef.current) return;
 
+    // Scope to blobContainerRef (absolute inset-0, covers full viewport).
+    // On iOS, non-passive touch listeners only work when the target element has
+    // touch-action:none — scoping to the container rather than window ensures
+    // iOS honours preventDefault and the scroll-reveal captures all touch input.
     observerRef.current = Observer.create({
+      target: blobContainerRef.current,
       type: 'wheel,touch,pointer',
       wheelSpeed: -1,
       tolerance: 30,
@@ -197,7 +208,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
         observerRef.current = null;
       }
     };
-  }, [blobReady, wordsComplete, handleScrollReveal]);
+  }, [blobReady, phase, handleScrollReveal]);
 
   // Handle Lottie animation complete
   const handleLottieComplete = useCallback(() => {
@@ -285,30 +296,50 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
   return (
     <div
       ref={containerRef}
-      className={`relative w-full h-full bg-[#6a3f33] overflow-hidden ${showBlob ? 'max-sm:overflow-visible' : ''}`}
+      className={`relative w-full h-full bg-[#6a3f33] [clip-path:inset(0)] ${showBlob ? 'max-sm:[clip-path:none]' : ''}`}
     >
       {/* Spiral Lottie Animation — visibility controlled by React state */}
       {showSpiral && (
         <div
           ref={spiralContainerRef}
+          data-testid="spiral-container"
           className="absolute inset-0 flex items-center justify-center p-4 md:p-12 lg:p-16"
           style={{ opacity: phase === 'spiral' ? 1 : undefined }}
         >
-          <div className="block w-full h-full max-w-[min(90vw,90vh)] max-h-[min(90vw,90vh)]">
-            <Lottie
-              lottieRef={lottieRef}
-              animationData={animationData}
+          {/* translateZ(0) on this inner wrapper — not on spiralContainerRef — promotes the
+              canvas to its own GPU tile without triggering the WebKit checkerboard artifact.
+              The parent no longer uses overflow:hidden (replaced with clip-path:inset(0))
+              so there is no compositor paint barrier between the background and the canvas. */}
+          <div
+            className="block w-full h-full max-w-[min(90vw,90vh)] max-h-[min(90vw,90vh)]"
+            style={{ transform: 'translateZ(0)' }}
+          >
+            <DotLottieReact
+              src="/spiral_animation.lottie"
               loop={false}
-              autoplay={true}
-              renderer="svg"
-              style={{
-                width: '100%',
-                height: '100%',
-              }}
-              onComplete={handleLottieComplete}
-              rendererSettings={{
-                preserveAspectRatio: 'xMidYMid meet',
-                progressiveLoad: true,
+              autoplay
+              useFrameInterpolation={false}
+              style={{ width: '100%', height: '100%' }}
+              // freezeOnOffscreen defaults to true and uses IntersectionObserver to pause
+              // the animation when "off-screen". On Safari, IntersectionObserver incorrectly
+              // reports a canvas inside overflow:hidden + position:fixed as not intersecting,
+              // so the animation is frozen immediately before drawing a single frame.
+              // Disabling this ensures the animation always plays regardless of IO state.
+              renderConfig={{ freezeOnOffscreen: false }}
+              dotLottieRefCallback={(dotLottie: DotLottie) => {
+                if (!dotLottie) return;
+                dotLottie.addEventListener('complete', handleLottieComplete);
+                // 'load' fires once WASM is initialised and the animation is playing.
+                // At that point we know the renderer is alive — reset the fallback to a
+                // generous safety net so a confirmed-running animation is never cut short.
+                dotLottie.addEventListener('load', () => {
+                  if (fallbackTimeoutRef.current) {
+                    clearTimeout(fallbackTimeoutRef.current);
+                    fallbackTimeoutRef.current = setTimeout(() => {
+                      if (!lottieCompletedRef.current) handleLottieComplete();
+                    }, 15000);
+                  }
+                });
               }}
             />
           </div>
@@ -319,19 +350,23 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
       {showBlob && (
         <div
           ref={blobContainerRef}
+          data-testid="blob-container"
           className="absolute inset-0 flex items-center justify-center"
-          style={{ opacity: phase === 'transitioning' ? 0 : 1 }}
+          style={{ opacity: phase === 'transitioning' ? 0 : 1, touchAction: 'none' }}
         >
           <div
             className="relative w-[680px] aspect-square max-w-none sm:w-[clamp(360px,min(95vw,75dvh),760px)] sm:aspect-auto sm:h-[clamp(360px,min(95vw,75dvh),760px)]"
           >
             {/* Organic Blob Shape - SVG */}
             <div className="w-full h-full relative">
-              <img
+              <Image
                 src="/splash_blob.svg"
                 alt=""
-                className="absolute inset-0 w-full h-full object-contain"
-                aria-hidden="true"
+                fill
+                sizes="(max-width: 640px) 680px, 760px"
+                className="object-contain"
+                aria-hidden={true}
+                priority
               />
               {/* Text Content */}
               <div

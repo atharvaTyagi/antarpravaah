@@ -41,7 +41,16 @@
       "Bash(node scripts/test-queries.js:*)",
       "Bash(node scripts/check-dataset-visibility.js:*)",
       "Bash(npx sanity:*)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(curl:*)",
+      "WebSearch",
+      "WebFetch(domain:benfrain.com)",
+      "WebFetch(domain:bugs.webkit.org)",
+      "WebFetch(domain:www.joshwcomeau.com)",
+      "Bash(python3:*)",
+      "Bash(xxd:*)",
+      "Bash(cp:*)",
+      "Bash(unzip:*)"
     ]
   }
 }

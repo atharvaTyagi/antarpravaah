@@ -192,6 +192,9 @@ body {
   bottom: 0;
   height: calc(100vh - var(--header-height, 90px));
   height: calc(var(--vh, 1vh) * 100 - var(--header-height, 90px));
+  /* touch-action: none tells the iOS compositor to surrender touch ownership to JS
+     before the gesture begins, allowing GSAP Observer's preventDefault to work reliably */
+  touch-action: none;
 }
 
 @supports (height: 100dvh) {
@@ -206,6 +209,7 @@ body {
   min-height: calc(100vh - var(--header-height, 90px));
   height: calc(var(--vh, 1vh) * 100 - var(--header-height, 90px));
   min-height: calc(var(--vh, 1vh) * 100 - var(--header-height, 90px));
+  touch-action: none;
 }
 
 @supports (height: 100dvh) {
@@ -281,6 +285,9 @@ nextjs-portal {
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    /* bg-background removed: BackgroundWrapper's fixed div handles background.
+       Applying it here would paint over the z-0 fixed div in Safari. */
+    @apply text-foreground;
+    background-color: transparent;
   }
 }
