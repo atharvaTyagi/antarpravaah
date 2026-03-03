@@ -8,7 +8,6 @@ import { Observer } from 'gsap/dist/Observer';
 import Button from './Button';
 import { getCloudinaryUrl } from '@/lib/cloudinary';
 
-// Register GSAP plugins
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(Observer);
 }
@@ -22,7 +21,7 @@ interface WeWorkTogetherProps {
 
 const workCards = [
   {
-    text: "At Antar Pravaah, healing is a shared responsibility. We both do the work.",
+    text: 'At Antar Pravaah, healing is a shared responsibility. We both do the work.',
     imagePosition: 'center' as const,
     isIntro: true,
   },
@@ -35,12 +34,11 @@ const workCards = [
     imagePosition: 'left' as const,
   },
   {
-    text: 'Why? Because we do want change but often change to the extent of the outermost limits of our own comfort zone. Healing or transformation works when you are willing to take the baby steps out of your comfortable space and step into the unfamiliar.',
+    text: "Why? Because we do want change but often change to the extent of the outermost limits of our own comfort zone. Healing or transformation works when you are willing to take the baby steps out of your comfortable space and step into the unfamiliar.",
     imagePosition: 'right' as const,
   },
 ];
 
-// Total cards: 4 content cards + 1 CTA = 5
 const TOTAL_CARDS = workCards.length + 1;
 
 export default function WeWorkTogether({
@@ -51,7 +49,7 @@ export default function WeWorkTogether({
 }: WeWorkTogetherProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const cardsContainerRef = useRef<HTMLDivElement | null>(null);
-  
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [activeIndex, setActiveIndex] = useState(0);
   const activeIndexRef = useRef(0);
@@ -61,7 +59,6 @@ export default function WeWorkTogether({
   const lastScrollTimeRef = useRef(0);
   const [isClient, setIsClient] = useState(false);
 
-  // Cooldown between card changes
   const scrollCooldown = 400;
 
   useEffect(() => {
@@ -69,21 +66,18 @@ export default function WeWorkTogether({
     setIsClient(true);
   }, []);
 
-  // Handle reset to start (when entering from above)
   useEffect(() => {
     if (!resetToStart || !isClient) return;
-    
-    // Reset to first card
+
     activeIndexRef.current = 0;
     prevIndexRef.current = 0;
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setActiveIndex(0);
     lastScrollTimeRef.current = Date.now();
-    
-    // Reset visual state
+
     const cardsContainer = cardsContainerRef.current;
     if (!cardsContainer) return;
-    
+
     const cards = Array.from(cardsContainer.querySelectorAll<HTMLElement>('.work-card'));
     cards.forEach((card, index) => {
       gsap.set(card, {
@@ -95,22 +89,19 @@ export default function WeWorkTogether({
     });
   }, [resetToStart, isClient]);
 
-  // Handle reset to end (when entering from below)
   useEffect(() => {
     if (!resetToEnd || !isClient) return;
-    
-    // Reset to last card (CTA)
+
     const lastIndex = TOTAL_CARDS - 1;
     activeIndexRef.current = lastIndex;
     prevIndexRef.current = lastIndex;
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setActiveIndex(lastIndex);
     lastScrollTimeRef.current = Date.now();
-    
-    // Reset visual state
+
     const cardsContainer = cardsContainerRef.current;
     if (!cardsContainer) return;
-    
+
     const cards = Array.from(cardsContainer.querySelectorAll<HTMLElement>('.work-card'));
     cards.forEach((card, index) => {
       gsap.set(card, {
@@ -122,12 +113,10 @@ export default function WeWorkTogether({
     });
   }, [resetToEnd, isClient]);
 
-  // Enable/disable observer based on isActive prop
   useEffect(() => {
     if (!observerRef.current) return;
-    
+
     if (isActive) {
-      // Add delay before enabling to prevent residual scroll from triggering
       const timeout = setTimeout(() => {
         observerRef.current?.enable();
         lastScrollTimeRef.current = Date.now();
@@ -138,11 +127,10 @@ export default function WeWorkTogether({
     }
   }, [isActive]);
 
-  // Animate card transition
   const animateToIndex = useCallback((newIndex: number, callback?: () => void) => {
     if (newIndex < 0 || newIndex >= TOTAL_CARDS) return;
     if (isAnimatingRef.current) return;
-    
+
     const currentIndex = activeIndexRef.current;
     if (newIndex === currentIndex) return;
 
@@ -157,12 +145,10 @@ export default function WeWorkTogether({
     activeIndexRef.current = newIndex;
     setActiveIndex(newIndex);
 
-    // Determine scroll direction
     const isScrollingDown = newIndex > currentIndex;
     const yStart = isScrollingDown ? 30 : -30;
     const yEnd = isScrollingDown ? -20 : 20;
 
-    // Animate out current card
     const currentCard = cards[currentIndex];
     if (currentCard) {
       gsap.to(currentCard, {
@@ -177,7 +163,6 @@ export default function WeWorkTogether({
       });
     }
 
-    // Animate in new card
     const newCard = cards[newIndex];
     if (newCard) {
       gsap.fromTo(
@@ -201,7 +186,7 @@ export default function WeWorkTogether({
             lastScrollTimeRef.current = Date.now();
             callback?.();
           },
-        }
+        },
       );
     } else {
       isAnimatingRef.current = false;
@@ -209,42 +194,41 @@ export default function WeWorkTogether({
     }
   }, []);
 
-  // Handle scroll input
-  const handleScroll = useCallback((direction: 'up' | 'down') => {
-    const now = Date.now();
-    if (now - lastScrollTimeRef.current < scrollCooldown) return;
-    if (isAnimatingRef.current) return;
+  const handleScroll = useCallback(
+    (direction: 'up' | 'down') => {
+      const now = Date.now();
+      if (now - lastScrollTimeRef.current < scrollCooldown) return;
+      if (isAnimatingRef.current) return;
 
-    const currentIndex = activeIndexRef.current;
+      const currentIndex = activeIndexRef.current;
 
-    if (direction === 'down') {
-      if (currentIndex < TOTAL_CARDS - 1) {
-        animateToIndex(currentIndex + 1);
+      if (direction === 'down') {
+        if (currentIndex < TOTAL_CARDS - 1) {
+          animateToIndex(currentIndex + 1);
+        } else {
+          lastScrollTimeRef.current = now;
+          onEdgeReached?.('end');
+        }
       } else {
-        // At the end - notify parent
-        lastScrollTimeRef.current = now;
-        onEdgeReached?.('end');
+        if (currentIndex > 0) {
+          animateToIndex(currentIndex - 1);
+        } else {
+          lastScrollTimeRef.current = now;
+          onEdgeReached?.('start');
+        }
       }
-    } else {
-      if (currentIndex > 0) {
-        animateToIndex(currentIndex - 1);
-      } else {
-        // At the start - notify parent
-        lastScrollTimeRef.current = now;
-        onEdgeReached?.('start');
-      }
-    }
-  }, [animateToIndex, onEdgeReached]);
+    },
+    [animateToIndex, onEdgeReached],
+  );
 
-  // Setup Observer-based scroll handling
+  // Scoped Observer on containerRef — touch-action:none is on the container
   useLayoutEffect(() => {
     if (typeof window === 'undefined' || !isClient) return;
-    if (!cardsContainerRef.current) return;
+    if (!containerRef.current || !cardsContainerRef.current) return;
 
     const cards = Array.from(cardsContainerRef.current.querySelectorAll<HTMLElement>('.work-card'));
     if (cards.length < 2) return;
 
-    // Set initial states - all cards hidden except first
     cards.forEach((card, index) => {
       gsap.set(card, {
         autoAlpha: index === 0 ? 1 : 0,
@@ -254,8 +238,8 @@ export default function WeWorkTogether({
       });
     });
 
-    // Create Observer for scroll handling - starts disabled
     const cardsObserver = Observer.create({
+      target: containerRef.current,
       type: 'wheel,touch,pointer',
       wheelSpeed: -1,
       tolerance: 50,
@@ -264,7 +248,6 @@ export default function WeWorkTogether({
       onUp: () => handleScroll('down'),
     });
 
-    // Start disabled
     cardsObserver.disable();
     observerRef.current = cardsObserver;
 
@@ -274,7 +257,6 @@ export default function WeWorkTogether({
     };
   }, [isClient, handleScroll]);
 
-  // Get image sources
   const imageSrcs = [
     getCloudinaryUrl('antarpravaah/we-work/we_work_together_vector_one'),
     getCloudinaryUrl('antarpravaah/we-work/we_work_together_vector_two'),
@@ -286,12 +268,11 @@ export default function WeWorkTogether({
     <div
       id="work-together"
       ref={containerRef}
-      className="relative w-full h-full bg-[#f6edd0] overflow-hidden"
+      className="relative w-full h-full bg-[#f6edd0]"
+      style={{ clipPath: 'inset(0)', touchAction: 'none' }}
     >
-      {/* Full height container */}
       <div className="relative w-full h-full flex flex-col">
-        {/* Background pattern */}
-        <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none z-0" style={{ clipPath: 'inset(0)' }}>
           <img
             src="/about_splash_vector.svg"
             alt=""
@@ -299,7 +280,8 @@ export default function WeWorkTogether({
             style={{
               top: '15%',
               left: '3%',
-              filter: 'brightness(0) saturate(100%) invert(89%) sepia(8%) saturate(497%) hue-rotate(16deg) brightness(95%) contrast(92%)'
+              filter:
+                'brightness(0) saturate(100%) invert(89%) sepia(8%) saturate(497%) hue-rotate(16deg) brightness(95%) contrast(92%)',
             }}
           />
           <img
@@ -310,12 +292,12 @@ export default function WeWorkTogether({
               top: '25%',
               right: '3%',
               transform: 'rotate(45deg)',
-              filter: 'brightness(0) saturate(100%) invert(89%) sepia(8%) saturate(497%) hue-rotate(16deg) brightness(95%) contrast(92%)'
+              filter:
+                'brightness(0) saturate(100%) invert(89%) sepia(8%) saturate(497%) hue-rotate(16deg) brightness(95%) contrast(92%)',
             }}
           />
         </div>
 
-        {/* Section Title */}
         <div className="relative z-10 w-full text-center pt-4 sm:pt-8 lg:pt-12 pb-3 sm:pb-6 lg:pb-8 flex-shrink-0">
           <h2
             className="text-[28px] sm:text-[42px] lg:text-[48px] leading-[1.1] text-[#645c42]"
@@ -325,19 +307,16 @@ export default function WeWorkTogether({
           </h2>
         </div>
 
-        {/* Cards Container - Centered in remaining viewport */}
-        <div 
+        <div
           ref={cardsContainerRef}
           className="relative z-10 flex-1 flex items-center justify-center p-4 sm:px-6 lg:px-8 pb-6 sm:pb-8 lg:pb-12"
         >
           <div className="relative w-full h-full sm:h-auto sm:max-w-[90vw] lg:max-w-[1000px]">
-            {/* Card Stack - All cards positioned absolutely */}
-            <div 
-              className="relative w-full h-full sm:h-[clamp(350px,55vh,550px)]"
-            >
+            <div className="relative w-full h-full sm:h-[clamp(350px,55vh,550px)]">
               {/* Intro Card */}
-              <div 
-                className="work-card absolute inset-0 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] overflow-hidden ios-radius-fix bg-[#d6c68e] p-6 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex flex-col items-center justify-center gap-6 sm:gap-8 lg:gap-10"
+              <div
+                className="work-card absolute inset-0 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d6c68e] p-6 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex flex-col items-center justify-center gap-6 sm:gap-8 lg:gap-10"
+                style={{ isolation: 'isolate', clipPath: 'inset(0 round 16px)', transform: 'translateZ(0)' }}
               >
                 <div className="flex items-center justify-center">
                   <Image
@@ -362,11 +341,12 @@ export default function WeWorkTogether({
               {workCards.slice(1).map((card, index) => {
                 const isLeft = card.imagePosition === 'left';
                 const imageSrc = imageSrcs[index + 1] || imageSrcs[1];
-                
+
                 return (
                   <div
                     key={index}
-                    className="work-card absolute inset-0 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] overflow-hidden ios-radius-fix bg-[#d6c68e] p-6 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex items-center justify-center"
+                    className="work-card absolute inset-0 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d6c68e] p-6 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex items-center justify-center"
+                    style={{ isolation: 'isolate', clipPath: 'inset(0 round 16px)', transform: 'translateZ(0)' }}
                   >
                     <div
                       className={`flex flex-col items-center gap-6 sm:gap-8 lg:gap-10 w-full sm:h-full justify-center ${
@@ -398,7 +378,8 @@ export default function WeWorkTogether({
               {/* CTA Card */}
               <Link
                 href="/approach"
-                className="work-card absolute inset-0 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] overflow-hidden ios-radius-fix bg-[#645c42] p-6 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex items-center justify-center cursor-pointer hover:bg-[#555141] transition-colors duration-300 group"
+                className="work-card absolute inset-0 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#645c42] p-6 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex items-center justify-center cursor-pointer hover:bg-[#555141] transition-colors duration-300 group"
+                style={{ isolation: 'isolate', clipPath: 'inset(0 round 16px)', transform: 'translateZ(0)' }}
               >
                 <div className="pointer-events-none">
                   <Button text="Explore Our Approach" size="large" mode="light" />

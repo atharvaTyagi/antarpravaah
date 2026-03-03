@@ -1,0 +1,1584 @@
+{
+  "config": {
+    "configFile": "/Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/playwright.config.ts",
+    "rootDir": "/Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/tests",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 4
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "/Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "Mobile Safari",
+        "name": "Mobile Safari",
+        "testDir": "/Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "html",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "runAgents": "none",
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.58.2",
+    "workers": 4,
+    "webServer": {
+      "command": "npm run dev",
+      "url": "http://localhost:3000",
+      "reuseExistingServer": true,
+      "timeout": 120000
+    }
+  },
+  "suites": [
+    {
+      "title": "splash-webkit.spec.ts",
+      "file": "splash-webkit.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Splash screen — CSS fix verification",
+          "file": "splash-webkit.spec.ts",
+          "line": 14,
+          "column": 6,
+          "specs": [
+            {
+              "title": "main-container has no explicit z-index",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1288,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-03T12:37:17.348Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a3dba5dba28f23fde6e8-4b33c41ab7ffa02178b7",
+              "file": "splash-webkit.spec.ts",
+              "line": 19,
+              "column": 7
+            },
+            {
+              "title": "spiral container has translateZ(0) hardware-acceleration transform",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 1301,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-03T12:37:17.325Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a3dba5dba28f23fde6e8-09630db0ad1807028de7",
+              "file": "splash-webkit.spec.ts",
+              "line": 30,
+              "column": 7
+            },
+            {
+              "title": "main-container has no explicit z-index",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 3506,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-03T12:37:28.054Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a3dba5dba28f23fde6e8-3341255bc47554cee62e",
+              "file": "splash-webkit.spec.ts",
+              "line": 19,
+              "column": 7
+            },
+            {
+              "title": "spiral container has translateZ(0) hardware-acceleration transform",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 6,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 1420,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-03T12:37:30.695Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a3dba5dba28f23fde6e8-b67b3457ac5a1b95277a",
+              "file": "splash-webkit.spec.ts",
+              "line": 30,
+              "column": 7
+            },
+            {
+              "title": "main-container has no explicit z-index",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [
+                    {
+                      "workerIndex": 10,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 1202,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-03T12:37:44.626Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a3dba5dba28f23fde6e8-0897c07f2ad369644ff3",
+              "file": "splash-webkit.spec.ts",
+              "line": 19,
+              "column": 7
+            },
+            {
+              "title": "spiral container has translateZ(0) hardware-acceleration transform",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [
+                    {
+                      "workerIndex": 11,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 1059,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-03T12:37:44.780Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a3dba5dba28f23fde6e8-3c9bb11674f834e23744",
+              "file": "splash-webkit.spec.ts",
+              "line": 30,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "Splash screen — DotLottie canvas rendering",
+          "file": "splash-webkit.spec.ts",
+          "line": 46,
+          "column": 6,
+          "specs": [
+            {
+              "title": "DotLottie canvas element mounts in the DOM",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 1296,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-03T12:37:17.311Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a3dba5dba28f23fde6e8-9cbb176fa93e28cfa8b8",
+              "file": "splash-webkit.spec.ts",
+              "line": 51,
+              "column": 7
+            },
+            {
+              "title": "DotLottie canvas has non-zero dimensions",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 1301,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-03T12:37:17.312Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a3dba5dba28f23fde6e8-3b121760fd174f5f192a",
+              "file": "splash-webkit.spec.ts",
+              "line": 58,
+              "column": 7
+            },
+            {
+              "title": "DotLottie canvas paints non-blank pixels",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 3656,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at /Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/tests/splash-webkit.spec.ts:95:33",
+                        "location": {
+                          "file": "/Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/tests/splash-webkit.spec.ts",
+                          "column": 33,
+                          "line": 95
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 93 |\u001b[39m     \u001b[90m// null means we couldn't read pixels (cross-origin canvas) — skip the assertion\u001b[39m\n \u001b[90m 94 |\u001b[39m     \u001b[36mif\u001b[39m (hasNonBlankPixels \u001b[33m!==\u001b[39m \u001b[36mnull\u001b[39m) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 95 |\u001b[39m       expect(hasNonBlankPixels)\u001b[33m.\u001b[39mtoBe(\u001b[36mtrue\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                 \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 96 |\u001b[39m     }\n \u001b[90m 97 |\u001b[39m   })\u001b[33m;\u001b[39m\n \u001b[90m 98 |\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/tests/splash-webkit.spec.ts",
+                            "column": 33,
+                            "line": 95
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n\u001b[0m \u001b[90m 93 |\u001b[39m     \u001b[90m// null means we couldn't read pixels (cross-origin canvas) — skip the assertion\u001b[39m\n \u001b[90m 94 |\u001b[39m     \u001b[36mif\u001b[39m (hasNonBlankPixels \u001b[33m!==\u001b[39m \u001b[36mnull\u001b[39m) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 95 |\u001b[39m       expect(hasNonBlankPixels)\u001b[33m.\u001b[39mtoBe(\u001b[36mtrue\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                 \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 96 |\u001b[39m     }\n \u001b[90m 97 |\u001b[39m   })\u001b[33m;\u001b[39m\n \u001b[90m 98 |\u001b[39m\u001b[0m\n\u001b[2m    at /Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/tests/splash-webkit.spec.ts:95:33\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-03T12:37:19.828Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/test-results/splash-webkit-Splash-scree-db5e5-vas-paints-non-blank-pixels-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/test-results/splash-webkit-Splash-scree-db5e5-vas-paints-non-blank-pixels-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/tests/splash-webkit.spec.ts",
+                        "column": 33,
+                        "line": 95
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a3dba5dba28f23fde6e8-290405c4d2aadc629d7d",
+              "file": "splash-webkit.spec.ts",
+              "line": 68,
+              "column": 7
+            },
+            {
+              "title": "spiral container is visible and not clipped",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 886,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-03T12:37:19.836Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a3dba5dba28f23fde6e8-e163451029c6c8fd386a",
+              "file": "splash-webkit.spec.ts",
+              "line": 99,
+              "column": 7
+            },
+            {
+              "title": "DotLottie canvas element mounts in the DOM",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 7,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1052,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-03T12:37:34.233Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a3dba5dba28f23fde6e8-75be238b9f7aa4095da3",
+              "file": "splash-webkit.spec.ts",
+              "line": 51,
+              "column": 7
+            },
+            {
+              "title": "DotLottie canvas has non-zero dimensions",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 954,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-03T12:37:32.692Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a3dba5dba28f23fde6e8-8234e45e169cd95d8fe4",
+              "file": "splash-webkit.spec.ts",
+              "line": 58,
+              "column": 7
+            },
+            {
+              "title": "DotLottie canvas paints non-blank pixels",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 6,
+                      "parallelIndex": 2,
+                      "status": "failed",
+                      "duration": 3609,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at /Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/tests/splash-webkit.spec.ts:95:33",
+                        "location": {
+                          "file": "/Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/tests/splash-webkit.spec.ts",
+                          "column": 33,
+                          "line": 95
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 93 |\u001b[39m     \u001b[90m// null means we couldn't read pixels (cross-origin canvas) — skip the assertion\u001b[39m\n \u001b[90m 94 |\u001b[39m     \u001b[36mif\u001b[39m (hasNonBlankPixels \u001b[33m!==\u001b[39m \u001b[36mnull\u001b[39m) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 95 |\u001b[39m       expect(hasNonBlankPixels)\u001b[33m.\u001b[39mtoBe(\u001b[36mtrue\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                 \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 96 |\u001b[39m     }\n \u001b[90m 97 |\u001b[39m   })\u001b[33m;\u001b[39m\n \u001b[90m 98 |\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/tests/splash-webkit.spec.ts",
+                            "column": 33,
+                            "line": 95
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n\u001b[0m \u001b[90m 93 |\u001b[39m     \u001b[90m// null means we couldn't read pixels (cross-origin canvas) — skip the assertion\u001b[39m\n \u001b[90m 94 |\u001b[39m     \u001b[36mif\u001b[39m (hasNonBlankPixels \u001b[33m!==\u001b[39m \u001b[36mnull\u001b[39m) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 95 |\u001b[39m       expect(hasNonBlankPixels)\u001b[33m.\u001b[39mtoBe(\u001b[36mtrue\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                 \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 96 |\u001b[39m     }\n \u001b[90m 97 |\u001b[39m   })\u001b[33m;\u001b[39m\n \u001b[90m 98 |\u001b[39m\u001b[0m\n\u001b[2m    at /Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/tests/splash-webkit.spec.ts:95:33\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-03T12:37:33.298Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/test-results/splash-webkit-Splash-scree-db5e5-vas-paints-non-blank-pixels-webkit/test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/test-results/splash-webkit-Splash-scree-db5e5-vas-paints-non-blank-pixels-webkit/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/tests/splash-webkit.spec.ts",
+                        "column": 33,
+                        "line": 95
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a3dba5dba28f23fde6e8-7817e0c43a24df6af430",
+              "file": "splash-webkit.spec.ts",
+              "line": 68,
+              "column": 7
+            },
+            {
+              "title": "spiral container is visible and not clipped",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 635,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-03T12:37:33.664Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a3dba5dba28f23fde6e8-5cc8b992cd03f9dd06f1",
+              "file": "splash-webkit.spec.ts",
+              "line": 99,
+              "column": 7
+            },
+            {
+              "title": "DotLottie canvas element mounts in the DOM",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [
+                    {
+                      "workerIndex": 10,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 811,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-03T12:37:46.088Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a3dba5dba28f23fde6e8-a8a7b2f22bb33cc87dc4",
+              "file": "splash-webkit.spec.ts",
+              "line": 51,
+              "column": 7
+            },
+            {
+              "title": "DotLottie canvas has non-zero dimensions",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [
+                    {
+                      "workerIndex": 11,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 856,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-03T12:37:46.090Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a3dba5dba28f23fde6e8-e6572e4dec7e81ff7971",
+              "file": "splash-webkit.spec.ts",
+              "line": 58,
+              "column": 7
+            },
+            {
+              "title": "DotLottie canvas paints non-blank pixels",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [
+                    {
+                      "workerIndex": 12,
+                      "parallelIndex": 2,
+                      "status": "failed",
+                      "duration": 3679,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at /Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/tests/splash-webkit.spec.ts:95:33",
+                        "location": {
+                          "file": "/Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/tests/splash-webkit.spec.ts",
+                          "column": 33,
+                          "line": 95
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 93 |\u001b[39m     \u001b[90m// null means we couldn't read pixels (cross-origin canvas) — skip the assertion\u001b[39m\n \u001b[90m 94 |\u001b[39m     \u001b[36mif\u001b[39m (hasNonBlankPixels \u001b[33m!==\u001b[39m \u001b[36mnull\u001b[39m) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 95 |\u001b[39m       expect(hasNonBlankPixels)\u001b[33m.\u001b[39mtoBe(\u001b[36mtrue\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                 \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 96 |\u001b[39m     }\n \u001b[90m 97 |\u001b[39m   })\u001b[33m;\u001b[39m\n \u001b[90m 98 |\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/tests/splash-webkit.spec.ts",
+                            "column": 33,
+                            "line": 95
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n\u001b[0m \u001b[90m 93 |\u001b[39m     \u001b[90m// null means we couldn't read pixels (cross-origin canvas) — skip the assertion\u001b[39m\n \u001b[90m 94 |\u001b[39m     \u001b[36mif\u001b[39m (hasNonBlankPixels \u001b[33m!==\u001b[39m \u001b[36mnull\u001b[39m) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 95 |\u001b[39m       expect(hasNonBlankPixels)\u001b[33m.\u001b[39mtoBe(\u001b[36mtrue\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                 \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 96 |\u001b[39m     }\n \u001b[90m 97 |\u001b[39m   })\u001b[33m;\u001b[39m\n \u001b[90m 98 |\u001b[39m\u001b[0m\n\u001b[2m    at /Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/tests/splash-webkit.spec.ts:95:33\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-03T12:37:47.995Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/test-results/splash-webkit-Splash-scree-db5e5-vas-paints-non-blank-pixels-Mobile-Safari/test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/test-results/splash-webkit-Splash-scree-db5e5-vas-paints-non-blank-pixels-Mobile-Safari/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/tests/splash-webkit.spec.ts",
+                        "column": 33,
+                        "line": 95
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a3dba5dba28f23fde6e8-ef42f1fa8e868ffd2461",
+              "file": "splash-webkit.spec.ts",
+              "line": 68,
+              "column": 7
+            },
+            {
+              "title": "spiral container is visible and not clipped",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [
+                    {
+                      "workerIndex": 10,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 657,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-03T12:37:46.914Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a3dba5dba28f23fde6e8-449f572b2da83fa28069",
+              "file": "splash-webkit.spec.ts",
+              "line": 99,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "Splash screen — animation flow",
+          "file": "splash-webkit.spec.ts",
+          "line": 115,
+          "column": 6,
+          "specs": [
+            {
+              "title": "spiral animation completes and blob phase appears within fallback timeout",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 7101,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-03T12:37:19.841Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a3dba5dba28f23fde6e8-e77356013f3ccd228d2b",
+              "file": "splash-webkit.spec.ts",
+              "line": 120,
+              "column": 7
+            },
+            {
+              "title": "blob container is not clipped by main-container overflow",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 7137,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-03T12:37:19.839Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a3dba5dba28f23fde6e8-c46778d49d3f3ff06318",
+              "file": "splash-webkit.spec.ts",
+              "line": 127,
+              "column": 7
+            },
+            {
+              "title": "blob text words are present in the DOM",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 6709,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-03T12:37:20.740Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a3dba5dba28f23fde6e8-21db569d20192b7c3f76",
+              "file": "splash-webkit.spec.ts",
+              "line": 147,
+              "column": 7
+            },
+            {
+              "title": "scroll up reveals blob words",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 7709,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0.5\u001b[39m\nReceived:   \u001b[31m0.2\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0.5\u001b[39m\nReceived:   \u001b[31m0.2\u001b[39m\n    at /Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/tests/splash-webkit.spec.ts:175:26",
+                        "location": {
+                          "file": "/Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/tests/splash-webkit.spec.ts",
+                          "column": 26,
+                          "line": 175
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 173 |\u001b[39m       parseFloat(window\u001b[33m.\u001b[39mgetComputedStyle(el)\u001b[33m.\u001b[39mopacity)\n \u001b[90m 174 |\u001b[39m     )\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 175 |\u001b[39m     expect(opacityAfter)\u001b[33m.\u001b[39mtoBeGreaterThan(\u001b[35m0.5\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 176 |\u001b[39m   })\u001b[33m;\u001b[39m\n \u001b[90m 177 |\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m 178 |\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/tests/splash-webkit.spec.ts",
+                            "column": 26,
+                            "line": 175
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0.5\u001b[39m\nReceived:   \u001b[31m0.2\u001b[39m\n\n\u001b[0m \u001b[90m 173 |\u001b[39m       parseFloat(window\u001b[33m.\u001b[39mgetComputedStyle(el)\u001b[33m.\u001b[39mopacity)\n \u001b[90m 174 |\u001b[39m     )\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 175 |\u001b[39m     expect(opacityAfter)\u001b[33m.\u001b[39mtoBeGreaterThan(\u001b[35m0.5\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 176 |\u001b[39m   })\u001b[33m;\u001b[39m\n \u001b[90m 177 |\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m 178 |\u001b[39m\u001b[0m\n\u001b[2m    at /Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/tests/splash-webkit.spec.ts:175:26\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-03T12:37:24.304Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/test-results/splash-webkit-Splash-scree-b6e7e-croll-up-reveals-blob-words-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/test-results/splash-webkit-Splash-scree-b6e7e-croll-up-reveals-blob-words-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/tests/splash-webkit.spec.ts",
+                        "column": 26,
+                        "line": 175
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a3dba5dba28f23fde6e8-b5d230e2bfceec796274",
+              "file": "splash-webkit.spec.ts",
+              "line": 156,
+              "column": 7
+            },
+            {
+              "title": "spiral animation completes and blob phase appears within fallback timeout",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 8,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 7476,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-03T12:37:35.924Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a3dba5dba28f23fde6e8-27d22334dd74d326fd0c",
+              "file": "splash-webkit.spec.ts",
+              "line": 120,
+              "column": 7
+            },
+            {
+              "title": "blob container is not clipped by main-container overflow",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 7244,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-03T12:37:34.312Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a3dba5dba28f23fde6e8-601e65ddd16d3c899e5f",
+              "file": "splash-webkit.spec.ts",
+              "line": 127,
+              "column": 7
+            },
+            {
+              "title": "blob text words are present in the DOM",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 7,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 7331,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-03T12:37:35.537Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a3dba5dba28f23fde6e8-3211d14dc46c3d53632a",
+              "file": "splash-webkit.spec.ts",
+              "line": 147,
+              "column": 7
+            },
+            {
+              "title": "scroll up reveals blob words",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 9,
+                      "parallelIndex": 2,
+                      "status": "failed",
+                      "duration": 8332,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0.5\u001b[39m\nReceived:   \u001b[31m0.2\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0.5\u001b[39m\nReceived:   \u001b[31m0.2\u001b[39m\n    at /Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/tests/splash-webkit.spec.ts:175:26",
+                        "location": {
+                          "file": "/Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/tests/splash-webkit.spec.ts",
+                          "column": 26,
+                          "line": 175
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 173 |\u001b[39m       parseFloat(window\u001b[33m.\u001b[39mgetComputedStyle(el)\u001b[33m.\u001b[39mopacity)\n \u001b[90m 174 |\u001b[39m     )\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 175 |\u001b[39m     expect(opacityAfter)\u001b[33m.\u001b[39mtoBeGreaterThan(\u001b[35m0.5\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 176 |\u001b[39m   })\u001b[33m;\u001b[39m\n \u001b[90m 177 |\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m 178 |\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/tests/splash-webkit.spec.ts",
+                            "column": 26,
+                            "line": 175
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0.5\u001b[39m\nReceived:   \u001b[31m0.2\u001b[39m\n\n\u001b[0m \u001b[90m 173 |\u001b[39m       parseFloat(window\u001b[33m.\u001b[39mgetComputedStyle(el)\u001b[33m.\u001b[39mopacity)\n \u001b[90m 174 |\u001b[39m     )\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 175 |\u001b[39m     expect(opacityAfter)\u001b[33m.\u001b[39mtoBeGreaterThan(\u001b[35m0.5\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 176 |\u001b[39m   })\u001b[33m;\u001b[39m\n \u001b[90m 177 |\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m 178 |\u001b[39m\u001b[0m\n\u001b[2m    at /Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/tests/splash-webkit.spec.ts:175:26\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-03T12:37:38.168Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/test-results/splash-webkit-Splash-scree-b6e7e-croll-up-reveals-blob-words-webkit/test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/test-results/splash-webkit-Splash-scree-b6e7e-croll-up-reveals-blob-words-webkit/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/tests/splash-webkit.spec.ts",
+                        "column": 26,
+                        "line": 175
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a3dba5dba28f23fde6e8-55fda5272d9ea945d526",
+              "file": "splash-webkit.spec.ts",
+              "line": 156,
+              "column": 7
+            },
+            {
+              "title": "spiral animation completes and blob phase appears within fallback timeout",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [
+                    {
+                      "workerIndex": 11,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 4058,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-03T12:37:46.967Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a3dba5dba28f23fde6e8-e57bec1b51c383002f6b",
+              "file": "splash-webkit.spec.ts",
+              "line": 120,
+              "column": 7
+            },
+            {
+              "title": "blob container is not clipped by main-container overflow",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [
+                    {
+                      "workerIndex": 10,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 4201,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-03T12:37:47.582Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a3dba5dba28f23fde6e8-6dc0aacfe3c16da3ff36",
+              "file": "splash-webkit.spec.ts",
+              "line": 127,
+              "column": 7
+            },
+            {
+              "title": "blob text words are present in the DOM",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [
+                    {
+                      "workerIndex": 13,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4485,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-03T12:37:51.176Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a3dba5dba28f23fde6e8-87cdca06c35659202176",
+              "file": "splash-webkit.spec.ts",
+              "line": 147,
+              "column": 7
+            },
+            {
+              "title": "scroll up reveals blob words",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [
+                    {
+                      "workerIndex": 11,
+                      "parallelIndex": 1,
+                      "status": "failed",
+                      "duration": 4222,
+                      "error": {
+                        "message": "Error: mouse.wheel: Mouse wheel is not supported in mobile WebKit",
+                        "stack": "Error: mouse.wheel: Mouse wheel is not supported in mobile WebKit\n    at /Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/tests/splash-webkit.spec.ts:169:22",
+                        "location": {
+                          "file": "/Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/tests/splash-webkit.spec.ts",
+                          "column": 22,
+                          "line": 169
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 167 |\u001b[39m\n \u001b[90m 168 |\u001b[39m     \u001b[90m// Simulate upward scroll to trigger word reveal\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 169 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mmouse\u001b[33m.\u001b[39mwheel(\u001b[35m0\u001b[39m\u001b[33m,\u001b[39m \u001b[33m-\u001b[39m\u001b[35m200\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                      \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 170 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForTimeout(\u001b[35m600\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 171 |\u001b[39m\n \u001b[90m 172 |\u001b[39m     \u001b[36mconst\u001b[39m opacityAfter \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m firstWord\u001b[33m.\u001b[39mevaluate((el) \u001b[33m=>\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/tests/splash-webkit.spec.ts",
+                            "column": 22,
+                            "line": 169
+                          },
+                          "message": "Error: mouse.wheel: Mouse wheel is not supported in mobile WebKit\n\n\u001b[0m \u001b[90m 167 |\u001b[39m\n \u001b[90m 168 |\u001b[39m     \u001b[90m// Simulate upward scroll to trigger word reveal\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 169 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mmouse\u001b[33m.\u001b[39mwheel(\u001b[35m0\u001b[39m\u001b[33m,\u001b[39m \u001b[33m-\u001b[39m\u001b[35m200\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                      \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 170 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForTimeout(\u001b[35m600\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 171 |\u001b[39m\n \u001b[90m 172 |\u001b[39m     \u001b[36mconst\u001b[39m opacityAfter \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m firstWord\u001b[33m.\u001b[39mevaluate((el) \u001b[33m=>\u001b[39m\u001b[0m\n\u001b[2m    at /Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/tests/splash-webkit.spec.ts:169:22\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-03T12:37:51.043Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/test-results/splash-webkit-Splash-scree-b6e7e-croll-up-reveals-blob-words-Mobile-Safari/test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/test-results/splash-webkit-Splash-scree-b6e7e-croll-up-reveals-blob-words-Mobile-Safari/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/atharvatyagi/Developer/atharva-freelance/antarpravaah/tests/splash-webkit.spec.ts",
+                        "column": 22,
+                        "line": 169
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a3dba5dba28f23fde6e8-96bb77b401492fe5841a",
+              "file": "splash-webkit.spec.ts",
+              "line": 156,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "Splash screen — visual snapshot",
+          "file": "splash-webkit.spec.ts",
+          "line": 179,
+          "column": 6,
+          "specs": [
+            {
+              "title": "spiral phase screenshot",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 3020,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-03T12:37:26.969Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a3dba5dba28f23fde6e8-9b83fc112beb8f17d150",
+              "file": "splash-webkit.spec.ts",
+              "line": 180,
+              "column": 7
+            },
+            {
+              "title": "blob phase screenshot",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 7215,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-03T12:37:26.995Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a3dba5dba28f23fde6e8-e4adfb55f1ebb7714618",
+              "file": "splash-webkit.spec.ts",
+              "line": 193,
+              "column": 7
+            },
+            {
+              "title": "spiral phase screenshot",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 2456,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-03T12:37:41.590Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a3dba5dba28f23fde6e8-7ceb38c3c9cece667d36",
+              "file": "splash-webkit.spec.ts",
+              "line": 180,
+              "column": 7
+            },
+            {
+              "title": "blob phase screenshot",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 7,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 7433,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-03T12:37:42.888Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a3dba5dba28f23fde6e8-474a8af9d6bf95ddff24",
+              "file": "splash-webkit.spec.ts",
+              "line": 193,
+              "column": 7
+            },
+            {
+              "title": "spiral phase screenshot",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [
+                    {
+                      "workerIndex": 10,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 3262,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-03T12:37:51.816Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a3dba5dba28f23fde6e8-d00c1277f93293f129f6",
+              "file": "splash-webkit.spec.ts",
+              "line": 180,
+              "column": 7
+            },
+            {
+              "title": "blob phase screenshot",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [
+                    {
+                      "workerIndex": 14,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 4412,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-03T12:37:52.960Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a3dba5dba28f23fde6e8-7fbed20a698ebf009075",
+              "file": "splash-webkit.spec.ts",
+              "line": 193,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-03-03T12:37:16.349Z",
+    "duration": 41415.816,
+    "expected": 30,
+    "skipped": 0,
+    "unexpected": 6,
+    "flaky": 0
+  }
+}
