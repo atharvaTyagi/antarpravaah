@@ -50,7 +50,11 @@
       "Bash(python3:*)",
       "Bash(xxd:*)",
       "Bash(cp:*)",
-      "Bash(unzip:*)"
+      "Bash(unzip:*)",
+      "Bash(git config:*)",
+      "Bash(chmod +x:*)",
+      "Bash(.git/hooks/pre-push:*)",
+      "Bash(git rebase:*)"
     ]
   }
 }
