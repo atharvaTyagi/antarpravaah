@@ -573,9 +573,9 @@ export default function TherapiesPage() {
               {antarSmaranProcess && (
                 <div
                   ref={(el) => { if (el) sectionsRef.current[1] = el; }}
-                  className={`relative flex items-center justify-center px-5 bg-[#f6edd0] overflow-hidden ${sectionClass}`}
+                  className={`relative flex items-center justify-center px-5 py-4 bg-[#f6edd0] overflow-hidden ${sectionClass}`}
                 >
-                  <div className="w-full h-full max-h-[calc(100%-40px)]">
+                  <div className="w-full h-full">
                     <TherapyCard 
                       therapy={antarSmaranProcess} 
                       isVisible={aspCardVisible} 
@@ -753,9 +753,9 @@ export default function TherapiesPage() {
               {antarSmaranProcess && (
                 <div
                   ref={(el) => { if (el) sectionsRef.current[1] = el; }}
-                  className={`relative flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 bg-[#f6edd0] overflow-hidden ${sectionClass}`}
+                  className={`relative flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 bg-[#f6edd0] overflow-hidden ${sectionClass}`}
                 >
-                  <div className="max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1347px] mx-auto w-full">
+                  <div className="max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1347px] mx-auto w-full h-full">
                     <TherapyCard therapy={antarSmaranProcess} isVisible={aspCardVisible} onCtaClick={handleOpenModalInitial} />
                   </div>
                 </div>

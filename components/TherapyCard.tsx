@@ -332,7 +332,7 @@ export default function TherapyCard({ therapy, isVisible = false, isMobile = fal
   if (isCenter) {
     // Special layout for ASP (centered) - larger card with more padding (Desktop)
     return (
-      <div ref={cardRef} className="w-full min-h-[600px] sm:min-h-[700px] lg:min-h-[840px] bg-[#d6c68e] rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] overflow-hidden ios-radius-fix p-8 sm:p-12 lg:p-20 flex flex-col items-center justify-center gap-8 sm:gap-10 lg:gap-12 shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
+      <div ref={cardRef} className="w-full h-full bg-[#d6c68e] rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] overflow-hidden ios-radius-fix p-8 sm:p-12 lg:p-20 flex flex-col items-center justify-center gap-8 sm:gap-10 lg:gap-12 shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
         {/* Icon centered at top */}
         <div ref={iconRef} className="w-full flex justify-center">
           <img
