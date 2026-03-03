@@ -5,7 +5,6 @@ import { gsap } from 'gsap';
 import { Observer } from 'gsap/dist/Observer';
 import { useTestimonials, type SanityTestimonial } from '@/sanity/lib/queries';
 
-// Register GSAP plugins
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(Observer);
 }
@@ -16,10 +15,6 @@ interface VoicesOfTransformationProps {
   resetToStart?: boolean;
   resetToEnd?: boolean;
 }
-
-// =============================================================================
-// Loading Spinner Component
-// =============================================================================
 
 function LoadingSpinner() {
   return (
@@ -32,25 +27,11 @@ function LoadingSpinner() {
   );
 }
 
-// =============================================================================
-// Error State Component
-// =============================================================================
-
-interface ErrorStateProps {
-  message: string;
-  onRetry?: () => void;
-}
-
-function ErrorState({ message, onRetry }: ErrorStateProps) {
+function ErrorState({ message, onRetry }: { message: string; onRetry?: () => void }) {
   return (
     <div className="flex flex-col items-center justify-center py-16 text-center">
       <div className="mb-4 text-[#474e3a]/60">
-        <svg
-          className="w-12 h-12"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
+        <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -78,10 +59,6 @@ function ErrorState({ message, onRetry }: ErrorStateProps) {
   );
 }
 
-// =============================================================================
-// Empty State Component
-// =============================================================================
-
 function EmptyState() {
   return (
     <div className="flex flex-col items-center justify-center py-16 text-center">
@@ -101,7 +78,6 @@ function EmptyState() {
   );
 }
 
-// Fallback testimonials in case Sanity fails or returns empty (for better UX)
 const fallbackTestimonials: SanityTestimonial[] = [
   {
     _id: 'fallback-1',
@@ -114,7 +90,8 @@ const fallbackTestimonials: SanityTestimonial[] = [
     _id: 'fallback-2',
     testimonial: `What has unfolded since I met Namita has been a journey far beyond what I could have imagined. What sets Namita apart is the way she holds 'space' with love, clarity, and quiet strength allowing one's own awakening to unfold. She has helped me see the interconnectedness of all life, how every part of nature lives within us, and we within it. She embodies the spirit of a real shaman: compassionate, wise, and rooted in love.`,
     name: 'UMPILIKA',
-    workshop: 'Foot Reflexology/ Shamanic Student/ Distance Healing/ Antar Smaran Process/ Systemic Constellations',
+    workshop:
+      'Foot Reflexology/ Shamanic Student/ Distance Healing/ Antar Smaran Process/ Systemic Constellations',
     publishedAt: '2024-01-02',
   },
   {
@@ -134,7 +111,7 @@ export default function VoicesOfTransformation({
 }: VoicesOfTransformationProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const carouselRef = useRef<HTMLDivElement | null>(null);
-  
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [currentIndex, setCurrentIndex] = useState(0);
   const currentIndexRef = useRef(0);
@@ -143,22 +120,15 @@ export default function VoicesOfTransformation({
   const lastScrollTimeRef = useRef(0);
   const [isClient, setIsClient] = useState(false);
   const [cardWidth, setCardWidth] = useState(0);
-  
-  // Fetch testimonials from Sanity CMS
+
   const { testimonials: sanityTestimonials, isLoading, error, refetch } = useTestimonials();
-  
-  // Use Sanity testimonials if available, otherwise fall back to hardcoded ones
+
   const testimonials = useMemo(() => {
-    if (sanityTestimonials.length > 0) {
-      return sanityTestimonials;
-    }
-    if (!isLoading) {
-      return fallbackTestimonials;
-    }
+    if (sanityTestimonials.length > 0) return sanityTestimonials;
+    if (!isLoading) return fallbackTestimonials;
     return [];
   }, [sanityTestimonials, isLoading]);
 
-  // Cooldown between carousel changes
   const scrollCooldown = 400;
 
   useEffect(() => {
@@ -166,14 +136,13 @@ export default function VoicesOfTransformation({
     setIsClient(true);
   }, []);
 
-  // Calculate card width on mount and resize
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    
+
     const calculateCardWidth = () => {
       const carousel = carouselRef.current;
       if (!carousel) return;
-      
+
       const cards = carousel.querySelectorAll('.voice-card');
       if (cards.length > 0) {
         const firstCard = cards[0] as HTMLElement;
@@ -182,51 +151,45 @@ export default function VoicesOfTransformation({
       }
     };
 
-    // Wait for layout
     const timeout = setTimeout(calculateCardWidth, 100);
     window.addEventListener('resize', calculateCardWidth);
-    
+
     return () => {
       clearTimeout(timeout);
       window.removeEventListener('resize', calculateCardWidth);
     };
   }, [testimonials.length, isClient]);
 
-  // Handle reset to start (when entering from above)
   useEffect(() => {
     if (!resetToStart || !isClient) return;
-    
+
     currentIndexRef.current = 0;
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setCurrentIndex(0);
     lastScrollTimeRef.current = Date.now();
-    
-    // Reset carousel position
+
     if (carouselRef.current) {
       gsap.set(carouselRef.current, { x: 0 });
     }
   }, [resetToStart, isClient]);
 
-  // Handle reset to end (when entering from below)
   useEffect(() => {
     if (!resetToEnd || !isClient || testimonials.length === 0) return;
-    
+
     const lastIndex = testimonials.length - 1;
     currentIndexRef.current = lastIndex;
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setCurrentIndex(lastIndex);
     lastScrollTimeRef.current = Date.now();
-    
-    // Set carousel to last position
+
     if (carouselRef.current && cardWidth > 0) {
       gsap.set(carouselRef.current, { x: -lastIndex * cardWidth });
     }
   }, [resetToEnd, isClient, testimonials.length, cardWidth]);
 
-  // Enable/disable observer based on isActive prop
   useEffect(() => {
     if (!observerRef.current) return;
-    
+
     if (isActive) {
       const timeout = setTimeout(() => {
         observerRef.current?.enable();
@@ -238,69 +201,68 @@ export default function VoicesOfTransformation({
     }
   }, [isActive]);
 
-  // Handle scroll input
-  const handleScroll = useCallback((direction: 'up' | 'down') => {
-    const now = Date.now();
-    if (now - lastScrollTimeRef.current < scrollCooldown) return;
-    if (isAnimatingRef.current) return;
-    if (testimonials.length === 0 || cardWidth === 0) return;
+  const handleScroll = useCallback(
+    (direction: 'up' | 'down') => {
+      const now = Date.now();
+      if (now - lastScrollTimeRef.current < scrollCooldown) return;
+      if (isAnimatingRef.current) return;
+      if (testimonials.length === 0 || cardWidth === 0) return;
 
-    const index = currentIndexRef.current;
+      const index = currentIndexRef.current;
 
-    if (direction === 'down') {
-      if (index < testimonials.length - 1) {
-        // Move to next testimonial
-        isAnimatingRef.current = true;
-        const newIndex = index + 1;
-        currentIndexRef.current = newIndex;
-        setCurrentIndex(newIndex);
-        
-        gsap.to(carouselRef.current, {
-          x: -newIndex * cardWidth,
-          duration: 0.5,
-          ease: 'power2.out',
-          onComplete: () => {
-            isAnimatingRef.current = false;
-            lastScrollTimeRef.current = Date.now();
-          },
-        });
+      if (direction === 'down') {
+        if (index < testimonials.length - 1) {
+          isAnimatingRef.current = true;
+          const newIndex = index + 1;
+          currentIndexRef.current = newIndex;
+          setCurrentIndex(newIndex);
+
+          gsap.to(carouselRef.current, {
+            x: -newIndex * cardWidth,
+            duration: 0.5,
+            ease: 'power2.out',
+            onComplete: () => {
+              isAnimatingRef.current = false;
+              lastScrollTimeRef.current = Date.now();
+            },
+          });
+        } else {
+          lastScrollTimeRef.current = now;
+          onEdgeReached?.('end');
+        }
       } else {
-        // At the end - notify parent
-        lastScrollTimeRef.current = now;
-        onEdgeReached?.('end');
-      }
-    } else {
-      if (index > 0) {
-        // Move to previous testimonial
-        isAnimatingRef.current = true;
-        const newIndex = index - 1;
-        currentIndexRef.current = newIndex;
-        setCurrentIndex(newIndex);
-        
-        gsap.to(carouselRef.current, {
-          x: -newIndex * cardWidth,
-          duration: 0.5,
-          ease: 'power2.out',
-          onComplete: () => {
-            isAnimatingRef.current = false;
-            lastScrollTimeRef.current = Date.now();
-          },
-        });
-      } else {
-        // At the start - notify parent
-        lastScrollTimeRef.current = now;
-        onEdgeReached?.('start');
-      }
-    }
-  }, [testimonials.length, cardWidth, onEdgeReached]);
+        if (index > 0) {
+          isAnimatingRef.current = true;
+          const newIndex = index - 1;
+          currentIndexRef.current = newIndex;
+          setCurrentIndex(newIndex);
 
-  // Setup Observer-based scroll handling
+          gsap.to(carouselRef.current, {
+            x: -newIndex * cardWidth,
+            duration: 0.5,
+            ease: 'power2.out',
+            onComplete: () => {
+              isAnimatingRef.current = false;
+              lastScrollTimeRef.current = Date.now();
+            },
+          });
+        } else {
+          lastScrollTimeRef.current = now;
+          onEdgeReached?.('start');
+        }
+      }
+    },
+    [testimonials.length, cardWidth, onEdgeReached],
+  );
+
+  // Scoped Observer on containerRef — touch-action:none is on the container
   useLayoutEffect(() => {
     if (typeof window === 'undefined' || !isClient) return;
+    if (!containerRef.current) return;
     if (testimonials.length === 0) return;
 
-    // Create Observer for scroll handling - starts disabled
     const carouselObserver = Observer.create({
+      target: containerRef.current,
       type: 'wheel,touch,pointer',
       wheelSpeed: -1,
       tolerance: 50,
@@ -309,7 +271,6 @@ export default function VoicesOfTransformation({
       onUp: () => handleScroll('down'),
     });
 
-    // Start disabled
     carouselObserver.disable();
     observerRef.current = carouselObserver;
 
@@ -319,13 +280,20 @@ export default function VoicesOfTransformation({
     };
   }, [isClient, testimonials.length, handleScroll]);
 
-  // Show loading state while fetching
+  const sectionTitle = (
+    <div className="w-full text-center mb-4 sm:mb-8 lg:mb-10 px-4 pt-4 sm:pt-8 lg:pt-12 flex-shrink-0">
+      <h2
+        className="text-[26px] sm:text-[42px] lg:text-[48px] leading-[1.1] text-[#474e3a]"
+        style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400 }}
+      >
+        Voices of Transformation
+      </h2>
+    </div>
+  );
+
   if (isLoading && testimonials.length === 0) {
     return (
-      <div
-        id="voices"
-        className="relative w-full h-full bg-[#f6edd0] overflow-hidden"
-      >
+      <div id="voices" className="relative w-full h-full bg-[#f6edd0]" style={{ clipPath: 'inset(0)' }}>
         <div className="relative w-full h-full flex flex-col justify-center items-center">
           <div className="w-full text-center mb-6 sm:mb-8 lg:mb-10 px-4 pt-8 sm:pt-12 lg:pt-16">
             <h2
@@ -341,13 +309,9 @@ export default function VoicesOfTransformation({
     );
   }
 
-  // Show error state if fetch failed and no fallback
   if (error && testimonials.length === 0) {
     return (
-      <div
-        id="voices"
-        className="relative w-full h-full bg-[#f6edd0] overflow-hidden"
-      >
+      <div id="voices" className="relative w-full h-full bg-[#f6edd0]" style={{ clipPath: 'inset(0)' }}>
         <div className="relative w-full h-full flex flex-col justify-center items-center">
           <div className="w-full text-center mb-6 sm:mb-8 lg:mb-10 px-4 pt-8 sm:pt-12 lg:pt-16">
             <h2
@@ -357,22 +321,15 @@ export default function VoicesOfTransformation({
               Voices of Transformation
             </h2>
           </div>
-          <ErrorState 
-            message="Unable to load testimonials. Please try again." 
-            onRetry={refetch} 
-          />
+          <ErrorState message="Unable to load testimonials. Please try again." onRetry={refetch} />
         </div>
       </div>
     );
   }
 
-  // Show empty state if no testimonials
   if (testimonials.length === 0) {
     return (
-      <div
-        id="voices"
-        className="relative w-full h-full bg-[#f6edd0] overflow-hidden"
-      >
+      <div id="voices" className="relative w-full h-full bg-[#f6edd0]" style={{ clipPath: 'inset(0)' }}>
         <div className="relative w-full h-full flex flex-col justify-center items-center">
           <div className="w-full text-center mb-6 sm:mb-8 lg:mb-10 px-4 pt-8 sm:pt-12 lg:pt-16">
             <h2
@@ -392,49 +349,46 @@ export default function VoicesOfTransformation({
     <div
       id="voices"
       ref={containerRef}
-      className="relative w-full h-full bg-[#f6edd0] overflow-hidden"
+      className="relative w-full h-full bg-[#f6edd0]"
+      style={{ clipPath: 'inset(0)', touchAction: 'none' }}
     >
-      {/* Full height container */}
       <div className="relative w-full h-full flex flex-col justify-center">
-        {/* Section Title */}
-        <div className="w-full text-center mb-4 sm:mb-8 lg:mb-10 px-4 pt-4 sm:pt-8 lg:pt-12 flex-shrink-0">
-          <h2
-            className="text-[26px] sm:text-[42px] lg:text-[48px] leading-[1.1] text-[#474e3a]"
-            style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400 }}
-          >
-            Voices of Transformation
-          </h2>
-        </div>
+        {sectionTitle}
 
-        {/* Carousel Track */}
-        <div className="flex-1 flex items-center w-full px-4 sm:px-6 lg:px-10 overflow-hidden pb-4 sm:pb-0">
+        <div className="flex-1 flex items-center w-full px-4 sm:px-6 lg:px-10 pb-4 sm:pb-0" style={{ clipPath: 'inset(0)' }}>
           <div
             ref={carouselRef}
-            className="flex gap-4 sm:gap-6 lg:gap-8 will-change-transform h-full items-center"
+            className="flex gap-4 sm:gap-6 lg:gap-8 h-full items-center"
+            style={{ willChange: 'transform' }}
           >
             {testimonials.map((t) => (
               <div
                 key={t._id}
-                className="voice-card shrink-0 rounded-[24px] bg-[#474e3a] p-8 sm:p-8 lg:p-10 flex flex-col gap-6 sm:gap-8 lg:gap-10 justify-start w-[calc(100vw-32px)] sm:w-[calc(100vw-48px)] lg:w-[calc(100vw-80px)] h-[calc(100%-8px)] sm:h-[clamp(300px,45vh,450px)] overflow-hidden ios-radius-fix"
+                className="voice-card shrink-0 rounded-[24px] bg-[#474e3a] p-8 sm:p-8 lg:p-10 flex flex-col gap-6 sm:gap-8 lg:gap-10 justify-start w-[calc(100vw-32px)] sm:w-[calc(100vw-48px)] lg:w-[calc(100vw-80px)] h-[calc(100%-8px)] sm:h-[clamp(300px,45vh,450px)]"
+                style={{
+                  isolation: 'isolate',
+                  clipPath: 'inset(0 round 24px)',
+                  transform: 'translateZ(0)',
+                }}
               >
                 <div className="flex-1 overflow-y-auto overflow-x-hidden hide-scrollbar pr-1">
                   <p
                     className="text-justify text-[#f6edd0]"
-                    style={{ 
-                      fontFamily: 'var(--font-graphik), sans-serif', 
+                    style={{
+                      fontFamily: 'var(--font-graphik), sans-serif',
                       fontWeight: 400,
                       fontSize: 'clamp(16px, 2.5vw, 20px)',
                       lineHeight: 'clamp(24px, 3.5vw, 30px)',
                     }}
-                  > 
+                  >
                     {t.testimonial}
                   </p>
                 </div>
                 <div className="text-center text-[#f6edd0] shrink-0">
                   <p
                     className="leading-[normal]"
-                    style={{ 
-                      fontFamily: 'var(--font-saphira), serif', 
+                    style={{
+                      fontFamily: 'var(--font-saphira), serif',
                       fontWeight: 400,
                       fontSize: 'clamp(22px, 3vw, 28px)',
                     }}
@@ -443,8 +397,8 @@ export default function VoicesOfTransformation({
                   </p>
                   <p
                     className="mt-1 uppercase"
-                    style={{ 
-                      fontFamily: 'var(--font-graphik), sans-serif', 
+                    style={{
+                      fontFamily: 'var(--font-graphik), sans-serif',
                       fontWeight: 400,
                       fontSize: 'clamp(11px, 1.8vw, 14px)',
                       letterSpacing: '1.92px',
@@ -458,7 +412,6 @@ export default function VoicesOfTransformation({
           </div>
         </div>
 
-        {/* Bottom padding */}
         <div className="pb-6 sm:pb-8 lg:pb-12 flex-shrink-0" />
       </div>
     </div>
