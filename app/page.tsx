@@ -11,6 +11,7 @@ import Footer from '@/components/Footer';
 import SplashScreen from '@/components/SplashScreen';
 import GuidedJourneyModal from '@/components/GuidedJourneyModal';
 import Button from '@/components/Button';
+import ThoughtsAndPonderings from '@/components/ThoughtsAndPonderings';
 import { useUiStore } from '@/lib/stores/useUiStore';
 import { useThemeStore } from '@/lib/stores/useThemeStore';
 import { SectionId } from '@/lib/themeConfig';
@@ -35,6 +36,7 @@ const SECTIONS: SectionDef[] = [
   { id: 'splash', type: 'splash', themeId: 'hero' },
   { id: 'journey', type: 'journey-scroll', themeId: 'journey' },
   { id: 'journey-cta', type: 'static', themeId: 'journey' },
+  { id: 'thoughts', type: 'static', themeId: 'thoughts' },
   { id: 'work-together', type: 'cards-scroll', themeId: 'work-together' },
   { id: 'voices', type: 'carousel-scroll', themeId: 'voices' },
   { id: 'ready-to-begin', type: 'static', themeId: 'ready-to-begin' },
@@ -145,6 +147,7 @@ export default function Home() {
 
   const [isAnimating, setIsAnimating] = useState(false);
   const [isReady, setIsReady] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   const [scrollState, dispatch] = useReducer(scrollReducer, initialScrollState);
 
@@ -166,10 +169,14 @@ export default function Home() {
       document.documentElement.style.setProperty('--vh', `${vh}px`);
     };
 
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+
     syncVh();
+    checkMobile();
 
     // visualViewport.resize fires when the Safari toolbar collapses/expands
     window.visualViewport?.addEventListener('resize', syncVh);
+    window.addEventListener('resize', checkMobile);
     window.addEventListener('orientationchange', syncVh);
 
     const t1 = setTimeout(syncVh, 100);
@@ -177,6 +184,7 @@ export default function Home() {
 
     return () => {
       window.visualViewport?.removeEventListener('resize', syncVh);
+      window.removeEventListener('resize', checkMobile);
       window.removeEventListener('orientationchange', syncVh);
       clearTimeout(t1);
       clearTimeout(t2);
@@ -284,6 +292,24 @@ export default function Home() {
   );
 
   // ---------------------------------------------------------------------------
+  // Helper: check if element is within a scrollable container
+  // ---------------------------------------------------------------------------
+
+  const isWithinScrollableContainer = useCallback((target: EventTarget | null): boolean => {
+    if (!target || !(target instanceof Element)) return false;
+    let element: Element | null = target;
+    while (element && element !== document.body) {
+      const style = window.getComputedStyle(element);
+      const overflowY = style.overflowY;
+      if ((overflowY === 'auto' || overflowY === 'scroll') && element.scrollHeight > element.clientHeight) {
+        return true;
+      }
+      element = element.parentElement;
+    }
+    return false;
+  }, []);
+
+  // ---------------------------------------------------------------------------
   // GSAP Observer (scoped to mainContainerRef — touch-action:none is in CSS)
   // ---------------------------------------------------------------------------
 
@@ -308,6 +334,47 @@ export default function Home() {
       observerRef.current = null;
     };
   }, [isReady, handleScroll]);
+
+  // ---------------------------------------------------------------------------
+  // Native scroll handlers for thoughts section (mobile native scroll passthrough)
+  // ---------------------------------------------------------------------------
+
+  useLayoutEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (!isReady) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      const section = SECTIONS[currentSectionRef.current];
+      if (isMobile && section.id === 'thoughts' && isWithinScrollableContainer(e.target)) {
+        // Allow native scroll inside the thoughts section on mobile
+        e.stopPropagation();
+      }
+    };
+
+    let lastTouchY = 0;
+    const handleTouchStart = (e: TouchEvent) => {
+      lastTouchY = e.touches[0].clientY;
+    };
+    const handleTouchMove = (e: TouchEvent) => {
+      const section = SECTIONS[currentSectionRef.current];
+      if (isMobile && section.id === 'thoughts' && isWithinScrollableContainer(e.target)) {
+        e.stopPropagation();
+        return;
+      }
+      const currentY = e.touches[0].clientY;
+      lastTouchY = currentY;
+    };
+
+    window.addEventListener('wheel', handleWheel, { capture: true, passive: false });
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { capture: true, passive: false });
+
+    return () => {
+      window.removeEventListener('wheel', handleWheel, { capture: true });
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove, { capture: true });
+    };
+  }, [isReady, isMobile, isWithinScrollableContainer]);
 
   // ---------------------------------------------------------------------------
   // Init: lock body scroll, set hero theme
@@ -453,9 +520,17 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Section 3: WeWorkTogether */}
+            {/* Section 3: Thoughts & Ponderings */}
             <div
               ref={(el) => { if (el) sectionsRef.current[3] = el; }}
+              className="section-height relative flex flex-col px-4 sm:px-8 lg:px-12 py-8 sm:py-12 bg-[#f6edd0] overflow-y-auto md:overflow-hidden"
+            >
+              <ThoughtsAndPonderings />
+            </div>
+
+            {/* Section 4: WeWorkTogether */}
+            <div
+              ref={(el) => { if (el) sectionsRef.current[4] = el; }}
               className="section-height"
             >
               <WeWorkTogether
@@ -466,9 +541,9 @@ export default function Home() {
               />
             </div>
 
-            {/* Section 4: VoicesOfTransformation */}
+            {/* Section 5: VoicesOfTransformation */}
             <div
-              ref={(el) => { if (el) sectionsRef.current[4] = el; }}
+              ref={(el) => { if (el) sectionsRef.current[5] = el; }}
               className="section-height"
             >
               <VoicesOfTransformation
@@ -479,17 +554,17 @@ export default function Home() {
               />
             </div>
 
-            {/* Section 5: ReadyToBegin */}
+            {/* Section 6: ReadyToBegin */}
             <div
-              ref={(el) => { if (el) sectionsRef.current[5] = el; }}
+              ref={(el) => { if (el) sectionsRef.current[6] = el; }}
               className="section-height"
             >
               <ReadyToBegin onBeginJourney={() => setShowGuidedJourney(true)} />
             </div>
 
-            {/* Section 6: Footer */}
+            {/* Section 7: Footer */}
             <div
-              ref={(el) => { if (el) sectionsRef.current[6] = el; }}
+              ref={(el) => { if (el) sectionsRef.current[7] = el; }}
               className="section-height"
             >
               <Footer />

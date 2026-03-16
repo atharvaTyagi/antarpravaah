@@ -7,7 +7,6 @@ import Button from '@/components/Button';
 import PageEndBlob from '@/components/PageEndBlob';
 import PathwaysCardStack from '@/components/PathwaysCardStack';
 import PathwayCard from '@/components/PathwayCard';
-import ThoughtsAndPonderings from '@/components/ThoughtsAndPonderings';
 import Footer from '@/components/Footer';
 import GuidedJourneyModal from '@/components/GuidedJourneyModal';
 import { pathways } from '@/data/pathwaysContent';
@@ -23,7 +22,6 @@ if (typeof window !== 'undefined') {
 const SECTIONS_DESKTOP: { id: string; type: 'static' | 'pathways-scroll' | 'footer'; themeId: SectionId }[] = [
   { id: 'approach-intro', type: 'static', themeId: 'approach' },
   { id: 'pathways', type: 'pathways-scroll', themeId: 'pathways' },
-  { id: 'thoughts', type: 'static', themeId: 'thoughts' },
   { id: 'approach-cta', type: 'static', themeId: 'approach-cta' },
   { id: 'footer', type: 'footer', themeId: 'approach-footer' },
 ];
@@ -32,7 +30,6 @@ const SECTIONS_DESKTOP: { id: string; type: 'static' | 'pathways-scroll' | 'foot
 const SECTIONS_MOBILE: { id: string; type: 'static' | 'pathways-scroll' | 'footer'; themeId: SectionId }[] = [
   { id: 'approach-intro', type: 'static', themeId: 'approach' },
   { id: 'pathways', type: 'pathways-scroll', themeId: 'pathways' },
-  { id: 'thoughts', type: 'static', themeId: 'thoughts' },
   { id: 'approach-cta', type: 'static', themeId: 'approach-cta' },
   { id: 'footer', type: 'footer', themeId: 'approach-footer' },
 ];
@@ -51,7 +48,6 @@ export default function ApproachPage() {
   const setTheme = useThemeStore((state) => state.setTheme);
 
   // State management
-  const [isMobile, setIsMobile] = useState(false);
   const [currentSection, setCurrentSection] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [isReady, setIsReady] = useState(false);
@@ -65,8 +61,7 @@ export default function ApproachPage() {
   const lastScrollTimeRef = useRef<number>(0);
   const sectionScrollCooldown = 800; // ms
 
-  // Get current sections based on viewport
-  const SECTIONS = isMobile ? SECTIONS_MOBILE : SECTIONS_DESKTOP;
+  const SECTIONS = SECTIONS_DESKTOP;
 
   // Prepare cards for the sticky stack
   const pathwayCards = pathways.map((pathway, index) => ({
@@ -77,16 +72,9 @@ export default function ApproachPage() {
     />,
   }));
 
-  // Initialize and check mobile
+  // Initialize
   useEffect(() => {
     if (typeof window === 'undefined') return;
-
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 640);
-    };
-
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
 
     // Set initial theme
     setTheme(SECTIONS_DESKTOP[0].themeId);
@@ -94,7 +82,6 @@ export default function ApproachPage() {
     const readyTimeout = setTimeout(() => setIsReady(true), 100);
 
     return () => {
-      window.removeEventListener('resize', checkMobile);
       clearTimeout(readyTimeout);
     };
   }, [setTheme]);
@@ -202,25 +189,6 @@ export default function ApproachPage() {
     }
   }, [isAnimating, currentSection, SECTIONS, isPathwaysScrollActive, goToSection]);
 
-  // Helper to check if element is within a scrollable container
-  const isWithinScrollableContainer = useCallback((target: EventTarget | null): boolean => {
-    if (!target || !(target instanceof Element)) return false;
-    
-    let element: Element | null = target;
-    while (element && element !== document.body) {
-      const style = window.getComputedStyle(element);
-      const overflowY = style.overflowY;
-      
-      // Check if this element is scrollable and has scrollable content
-      if ((overflowY === 'auto' || overflowY === 'scroll') && element.scrollHeight > element.clientHeight) {
-        return true;
-      }
-      
-      element = element.parentElement;
-    }
-    return false;
-  }, []);
-
   // Setup wheel/touch event handlers
   useLayoutEffect(() => {
     if (typeof window === 'undefined') return;
@@ -231,12 +199,6 @@ export default function ApproachPage() {
     const handleWheel = (e: WheelEvent) => {
       const section = SECTIONS[currentSection];
       if (section.type === 'pathways-scroll' && isPathwaysScrollActive) return;
-      
-      // Allow native scroll in thoughts section on mobile
-      if (isMobile && section.id === 'thoughts' && isWithinScrollableContainer(e.target)) {
-        return; // Don't prevent default, allow native scroll
-      }
-      
       e.preventDefault();
       handleScroll(e.deltaY);
     };
@@ -248,12 +210,6 @@ export default function ApproachPage() {
     const handleTouchMove = (e: TouchEvent) => {
       const section = SECTIONS[currentSection];
       if (section.type === 'pathways-scroll' && isPathwaysScrollActive) return;
-      
-      // Allow native scroll in thoughts section on mobile
-      if (isMobile && section.id === 'thoughts' && isWithinScrollableContainer(e.target)) {
-        return; // Don't prevent default, allow native scroll
-      }
-      
       e.preventDefault();
       const currentY = e.touches[0].clientY;
       const deltaY = lastTouchY - currentY;
@@ -271,7 +227,7 @@ export default function ApproachPage() {
       window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchmove', handleTouchMove);
     };
-  }, [isReady, currentSection, SECTIONS, isPathwaysScrollActive, handleScroll, isMobile, isWithinScrollableContainer]);
+  }, [isReady, currentSection, SECTIONS, isPathwaysScrollActive, handleScroll]);
 
   // Section height class name
   const sectionClass = "section-height";
@@ -394,17 +350,9 @@ export default function ApproachPage() {
             />
           </div>
 
-          {/* ===== SECTION 3: Thoughts & Ponderings ===== */}
+          {/* ===== SECTION 3: CTA ===== */}
           <div
             ref={(el) => { if (el) sectionsRef.current[2] = el; }}
-            className={`relative flex flex-col px-4 sm:px-8 lg:px-12 py-8 sm:py-12 bg-[#f6edd0] overflow-y-auto md:overflow-hidden ${sectionClass}`}
-          >
-            <ThoughtsAndPonderings />
-          </div>
-
-          {/* ===== SECTION 4: CTA ===== */}
-          <div
-            ref={(el) => { if (el) sectionsRef.current[3] = el; }}
             className={`relative flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 bg-[#f6edd0] overflow-hidden ${sectionClass}`}
           >
             <div className="mx-auto flex max-w-full sm:max-w-[600px] lg:max-w-[799px] flex-col items-center gap-6 sm:gap-8 lg:gap-10 text-center">
@@ -435,9 +383,9 @@ export default function ApproachPage() {
             </div>
           </div>
 
-          {/* ===== SECTION 5: Footer ===== */}
+          {/* ===== SECTION 4: Footer ===== */}
           <div
-            ref={(el) => { if (el) sectionsRef.current[4] = el; }}
+            ref={(el) => { if (el) sectionsRef.current[3] = el; }}
             className={`relative ${sectionClass}`}
           >
             <Footer />
