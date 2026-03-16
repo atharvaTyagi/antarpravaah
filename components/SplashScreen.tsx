@@ -10,31 +10,17 @@ if (typeof window !== 'undefined') {
   gsap.registerPlugin(Observer);
 }
 
-function AnimatedText({
-  text,
-  className,
-  style,
-}: {
-  text: string;
-  className?: string;
-  style?: React.CSSProperties;
-}) {
-  const wordEntries = text.split(' ').reduce<{ word: string; start: number }[]>((acc, word) => {
-    const start = acc.length === 0 ? 0 : acc[acc.length - 1].start + acc[acc.length - 1].word.length + 1;
-    acc.push({ word, start });
-    return acc;
-  }, []);
-  return (
-    <p className={className} style={style}>
-      {wordEntries.map(({ word, start }, i) => (
-        <span key={start} className="splash-word" style={{ opacity: 0.2 }}>
-          {word}
-          {i < wordEntries.length - 1 ? ' ' : ''}
-        </span>
-      ))}
-    </p>
-  );
-}
+// The two paragraphs of text, each split into display lines for animation
+const TEXT_LINES = [
+  "If we only remembered who we are,",
+  "and why we are here, then life",
+  "and everything that has happened in it,",
+  "would make sense. We will no longer",
+  "be lost or alone. We were, are and",
+  "shall always be whole.",
+  "\u00a0", // spacer line between paragraphs
+  "That is the Antar Smaran Process.",
+];
 
 interface SplashScreenProps {
   onComplete: () => void;
@@ -45,171 +31,74 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
     () => (typeof onComplete === 'function' ? onComplete : () => {}),
     [onComplete],
   );
+
   const containerRef = useRef<HTMLDivElement>(null);
   const spiralContainerRef = useRef<HTMLDivElement>(null);
   const blobContainerRef = useRef<HTMLDivElement>(null);
+  const lineRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
-  const isCompleting = useRef(false);
+  const observerRef = useRef<Observer | null>(null);
   const lottieCompletedRef = useRef(false);
   const fallbackTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const absoluteTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isCompletingRef = useRef(false);
 
   const [phase, setPhase] = useState<'spiral' | 'transitioning' | 'blob' | 'done'>('spiral');
-  const [blobReady, setBlobReady] = useState(false);
-  const wordsComplete = phase === 'done';
-  const observerRef = useRef<Observer | null>(null);
-  const currentWordIndexRef = useRef(0);
-  const totalWordsRef = useRef(0);
-  const lastScrollTimeRef = useRef(0);
-  const scrollCooldown = 80;
-  const wordsPerScroll = 3;
 
   // --vh is set by page.tsx — no duplicate here
 
+  // Fallback timers in case Lottie never fires
   useEffect(() => {
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
     const fallbackDelay = isMobile ? 8000 : 10000;
 
     fallbackTimeoutRef.current = setTimeout(() => {
-      if (!lottieCompletedRef.current) {
-        handleLottieComplete();
-      }
+      if (!lottieCompletedRef.current) handleLottieComplete();
     }, fallbackDelay);
 
     absoluteTimeoutRef.current = setTimeout(() => {
-      if (!isCompleting.current) {
-        isCompleting.current = true;
+      if (!isCompletingRef.current) {
+        isCompletingRef.current = true;
         setPhase('done');
         onCompleteSafe();
       }
-    }, 15000);
-
-    const mobileRevealTimeout = setTimeout(() => {
-      if (typeof window !== 'undefined' && window.innerWidth < 768) {
-        if (blobContainerRef.current && !isCompleting.current) {
-          const words = blobContainerRef.current.querySelectorAll('.splash-word');
-          if (words.length > 0) {
-            const firstWordOpacity = window.getComputedStyle(words[0]).opacity;
-            if (parseFloat(firstWordOpacity) < 0.5) {
-              gsap.to(words, {
-                opacity: 1,
-                color: '#6A3F33',
-                duration: 0.5,
-                stagger: 0.05,
-                ease: 'power2.out',
-              });
-            }
-          }
-        }
-      }
-    }, 8000);
+    }, 20000);
 
     return () => {
       if (fallbackTimeoutRef.current) clearTimeout(fallbackTimeoutRef.current);
       if (absoluteTimeoutRef.current) clearTimeout(absoluteTimeoutRef.current);
-      clearTimeout(mobileRevealTimeout);
-      if (timelineRef.current) {
-        timelineRef.current.kill();
-        timelineRef.current = null;
-      }
-      if (observerRef.current) {
-        observerRef.current.kill();
-        observerRef.current = null;
-      }
+      if (timelineRef.current) { timelineRef.current.kill(); timelineRef.current = null; }
+      if (observerRef.current) { observerRef.current.kill(); observerRef.current = null; }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleScrollReveal = useCallback(() => {
-    if (!blobContainerRef.current) return;
-
-    const now = Date.now();
-    if (now - lastScrollTimeRef.current < scrollCooldown) return;
-    lastScrollTimeRef.current = now;
-
-    const words = blobContainerRef.current.querySelectorAll('.splash-word');
-    if (words.length === 0) return;
-
-    const currentIndex = currentWordIndexRef.current;
-    const endIndex = Math.min(currentIndex + wordsPerScroll, words.length);
-
-    for (let i = currentIndex; i < endIndex; i++) {
-      gsap.to(words[i], {
-        opacity: 1,
-        color: '#6A3F33',
-        duration: 0.3,
-        ease: 'power2.out',
-      });
-    }
-
-    currentWordIndexRef.current = endIndex;
-
-    if (currentWordIndexRef.current >= words.length) {
-      setPhase('done');
-      setTimeout(() => {
-        if (!isCompleting.current) {
-          isCompleting.current = true;
-          if (fallbackTimeoutRef.current) clearTimeout(fallbackTimeoutRef.current);
-          if (absoluteTimeoutRef.current) clearTimeout(absoluteTimeoutRef.current);
-          onCompleteSafe();
-        }
-      }, 400);
-    }
-  }, [onCompleteSafe]);
-
-  // Scoped Observer on blobContainerRef — touch-action:none is on the element
-  useEffect(() => {
-    if (!blobReady || wordsComplete || typeof window === 'undefined') return;
-    if (!blobContainerRef.current) return;
-
-    observerRef.current = Observer.create({
-      target: blobContainerRef.current,
-      type: 'wheel,touch,pointer',
-      wheelSpeed: -1,
-      tolerance: 30,
-      preventDefault: true,
-      onDown: () => {},
-      onUp: () => handleScrollReveal(),
-    });
-
-    return () => {
-      if (observerRef.current) {
-        observerRef.current.kill();
-        observerRef.current = null;
-      }
-    };
-  }, [blobReady, wordsComplete, phase, handleScrollReveal]);
-
   const handleLottieComplete = useCallback(() => {
     if (lottieCompletedRef.current) return;
     lottieCompletedRef.current = true;
-
-    if (fallbackTimeoutRef.current) {
-      clearTimeout(fallbackTimeoutRef.current);
-      fallbackTimeoutRef.current = null;
-    }
-
+    if (fallbackTimeoutRef.current) { clearTimeout(fallbackTimeoutRef.current); fallbackTimeoutRef.current = null; }
     setPhase('transitioning');
   }, []);
 
-  // Transition: spiral out, blob in
+  // Transition: spiral out → blob in → auto-animate lines
   useEffect(() => {
     if (phase !== 'transitioning') return;
     if (!spiralContainerRef.current || !blobContainerRef.current) return;
 
-    if (timelineRef.current) {
-      timelineRef.current.kill();
-    }
+    if (timelineRef.current) timelineRef.current.kill();
+
+    const lines = lineRefs.current.filter(Boolean) as HTMLSpanElement[];
+
+    // Start all lines invisible
+    gsap.set(lines, { opacity: 0, y: 8 });
 
     const tl = gsap.timeline();
     timelineRef.current = tl;
 
-    tl.to(spiralContainerRef.current, {
-      opacity: 0,
-      duration: 0.7,
-      ease: 'power2.inOut',
-    });
+    // Fade out spiral
+    tl.to(spiralContainerRef.current, { opacity: 0, duration: 0.7, ease: 'power2.inOut' });
 
+    // Fade in blob container
     tl.fromTo(
       blobContainerRef.current,
       { opacity: 0 },
@@ -217,40 +106,62 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
         opacity: 1,
         duration: 0.8,
         ease: 'power2.inOut',
-        onComplete: () => {
-          setPhase('blob');
-
-          if (blobContainerRef.current) {
-            const words = blobContainerRef.current.querySelectorAll('.splash-word');
-            totalWordsRef.current = words.length;
-            currentWordIndexRef.current = 0;
-
-            if (words.length > 0) {
-              setBlobReady(true);
-            } else {
-              if (!isCompleting.current) {
-                isCompleting.current = true;
-                onCompleteSafe();
-              }
-            }
-          }
-        },
+        onComplete: () => setPhase('blob'),
       },
       '-=0.4',
     );
-  }, [phase, onCompleteSafe]);
 
-  // Ensure all words visible when done
-  useEffect(() => {
-    if (phase !== 'done') return;
-    if (!blobContainerRef.current) return;
+    // Animate each line in, one by one, slowly and steadily
+    lines.forEach((line, i) => {
+      tl.to(
+        line,
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.55,
+          ease: 'power2.out',
+        },
+        // First line starts 0.3s after blob is visible; each subsequent line 0.45s apart
+        `>-0.1`,
+      );
+      // Small extra pause after the spacer line
+      if (i === 6) tl.to({}, { duration: 0.2 });
+    });
 
-    const words = blobContainerRef.current.querySelectorAll('.splash-word');
-    words.forEach((word) => {
-      (word as HTMLElement).style.opacity = '1';
-      (word as HTMLElement).style.color = '#6A3F33';
+    // After all lines are visible, mark as done — user must scroll to advance
+    tl.call(() => {
+      setPhase('done');
     });
   }, [phase]);
+
+  // Once done, create an Observer so the user can scroll to advance
+  useEffect(() => {
+    if (phase !== 'done') return;
+    if (typeof window === 'undefined') return;
+    if (!blobContainerRef.current) return;
+
+    const obs = Observer.create({
+      target: blobContainerRef.current,
+      type: 'wheel,touch,pointer',
+      wheelSpeed: -1,
+      tolerance: 30,
+      preventDefault: true,
+      onDown: () => {},
+      onUp: () => {
+        if (isCompletingRef.current) return;
+        isCompletingRef.current = true;
+        if (absoluteTimeoutRef.current) clearTimeout(absoluteTimeoutRef.current);
+        onCompleteSafe();
+      },
+    });
+
+    observerRef.current = obs;
+
+    return () => {
+      obs.kill();
+      observerRef.current = null;
+    };
+  }, [phase, onCompleteSafe]);
 
   const showSpiral = phase === 'spiral' || phase === 'transitioning';
   const showBlob = phase === 'transitioning' || phase === 'blob' || phase === 'done';
@@ -260,11 +171,6 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
       ref={containerRef}
       className="relative w-full h-full bg-[#6a3f33]"
       style={{
-        /* WebKit needs the splash container on its own GPU layer so the
-           Lottie canvas and blob SVG actually get composited and painted.
-           overflow:hidden is avoided because WebKit ignores it under
-           will-change:transform ancestors; -webkit-mask-image forces a
-           compositing mask that Safari respects in all stacking contexts. */
         WebkitMaskImage: '-webkit-radial-gradient(white, black)',
         maskImage: 'radial-gradient(white, black)',
         transform: 'translateZ(0)',
@@ -337,25 +243,24 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
                   overflow: 'hidden',
                 }}
               >
-                <AnimatedText
-                  text="If we only remembered who we are, and why we are here, then life and everything that has happened in it, would make sense. We will no longer be lost or alone. We were, are and shall always be whole."
-                  className="leading-[1.3] text-[#4a3833] mb-3"
+                <p
+                  className="leading-[1.55] text-[#4a3833]"
                   style={{
                     fontFamily: 'var(--font-saphira), serif',
                     fontWeight: 400,
-                    fontSize: 'clamp(16px, 3.8vw, 24px)',
-                    marginBottom: 'clamp(8px, 2vw, 16px)',
+                    fontSize: 'clamp(14px, 3.4vw, 22px)',
                   }}
-                />
-                <AnimatedText
-                  text="That is the Antar Smaran Process."
-                  className="leading-[1.3] text-[#4a3833]"
-                  style={{
-                    fontFamily: 'var(--font-saphira), serif',
-                    fontWeight: 400,
-                    fontSize: 'clamp(16px, 3.8vw, 24px)',
-                  }}
-                />
+                >
+                  {TEXT_LINES.map((line, i) => (
+                    <span
+                      key={i}
+                      ref={(el) => { lineRefs.current[i] = el; }}
+                      style={{ display: 'block', opacity: 0 }}
+                    >
+                      {line}
+                    </span>
+                  ))}
+                </p>
               </div>
             </div>
           </div>

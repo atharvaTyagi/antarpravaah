@@ -198,12 +198,10 @@ export default function PathwayCard({ pathway, isMobile = false, onExpandedChang
       <div
         className="relative flex items-end overflow-hidden ios-radius-fix rounded-[12px] sm:rounded-[16px] lg:rounded-[24px] border-[4px] sm:border-[8px] lg:border-[12px] border-[#9ac1bf] w-full h-full"
       >
-        {/* Background Image with blur */}
         <div className="absolute inset-0 -z-10">
           <img
             src={pathway.image}
             alt=""
-            className="h-full w-full object-cover blur-[2px]"
             style={{ transform: 'scale(1.1)' }}
           />
         </div>
@@ -290,7 +288,6 @@ export default function PathwayCard({ pathway, isMobile = false, onExpandedChang
         <img
           src={pathway.image}
           alt=""
-          className="h-full w-full object-cover blur-[2px]"
           style={{ transform: 'scale(1.1)' }}
         />
       </div>

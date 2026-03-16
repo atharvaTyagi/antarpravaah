@@ -4,7 +4,8 @@ import { useEffect, useRef, useState, useCallback, useLayoutEffect } from 'react
 import { gsap } from 'gsap';
 import { Observer } from 'gsap/dist/Observer';
 import ModalitiesScrollCard, { ModalityContent } from '@/components/ModalitiesScrollCard';
-import MobileModalityCard, { MobileModalityData } from '@/components/MobileModalityCard';
+import { MobileModalityData } from '@/components/MobileModalityCard';
+import ModalitiesCardStack from '@/components/ModalitiesCardStack';
 import TherapyCard from '@/components/TherapyCard';
 import TherapiesBlobScroll from '@/components/TherapiesBlobScroll';
 import Button from '@/components/Button';
@@ -29,11 +30,11 @@ const SECTIONS_DESKTOP: { id: string; type: 'static' | 'modalities-scroll' | 'fo
   { id: 'therapies-footer', type: 'footer', themeId: 'therapies-footer' },
 ];
 
-// Mobile section configuration - modalities as carousel, blob as scroll-driven
-const SECTIONS_MOBILE: { id: string; type: 'static' | 'asp-scroll' | 'modalities-carousel' | 'blob-scroll' | 'footer'; themeId: SectionId }[] = [
+// Mobile section configuration - modalities as vertical card stack (like WeWorkTogether)
+const SECTIONS_MOBILE: { id: string; type: 'static' | 'asp-scroll' | 'modalities-stack' | 'blob-scroll' | 'footer'; themeId: SectionId }[] = [
   { id: 'therapies-intro', type: 'static', themeId: 'therapies-intro' },
   { id: 'therapies-asp', type: 'asp-scroll', themeId: 'therapies-asp' },
-  { id: 'therapies-modalities', type: 'modalities-carousel', themeId: 'therapies-modalities' },
+  { id: 'therapies-modalities', type: 'modalities-stack', themeId: 'therapies-modalities' },
   { id: 'therapies-not-sure', type: 'static', themeId: 'therapies-not-sure' },
   { id: 'therapies-come-find-me', type: 'blob-scroll', themeId: 'therapies-come-find-me' },
   { id: 'therapies-footer', type: 'footer', themeId: 'therapies-footer' },
@@ -49,7 +50,6 @@ const therapiesButtonColors = {
 export default function TherapiesPage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const sectionsRef = useRef<HTMLDivElement[]>([]);
-  const modalitiesCarouselRef = useRef<HTMLDivElement>(null);
 
   const setTheme = useThemeStore((state) => state.setTheme);
 
@@ -58,6 +58,7 @@ export default function TherapiesPage() {
   const [isAnimating, setIsAnimating] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [isModalitiesScrollActive, setIsModalitiesScrollActive] = useState(false);
+  const [isModalitiesStackActive, setIsModalitiesStackActive] = useState(false);
   const [aspCardVisible, setAspCardVisible] = useState(false);
   const [isCardExpanded, setIsCardExpanded] = useState(false);
   const [aspScrolledToEnd, setAspScrolledToEnd] = useState(false);
@@ -75,9 +76,9 @@ export default function TherapiesPage() {
   const [blobResetToStart, setBlobResetToStart] = useState(false);
   const [blobResetToEnd, setBlobResetToEnd] = useState(false);
 
-  // Mobile carousel state
-  const modalitiesScrollX = useRef(0);
-  const [currentModalityIndex, setCurrentModalityIndex] = useState(0);
+  // Mobile stack reset states
+  const [modalitiesStackResetToStart, setModalitiesStackResetToStart] = useState(false);
+  const [modalitiesStackResetToEnd, setModalitiesStackResetToEnd] = useState(false);
 
   const lastScrollTimeRef = useRef<number>(0);
   const sectionScrollCooldown = 1000;
@@ -118,6 +119,7 @@ export default function TherapiesPage() {
 
     setIsAnimating(true);
     setIsModalitiesScrollActive(false);
+    setIsModalitiesStackActive(false);
     setIsBlobScrollActive(false);
     lastScrollTimeRef.current = Date.now();
 
@@ -151,15 +153,16 @@ export default function TherapiesPage() {
           setTimeout(() => setIsModalitiesScrollActive(true), 400);
         }
 
-        // Mobile modalities carousel - reset position
-        if (section.type === 'modalities-carousel') {
+        // Mobile modalities stack handling
+        if (section.type === 'modalities-stack') {
           if (direction === 'down') {
-            modalitiesScrollX.current = 0;
-            setCurrentModalityIndex(0);
-            if (modalitiesCarouselRef.current) {
-              gsap.set(modalitiesCarouselRef.current, { x: 0 });
-            }
+            setModalitiesStackResetToStart(true);
+            setTimeout(() => setModalitiesStackResetToStart(false), 100);
+          } else {
+            setModalitiesStackResetToEnd(true);
+            setTimeout(() => setModalitiesStackResetToEnd(false), 100);
           }
+          setTimeout(() => setIsModalitiesStackActive(true), 400);
         }
 
         // Mobile blob scroll handling
@@ -183,15 +186,30 @@ export default function TherapiesPage() {
         setIsAnimating(false);
       },
     });
-  }, [isAnimating, SECTIONS, setTheme, isMobile, aspCardVisible, isBlobScrollLocked]);
+  }, [isAnimating, SECTIONS, setTheme, isMobile, aspCardVisible, isBlobScrollLocked, isModalitiesStackActive]);
 
-  // Handle modalities scroll edge reached
+  // Handle modalities scroll edge reached (desktop)
   const handleModalitiesEdgeReached = useCallback((edge: 'start' | 'end') => {
     if (isAnimating) return;
     const now = Date.now();
     if (now - lastScrollTimeRef.current < sectionScrollCooldown) return;
 
     setIsModalitiesScrollActive(false);
+
+    if (edge === 'end') {
+      goToSection(currentSection + 1, 'down');
+    } else if (edge === 'start') {
+      goToSection(currentSection - 1, 'up');
+    }
+  }, [isAnimating, currentSection, goToSection]);
+
+  // Handle modalities stack edge reached (mobile)
+  const handleModalitiesStackEdgeReached = useCallback((edge: 'start' | 'end') => {
+    if (isAnimating) return;
+    const now = Date.now();
+    if (now - lastScrollTimeRef.current < sectionScrollCooldown) return;
+
+    setIsModalitiesStackActive(false);
 
     if (edge === 'end') {
       goToSection(currentSection + 1, 'down');
@@ -251,6 +269,7 @@ export default function TherapiesPage() {
     
     // Skip if internal scroll handlers are active
     if (section.type === 'modalities-scroll' && isModalitiesScrollActive) return;
+    if (section.type === 'modalities-stack' && isModalitiesStackActive) return;
     if (section.type === 'blob-scroll' && isBlobScrollActive) return;
     
     // CRITICAL: Block all scroll if blob scroll is locked (desktop)
@@ -269,45 +288,6 @@ export default function TherapiesPage() {
       return; // Block forward scroll until ASP content is fully scrolled
     }
 
-    // Mobile modalities carousel - handle horizontal scroll
-    if (isMobile && section.type === 'modalities-carousel') {
-      const modalityTherapies = therapies.filter((t) => t.id !== 'antar-smaran-process');
-      const totalCards = modalityTherapies.length;
-      const cardWidth = 353 + 16; // Card width + gap
-      
-      if (isScrollingDown) {
-        if (currentModalityIndex < totalCards - 1) {
-          const newIndex = currentModalityIndex + 1;
-          setCurrentModalityIndex(newIndex);
-          modalitiesScrollX.current = newIndex * cardWidth;
-          if (modalitiesCarouselRef.current) {
-            gsap.to(modalitiesCarouselRef.current, {
-              x: -modalitiesScrollX.current,
-              duration: 0.4,
-              ease: 'power2.out',
-            });
-          }
-          lastScrollTimeRef.current = now;
-          return;
-        }
-      } else {
-        if (currentModalityIndex > 0) {
-          const newIndex = currentModalityIndex - 1;
-          setCurrentModalityIndex(newIndex);
-          modalitiesScrollX.current = newIndex * cardWidth;
-          if (modalitiesCarouselRef.current) {
-            gsap.to(modalitiesCarouselRef.current, {
-              x: -modalitiesScrollX.current,
-              duration: 0.4,
-              ease: 'power2.out',
-            });
-          }
-          lastScrollTimeRef.current = now;
-          return;
-        }
-      }
-    }
-
     lastScrollTimeRef.current = now;
 
     if (isScrollingDown) {
@@ -315,7 +295,7 @@ export default function TherapiesPage() {
     } else {
       goToSection(currentSection - 1, 'up');
     }
-  }, [isAnimating, isCardExpanded, currentSection, SECTIONS, isModalitiesScrollActive, isBlobScrollActive, isMobile, aspScrolledToEnd, currentModalityIndex, goToSection, isBlobScrollLocked]);
+  }, [isAnimating, isCardExpanded, currentSection, SECTIONS, isModalitiesScrollActive, isModalitiesStackActive, isBlobScrollActive, isMobile, aspScrolledToEnd, goToSection, isBlobScrollLocked]);
 
   // Handle mobile viewport height (accounts for browser toolbar)
   useEffect(() => {
@@ -347,8 +327,8 @@ export default function TherapiesPage() {
       if (isCardExpanded) return;
       const section = SECTIONS[currentSection];
       if (section.type === 'modalities-scroll' && isModalitiesScrollActive) return;
+      if (section.type === 'modalities-stack' && isModalitiesStackActive) return;
       if (section.type === 'blob-scroll' && isBlobScrollActive) return;
-      // CRITICAL: Block wheel events if blob scroll is locked
       if (isBlobScrollLocked) return;
       e.preventDefault();
       handleScroll(e.deltaY);
@@ -362,8 +342,8 @@ export default function TherapiesPage() {
       if (isCardExpanded) return;
       const section = SECTIONS[currentSection];
       if (section.type === 'modalities-scroll' && isModalitiesScrollActive) return;
+      if (section.type === 'modalities-stack' && isModalitiesStackActive) return;
       if (section.type === 'blob-scroll' && isBlobScrollActive) return;
-      // CRITICAL: Block touch events if blob scroll is locked
       if (isBlobScrollLocked) return;
       e.preventDefault();
       const currentY = e.touches[0].clientY;
@@ -382,7 +362,7 @@ export default function TherapiesPage() {
       window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchmove', handleTouchMove);
     };
-  }, [isReady, currentSection, SECTIONS, isModalitiesScrollActive, isBlobScrollActive, isCardExpanded, handleScroll, isBlobScrollLocked]);
+  }, [isReady, currentSection, SECTIONS, isModalitiesScrollActive, isModalitiesStackActive, isBlobScrollActive, isCardExpanded, handleScroll, isBlobScrollLocked]);
 
   // Get Antar Smaran Process for featured section
   const antarSmaranProcess = therapies.find((t) => t.id === 'antar-smaran-process');
@@ -587,38 +567,20 @@ export default function TherapiesPage() {
                 </div>
               )}
 
-              {/* Section 3: Modalities Carousel */}
+              {/* Section 3: Modalities Card Stack */}
               <div
                 ref={(el) => { if (el) sectionsRef.current[2] = el; }}
-                className={`relative flex flex-col bg-[#f6edd0] overflow-hidden ${sectionClass}`}
+                className={`relative ${sectionClass}`}
               >
-                {/* Sticky Title */}
-                <div className="sticky top-0 z-10 bg-[#f6edd0] pt-4 pb-4 px-5">
-                  <h2
-                    className="text-[48px] leading-[1.0] text-[#645c42] text-center"
-                    style={{ fontFamily: 'var(--font-saphira), serif' }}
-                  >
-                    Our Modalities
-                  </h2>
-                </div>
-
-                {/* Carousel Container */}
-                <div className="flex-1 flex items-center overflow-hidden px-5 py-8">
-                  <div
-                    ref={modalitiesCarouselRef}
-                    className="flex gap-4 will-change-transform"
-                  >
-                    {mobileModalitiesContent.map((modality) => (
-                      <div key={modality.id} className="shrink-0">
-                        <MobileModalityCard
-                          data={modality}
-                          onExpandedChange={handleCardExpandedChange}
-                          onCtaClick={handleOpenModalCalendar}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                <ModalitiesCardStack
+                  modalities={mobileModalitiesContent}
+                  isActive={isModalitiesStackActive}
+                  onEdgeReached={handleModalitiesStackEdgeReached}
+                  resetToStart={modalitiesStackResetToStart}
+                  resetToEnd={modalitiesStackResetToEnd}
+                  onExpandedChange={handleCardExpandedChange}
+                  onCtaClick={handleOpenModalCalendar}
+                />
               </div>
 
               {/* Section 4: Not Sure Section */}
@@ -764,7 +726,7 @@ export default function TherapiesPage() {
               {/* Section 3: Modalities Scroll Card */}
               <div
                 ref={(el) => { if (el) sectionsRef.current[2] = el; }}
-                className={`relative flex items-center justify-center px-4 sm:px-8 lg:px-12 bg-[#f6edd0] overflow-hidden ${sectionClass}`}
+                className={`relative flex items-center justify-center px-4 sm:px-8 lg:px-12 py-6 sm:py-8 lg:py-10 bg-[#f6edd0] overflow-hidden ${sectionClass}`}
               >
                 <ModalitiesScrollCard 
                   modalities={modalitiesContent} 

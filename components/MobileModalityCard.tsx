@@ -153,19 +153,19 @@ export default function MobileModalityCard({
   // Collapsed State - Default view with icon, title, subtitle, Read More
   if (!isExpanded) {
     return (
-      <div className="bg-[#d6c68e] flex flex-col h-[540px] w-[340px] rounded-[24px] overflow-hidden ios-radius-fix px-[32px] py-[24px]">
+      <div className="bg-[#d6c68e] flex flex-col h-full w-[80vw] max-w-[340px] rounded-[24px] overflow-hidden ios-radius-fix p-6">
         {/* Icon at top - takes flex-1 */}
         <div className="flex-1 flex items-center justify-center min-h-0">
           <img
             src={data.iconSrc}
             alt={data.title}
-            className="w-[75%] max-w-[260px] h-auto max-h-[240px] object-contain"
+            className="w-[70%] h-auto max-h-[40vh] object-contain"
           />
         </div>
 
         {/* Title */}
         <h3
-          className="text-[36px] leading-[1.0] text-[#645c42] text-center"
+          className="text-[28px] leading-[1.0] text-[#645c42] text-center shrink-0"
           style={{ fontFamily: 'var(--font-saphira), serif' }}
         >
           {data.title}
@@ -173,14 +173,14 @@ export default function MobileModalityCard({
 
         {/* Subtitle */}
         <p
-          className="text-[16px] leading-[24px] text-[#645c42] text-center mt-2"
+          className="text-[14px] leading-[1.5] text-[#645c42] text-center mt-2 shrink-0"
           style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
         >
           {data.subtitle}
         </p>
 
         {/* Read More Button */}
-        <div className="mt-4 w-full">
+        <div className="mt-3 w-full shrink-0">
           <ModalityCtaButton text="Read More" onClick={handleExpand} fullWidth />
         </div>
       </div>
@@ -189,7 +189,7 @@ export default function MobileModalityCard({
 
   // Expanded State - Title + Close + scrollable content
   return (
-    <div className="bg-[#d6c68e] flex flex-col h-[540px] w-[340px] rounded-[24px] overflow-hidden ios-radius-fix px-[32px] py-[24px]">
+    <div className="bg-[#d6c68e] flex flex-col h-full w-[80vw] max-w-[340px] rounded-[24px] overflow-hidden ios-radius-fix p-6">
       {/* Header with Title and Close Button */}
       <div className="flex items-start justify-between mb-4 shrink-0">
         <h3

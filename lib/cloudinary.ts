@@ -44,7 +44,7 @@ export function getCloudinaryUrl(
   const {
     width,
     height,
-    quality = 'auto:good',
+    quality = 'auto:best',
     format = 'auto',
     crop = 'fit',
     version,
@@ -71,12 +71,12 @@ export function getCloudinaryUrl(
 /**
  * Get Cloudinary URL without width/height constraints (for responsive images)
  * @param publicId - The Cloudinary public ID
- * @param quality - Quality setting (default: 'auto:good')
+ * @param quality - Quality setting (default: 'auto:best')
  * @returns Cloudinary URL
  */
 export function getResponsiveCloudinaryUrl(
   publicId: string,
-  quality: CloudinaryOptions['quality'] = 'auto:good'
+  quality: CloudinaryOptions['quality'] = 'auto:best'
 ): string {
   return getCloudinaryUrl(publicId, { quality });
 }

@@ -332,32 +332,35 @@ export default function TherapyCard({ therapy, isVisible = false, isMobile = fal
   if (isCenter) {
     // Special layout for ASP (centered) - larger card with more padding (Desktop)
     return (
-      <div ref={cardRef} className="w-full h-full bg-[#d6c68e] rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] overflow-hidden ios-radius-fix p-8 sm:p-12 lg:p-20 flex flex-col items-center justify-center gap-8 sm:gap-10 lg:gap-12 shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
-        {/* Icon centered at top */}
-        <div ref={iconRef} className="w-full flex justify-center">
-          <img
-            src={therapy.icon}
-            alt={therapy.title}
-            className="h-[140px] sm:h-[160px] lg:h-[186px] w-auto object-contain"
-          />
-        </div>
-
-        {/* Content centered */}
-        <div className="flex flex-col gap-4 sm:gap-5 lg:gap-6 items-center text-center max-w-full sm:max-w-[500px] lg:max-w-[600px] px-2">
-          <h3
-            ref={titleRef}
-            className="text-[36px] sm:text-[42px] lg:text-[48px] leading-[1.0] text-[#645c42]"
-            style={{ fontFamily: 'var(--font-saphira), serif' }}
-          >
-            {therapy.title}
-          </h3>
-          <div ref={descriptionRef} className="text-[#645c42] text-[14px] sm:text-[15px] lg:text-[16px] leading-[24px] text-justify w-full">
-            {renderDescription()}
+      <div ref={cardRef} className="w-full h-full bg-[#d6c68e] rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] overflow-hidden ios-radius-fix flex flex-col items-center justify-start shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
+        {/* Inner scroll container so content never clips */}
+        <div className="w-full h-full overflow-y-auto overscroll-contain flex flex-col items-center justify-center px-6 sm:px-12 lg:px-20 py-6 sm:py-8 lg:py-10 gap-4 sm:gap-6 lg:gap-8">
+          {/* Icon centered at top */}
+          <div ref={iconRef} className="w-full flex justify-center shrink-0">
+            <img
+              src={therapy.icon}
+              alt={therapy.title}
+              className="h-[clamp(80px,12vh,186px)] w-auto object-contain"
+            />
           </div>
 
-          {/* CTA */}
-          <div ref={ctaRef} className="mt-4 sm:mt-6">
-            <Button text={therapy.ctaText} size="large" colors={therapiesButtonColors} onClick={onCtaClick} />
+          {/* Content centered */}
+          <div className="flex flex-col gap-3 sm:gap-4 lg:gap-5 items-center text-center max-w-full sm:max-w-[500px] lg:max-w-[600px] px-2 w-full">
+            <h3
+              ref={titleRef}
+              className="text-[clamp(1.75rem,4vw,3rem)] leading-[1.0] text-[#645c42]"
+              style={{ fontFamily: 'var(--font-saphira), serif' }}
+            >
+              {therapy.title}
+            </h3>
+            <div ref={descriptionRef} className="text-[#645c42] text-[clamp(0.8rem,1.4vw,1rem)] leading-[1.6] text-justify w-full">
+              {renderDescription()}
+            </div>
+
+            {/* CTA */}
+            <div ref={ctaRef} className="mt-2 sm:mt-4">
+              <Button text={therapy.ctaText} size="large" colors={therapiesButtonColors} onClick={onCtaClick} />
+            </div>
           </div>
         </div>
       </div>

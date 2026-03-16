@@ -1,62 +1,35 @@
 'use client';
 
-import { useRef, useEffect, useState, useCallback } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import gsap from 'gsap';
 import { Observer } from 'gsap/dist/Observer';
 import Button from '@/components/Button';
 
-// Register GSAP plugins
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(Observer);
 }
 
-// Therapies page button colors matching the page theme
 const therapiesButtonColors = {
   fg: '#645c42',
   fgHover: '#d6c68e',
   bgHover: '#645c42',
 };
 
-// Helper component to render text with word-by-word spans (exactly like SplashScreen)
-function AnimatedText({ 
-  text, 
-  className, 
-  style 
-}: { 
-  text: string; 
-  className?: string; 
-  style?: React.CSSProperties;
-}) {
-  const words = text.split(' ');
-  return (
-    <p className={className} style={style}>
-      {words.map((word, index) => (
-        <span key={index} className="splash-word" style={{ opacity: 0.2 }}>
-          {word}
-          {index < words.length - 1 ? ' ' : ''}
-        </span>
-      ))}
-    </p>
-  );
-}
-
-// Full text content for the blob
-const blobContent = {
-  opening: "Come and find me....",
-  lines: [
-    "Find me when you have lost track of your path,",
-    "When you have forgotten what you like and dislike,",
-    "When you are bored of always seeking people to fill the emptiness you feel within,",
-    "When your body hurts and you can't take it no more,",
-    "When you feel purposeless and joyless,",
-    "When this life seems alien,",
-    "When dealing with others drains your energy,",
-    "When you cannot see the light in others and only the dark in yourself,",
-    "Find me when no answer is good enough,",
-    "When you have been to enough people seeking to get clarity about your life,",
-  ],
-  closing: "Find me when you are ready to find yourself.",
-};
+// All text as individual lines for animation — order matches the original content
+const TEXT_LINES = [
+  { text: 'Come and find me....', type: 'opening' },
+  { text: 'Find me when you have lost track of your path,', type: 'line' },
+  { text: 'When you have forgotten what you like and dislike,', type: 'line' },
+  { text: 'When you are bored of always seeking people to fill the emptiness you feel within,', type: 'line' },
+  { text: 'When your body hurts and you can\'t take it no more,', type: 'line' },
+  { text: 'When you feel purposeless and joyless,', type: 'line' },
+  { text: 'When this life seems alien,', type: 'line' },
+  { text: 'When dealing with others drains your energy,', type: 'line' },
+  { text: 'When you cannot see the light in others and only the dark in yourself,', type: 'line' },
+  { text: 'Find me when no answer is good enough,', type: 'line' },
+  { text: 'When you have been to enough people seeking to get clarity about your life,', type: 'line' },
+  { text: 'Find me when you are ready to find yourself.', type: 'closing' },
+];
 
 interface TherapiesBlobScrollProps {
   isActive?: boolean;
@@ -79,190 +52,171 @@ export default function TherapiesBlobScroll({
 }: TherapiesBlobScrollProps) {
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const blobContainerRef = useRef<HTMLDivElement | null>(null);
+  const ctaRef = useRef<HTMLDivElement | null>(null);
+  const lineRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const timelineRef = useRef<gsap.core.Timeline | null>(null);
   const observerRef = useRef<Observer | null>(null);
-  const currentWordIndexRef = useRef(0);
-  const totalWordsRef = useRef(0);
+  const hasCompletedOnceRef = useRef(false);
   const lastScrollTimeRef = useRef(0);
-  const hasCompletedOnceRef = useRef(false); // Persists - once revealed, stays revealed
-  const scrollCooldown = 80;
-  const wordsPerScroll = 3;
-  
+  const scrollCooldown = 400;
+
   const [isClient, setIsClient] = useState(false);
-  const [wordsComplete, setWordsComplete] = useState(false);
 
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+  useEffect(() => { setIsClient(true); }, []);
 
-  // Handle scroll to reveal words (like SplashScreen)
-  const handleScrollReveal = useCallback(() => {
-    if (!blobContainerRef.current) return;
-    
-    const now = Date.now();
-    if (now - lastScrollTimeRef.current < scrollCooldown) return;
-    lastScrollTimeRef.current = now;
+  // -------------------------------------------------------------------------
+  // Helpers
+  // -------------------------------------------------------------------------
 
-    const words = blobContainerRef.current.querySelectorAll('.splash-word');
-    if (words.length === 0) return;
+  const getLines = () => lineRefs.current.filter(Boolean) as HTMLSpanElement[];
 
-    const currentIndex = currentWordIndexRef.current;
-    const endIndex = Math.min(currentIndex + wordsPerScroll, words.length);
+  const showAllInstant = () => {
+    gsap.set(getLines(), { opacity: 1, y: 0 });
+    if (ctaRef.current) gsap.set(ctaRef.current, { opacity: 1 });
+  };
 
-    for (let i = currentIndex; i < endIndex; i++) {
-      gsap.to(words[i], {
-        opacity: 1,
-        duration: 0.3,
-        ease: 'power2.out',
-      });
-    }
+  const hideAllInstant = () => {
+    gsap.set(getLines(), { opacity: 0, y: 8 });
+    if (ctaRef.current) gsap.set(ctaRef.current, { opacity: 0 });
+  };
 
-    currentWordIndexRef.current = endIndex;
+  const killTimeline = () => {
+    if (timelineRef.current) { timelineRef.current.kill(); timelineRef.current = null; }
+  };
 
-    // Check if all words are revealed
-    if (currentWordIndexRef.current >= words.length) {
-      hasCompletedOnceRef.current = true; // Mark permanently completed
-      // Safety: Ensure ALL words are at full opacity
-      gsap.to(words, {
-        opacity: 1,
-        duration: 0.3,
-        ease: 'power2.out',
-        onComplete: () => {
-          setWordsComplete(true);
-          onScrollLockChange?.(false); // Unlock scroll
-          // Reveal CTA button
-          const ctaButton = blobContainerRef.current?.querySelector('.blob-cta-button');
-          if (ctaButton) {
-            gsap.to(ctaButton, {
-              opacity: 1,
-              duration: 0.5,
-              ease: 'power2.out',
-            });
-          }
-          onAnimationComplete?.();
-        }
-      });
-    }
-  }, [onAnimationComplete, onScrollLockChange]);
+  const killObserver = () => {
+    if (observerRef.current) { observerRef.current.kill(); observerRef.current = null; }
+  };
 
-  // Setup GSAP Observer when section becomes active
-  useEffect(() => {
-    if (!isActive || !isClient || !blobContainerRef.current) return;
-
-    const words = blobContainerRef.current.querySelectorAll('.splash-word');
-    const ctaButton = blobContainerRef.current.querySelector('.blob-cta-button');
-    totalWordsRef.current = words.length;
-
-    // If already completed once, show final state immediately - no lock, no reset
-    if (hasCompletedOnceRef.current) {
-      gsap.set(words, { opacity: 1 });
-      gsap.set(ctaButton, { opacity: 1 });
-      currentWordIndexRef.current = words.length;
-      setWordsComplete(true);
-      // Don't lock scroll - already complete
-
-      // Still create Observer for navigation only
-      observerRef.current = Observer.create({
-        type: 'wheel,touch,pointer',
-        wheelSpeed: -1,
-        tolerance: 30,
-        preventDefault: true,
-        onDown: () => { onEdgeReached?.('start'); },
-        onUp: () => { onEdgeReached?.('end'); },
-      });
-
-      return () => {
-        if (observerRef.current) {
-          observerRef.current.kill();
-          observerRef.current = null;
-        }
-      };
-    }
-
-    // First time: reset and lock for scroll reveal
-    currentWordIndexRef.current = 0;
-    setWordsComplete(false);
-    onScrollLockChange?.(true);
-    
-    gsap.set(words, { opacity: 0.2 });
-    gsap.set(ctaButton, { opacity: 0 });
-
-    // Create Observer for scroll-based reveal
+  // Create the scroll-navigation Observer (used after animation completes)
+  const createNavigationObserver = () => {
+    killObserver();
     observerRef.current = Observer.create({
       type: 'wheel,touch,pointer',
       wheelSpeed: -1,
       tolerance: 30,
       preventDefault: true,
       onDown: () => {
-        // Scrolling up - go to previous section if at start
-        if (currentWordIndexRef.current === 0) {
-          onEdgeReached?.('start');
-        }
+        const now = Date.now();
+        if (now - lastScrollTimeRef.current < scrollCooldown) return;
+        lastScrollTimeRef.current = now;
+        onEdgeReached?.('start');
       },
       onUp: () => {
-        // Scrolling down - reveal words or go to next section
-        if (hasCompletedOnceRef.current) {
-          onEdgeReached?.('end');
-        } else {
-          handleScrollReveal();
-        }
+        const now = Date.now();
+        if (now - lastScrollTimeRef.current < scrollCooldown) return;
+        lastScrollTimeRef.current = now;
+        onEdgeReached?.('end');
       },
     });
+  };
 
-    return () => {
-      if (observerRef.current) {
-        observerRef.current.kill();
-        observerRef.current = null;
-      }
+  // -------------------------------------------------------------------------
+  // Auto-animate lines, then show CTA and hand off to scroll
+  // -------------------------------------------------------------------------
+
+  const runAnimation = () => {
+    killTimeline();
+    killObserver();
+
+    const lines = getLines();
+    gsap.set(lines, { opacity: 0, y: 8 });
+    if (ctaRef.current) gsap.set(ctaRef.current, { opacity: 0 });
+
+    const tl = gsap.timeline();
+    timelineRef.current = tl;
+
+    // Animate each line in steadily, one by one
+    lines.forEach((line) => {
+      tl.to(line, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, '>-0.05');
+    });
+
+    // Fade in CTA after last line
+    if (ctaRef.current) {
+      tl.to(ctaRef.current, { opacity: 1, duration: 0.5, ease: 'power2.out' }, '+=0.2');
+    }
+
+    tl.call(() => {
+      hasCompletedOnceRef.current = true;
+      onAnimationComplete?.();
       onScrollLockChange?.(false);
-    };
+      lastScrollTimeRef.current = Date.now();
+      createNavigationObserver();
+    });
+  };
+
+  // -------------------------------------------------------------------------
+  // isActive: start animation or restore completed state
+  // -------------------------------------------------------------------------
+
+  useEffect(() => {
+    if (!isClient) return;
+
+    if (isActive) {
+      const startDelay = setTimeout(() => {
+        if (hasCompletedOnceRef.current) {
+          // Already animated before — show final state, enable navigation
+          showAllInstant();
+          onScrollLockChange?.(false);
+          createNavigationObserver();
+          lastScrollTimeRef.current = Date.now();
+        } else {
+          onScrollLockChange?.(true);
+          runAnimation();
+        }
+      }, 350);
+      return () => clearTimeout(startDelay);
+    } else {
+      killTimeline();
+      killObserver();
+      onScrollLockChange?.(false);
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isActive, isClient]);
 
-  // Handle reset to start - respect hasCompletedOnce
+  // -------------------------------------------------------------------------
+  // Reset handlers
+  // -------------------------------------------------------------------------
+
   useEffect(() => {
-    if (!resetToStart || !isClient || !blobContainerRef.current) return;
-    
-    const words = blobContainerRef.current.querySelectorAll('.splash-word');
-    const ctaButton = blobContainerRef.current.querySelector('.blob-cta-button');
-    
-    // If already completed once, keep showing final state
+    if (!resetToStart || !isClient) return;
+    killTimeline();
+    killObserver();
     if (hasCompletedOnceRef.current) {
-      gsap.set(words, { opacity: 1 });
-      gsap.set(ctaButton, { opacity: 1 });
-      currentWordIndexRef.current = words.length;
-      setWordsComplete(true);
+      showAllInstant();
     } else {
-      gsap.set(words, { opacity: 0.2 });
-      gsap.set(ctaButton, { opacity: 0 });
-      currentWordIndexRef.current = 0;
-      setWordsComplete(false);
+      hideAllInstant();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resetToStart, isClient]);
 
-  // Handle reset to end
   useEffect(() => {
-    if (!resetToEnd || !isClient || !blobContainerRef.current) return;
-    
-    const words = blobContainerRef.current.querySelectorAll('.splash-word');
-    const ctaButton = blobContainerRef.current.querySelector('.blob-cta-button');
-    
-    gsap.set(words, { opacity: 1 });
-    gsap.set(ctaButton, { opacity: 1 });
-    currentWordIndexRef.current = words.length;
+    if (!resetToEnd || !isClient) return;
+    killTimeline();
+    killObserver();
     hasCompletedOnceRef.current = true;
-    setWordsComplete(true);
+    showAllInstant();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resetToEnd, isClient]);
+
+  // -------------------------------------------------------------------------
+  // Initial DOM state on mount
+  // -------------------------------------------------------------------------
+
+  useEffect(() => {
+    if (!isClient) return;
+    hideAllInstant();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isClient]);
 
   return (
     <div
       ref={sectionRef}
       className="therapies-blob-scroll relative w-full h-full flex items-center justify-center overflow-visible py-4 sm:py-6 lg:py-8"
     >
-      {/* Blob with text - fills the section */}
       <div ref={blobContainerRef} className="relative flex items-center justify-center w-full h-full max-h-full">
-        {/* Text blob shape container - mobile: wider fixed width, desktop: viewport-based */}
         <div className="relative flex items-center justify-center max-h-full w-full">
-          {/* Background SVG shape - mobile: wider than viewport, desktop: contained */}
+          {/* Blob background */}
           <img
             src="/about_text_blob.svg"
             alt=""
@@ -272,49 +226,37 @@ export default function TherapiesBlobScroll({
                 'brightness(0) saturate(100%) invert(87%) sepia(11%) saturate(939%) hue-rotate(7deg) brightness(102%) contrast(85%)',
             }}
           />
-          
-          {/* Text content overlay */}
+
+          {/* Text overlay */}
           <div className="absolute inset-0 flex items-center justify-center px-[12%] sm:px-[14%] lg:px-[15%] py-[8%] sm:py-[9%] lg:py-[10%]">
-            <div className="flex flex-col items-center justify-center text-center max-w-[95%] sm:max-w-[92%] lg:max-w-[90%] gap-[clamp(6px,1.2vh,16px)]">
-              {/* Opening Title - mobile: match splash blob size; desktop: original larger size */}
-              <AnimatedText
-                text={blobContent.opening}
-                className="leading-[1.3] text-[#645c42] text-[clamp(16px,3.8vw,24px)] sm:text-[clamp(24px,4vmin,42px)]"
-                style={{ 
-                  fontFamily: 'var(--font-saphira), serif',
-                  fontWeight: 400,
-                }}
-              />
+            <div className="flex flex-col items-center justify-center text-center max-w-[95%] sm:max-w-[92%] lg:max-w-[90%] gap-[clamp(4px,0.8vh,12px)]">
 
-              {/* Text Lines - mobile: match splash blob size; desktop: original smaller body text */}
+              {TEXT_LINES.map((line, i) => (
+                <span
+                  key={i}
+                  ref={(el) => { lineRefs.current[i] = el; }}
+                  className={[
+                    'block leading-[1.35] text-[#645c42]',
+                    line.type === 'opening'
+                      ? 'text-[clamp(16px,3.8vw,24px)] sm:text-[clamp(24px,4vmin,42px)]'
+                      : line.type === 'closing'
+                      ? 'text-[clamp(16px,3.8vw,24px)] sm:text-[clamp(20px,3.5vmin,36px)] mt-[clamp(4px,1vh,12px)]'
+                      : 'text-[clamp(16px,3.8vw,24px)] sm:text-[clamp(12px,1.8vmin,18px)]',
+                  ].join(' ')}
+                  style={{
+                    fontFamily: 'var(--font-saphira), serif',
+                    fontWeight: 400,
+                    opacity: 0,
+                  }}
+                >
+                  {line.text}
+                </span>
+              ))}
+
+              {/* CTA Button */}
               <div
-                className="leading-[1.3] text-[#645c42] text-[clamp(16px,3.8vw,24px)] sm:text-[clamp(12px,1.8vmin,18px)]"
-                style={{ 
-                  fontFamily: 'var(--font-saphira), serif',
-                  fontWeight: 400,
-                }}
-              >
-                {blobContent.lines.map((line, index) => (
-                  <AnimatedText
-                    key={index}
-                    text={line}
-                  />
-                ))}
-              </div>
-
-              {/* Closing Title - mobile: match splash blob size; desktop: original mid-size */}
-              <AnimatedText
-                text={blobContent.closing}
-                className="leading-[1.3] text-[#645c42] mt-[clamp(6px, 2vw, 16px)] text-[clamp(16px,3.8vw,24px)] sm:text-[clamp(20px,3.5vmin,36px)]"
-                style={{ 
-                  fontFamily: 'var(--font-saphira), serif',
-                  fontWeight: 400,
-                }}
-              />
-
-              {/* CTA Button - starts hidden */}
-              <div
-                className="blob-cta-button mt-[clamp(12px,2vh,24px)]"
+                ref={ctaRef}
+                className="mt-[clamp(12px,2vh,24px)]"
                 style={{ opacity: 0 }}
               >
                 <Button
