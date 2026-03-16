@@ -93,6 +93,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
             if (parseFloat(firstWordOpacity) < 0.5) {
               gsap.to(words, {
                 opacity: 1,
+                color: '#6A3F33',
                 duration: 0.5,
                 stagger: 0.05,
                 ease: 'power2.out',
@@ -135,6 +136,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
     for (let i = currentIndex; i < endIndex; i++) {
       gsap.to(words[i], {
         opacity: 1,
+        color: '#6A3F33',
         duration: 0.3,
         ease: 'power2.out',
       });
@@ -246,6 +248,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
     const words = blobContainerRef.current.querySelectorAll('.splash-word');
     words.forEach((word) => {
       (word as HTMLElement).style.opacity = '1';
+      (word as HTMLElement).style.color = '#6A3F33';
     });
   }, [phase]);
 

@@ -311,8 +311,8 @@ export default function WeWorkTogether({
           ref={cardsContainerRef}
           className="relative z-10 flex-1 flex items-center justify-center p-4 sm:px-6 lg:px-8 pb-6 sm:pb-8 lg:pb-12"
         >
-          <div className="relative w-full h-full sm:h-auto sm:max-w-[90vw] lg:max-w-[1000px]">
-            <div className="relative w-full h-full sm:h-[clamp(350px,55vh,550px)]">
+          <div className="relative w-full h-full sm:max-w-[90vw] lg:max-w-[1000px]">
+            <div className="relative w-full h-full">
               {/* Intro Card */}
               <div
                 className="work-card absolute inset-0 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d6c68e] p-6 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex flex-col items-center justify-center gap-6 sm:gap-8 lg:gap-10"
@@ -326,7 +326,7 @@ export default function WeWorkTogether({
                     height={450}
                     quality={85}
                     loading="lazy"
-                    className="w-auto h-auto max-w-[280px] max-h-[280px] sm:max-w-[320px] sm:max-h-[320px] lg:max-w-[380px] lg:max-h-[380px] object-contain"
+                    className="w-auto h-auto max-w-[240px] max-h-[30vh] sm:max-w-[300px] sm:max-h-[34vh] lg:max-w-[380px] lg:max-h-[38vh] object-contain"
                   />
                 </div>
                 <p
@@ -361,7 +361,7 @@ export default function WeWorkTogether({
                           height={450}
                           quality={85}
                           loading="lazy"
-                          className="w-auto h-auto max-w-[280px] max-h-[280px] sm:max-w-[320px] sm:max-h-[320px] lg:max-w-[380px] lg:max-h-[380px] object-contain"
+                          className="w-auto h-auto max-w-[240px] max-h-[30vh] sm:max-w-[300px] sm:max-h-[34vh] lg:max-w-[380px] lg:max-h-[38vh] object-contain"
                         />
                       </div>
                       <p
