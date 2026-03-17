@@ -55,7 +55,7 @@ function ConnectorPath({ flip, clipId }: { flip: boolean; clipId: string }) {
           <rect className="clip-rect" x="0" y="0" width="0" height="206" />
         </clipPath>
       </defs>
-      <path d={JOURNEY_PATH} fill="#9AC1BF" clipPath={`url(#${clipId})`} />
+      <path d={JOURNEY_PATH} fill="#a2c0bf" clipPath={`url(#${clipId})`} />
     </svg>
   );
 }
@@ -388,7 +388,7 @@ export default function TheJourney({
                         className="w-full sm:w-[340px] lg:w-[400px] text-justify journey-step px-2 sm:px-0"
                       >
                         <p
-                          className="text-[24px] sm:text-[30px] lg:text-[36px] leading-[1.0] text-[#9ac1bf]"
+                          className="text-[24px] sm:text-[30px] lg:text-[36px] leading-[1.0] text-[#a2c0bf]"
                           style={{ fontFamily: 'var(--font-saphira), serif' }}
                         >
                           {step.title}

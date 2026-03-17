@@ -103,12 +103,12 @@ export default function Header() {
                 <Link
                   key={item.label}
                   href={item.href}
-                  className={`uppercase tracking-[1.92px] text-[12px] transition-[font-weight] ${
+                  className={`uppercase tracking-[1.92px] text-[16px] transition-[font-weight] ${
                     isActive ? 'font-bold' : 'font-light hover:font-bold'
                   }`}
                   style={{
                     fontFamily: 'var(--font-graphik), sans-serif',
-                    fontWeight: isActive ? 700 : 300,
+                    fontWeight: isActive ? 700 : 400,
                     color: navTextColor,
                   }}
                 >

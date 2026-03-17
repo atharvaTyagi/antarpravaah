@@ -25,7 +25,7 @@ export default function ReadyToBegin({ onBeginJourney }: ReadyToBeginProps) {
           <div className="pt-2 sm:pt-4">
             <Button
               text="Begin Your Journey"
-              size="large"
+              size="medium"
               mode="light"
               colors={{
                 fg: '#474e3a',

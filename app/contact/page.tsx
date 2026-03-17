@@ -12,9 +12,9 @@ import { SectionId } from '@/lib/themeConfig';
 
 // Contact page button colors
 const contactButtonColors = {
-  fg: '#474e3a',
-  fgHover: '#f6edd0',
-  bgHover: '#474e3a',
+  fg: '#494e3c',
+  fgHover: '#96a37c',
+  bgHover: '#494e3c',
 };
 
 // Button colors for the green card section
@@ -296,7 +296,7 @@ export default function ContactPage() {
             ref={(el) => { if (el) sectionsRef.current[0] = el; }}
             className={`relative flex flex-col items-center justify-center px-5 sm:px-8 lg:px-8 bg-[#f6edd0] ${sectionClass}`}
           >
-            <div className="max-w-[687px] mx-auto text-center flex flex-col gap-5">
+            <div className="max-w-[800px] mx-auto text-center flex flex-col gap-5">
               <h1
                 className="text-[36px] sm:text-[42px] lg:text-[48px] leading-normal text-[#474e3a]"
                 style={{ fontFamily: 'var(--font-saphira), serif' }}
@@ -304,8 +304,8 @@ export default function ContactPage() {
                 We&apos;re here to support your journey
               </h1>
               <p
-                className="text-[14px] sm:text-[15px] lg:text-[16px] leading-normal text-[#474e3a] tracking-[2.5px] sm:tracking-[3px] lg:tracking-[2.56px]"
-                style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
+                className="text-[14px] sm:text-[15px] lg:text-[16px] leading-normal text-[#474e3a"
+                style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
               >
                 Whether you have questions about our approach, need guidance choosing the right therapy,
                 or want to learn more about upcoming immersions and trainings, we&apos;re here to help. Your
@@ -450,7 +450,7 @@ export default function ContactPage() {
                     {/* Section Header */}
                     <div className="w-full text-center py-3 sm:py-4">
                       <h3
-                        className="text-[20px] sm:text-[22px] lg:text-[24px] leading-normal text-[#93a378]"
+                        className="text-[20px] sm:text-[22px] lg:text-[24px] leading-normal text-[#96a37c]"
                         style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
                       >
                         {section.title}
@@ -465,7 +465,7 @@ export default function ContactPage() {
                         className="w-[34px] h-[35px]"
                         style={{
                           filter:
-                            'brightness(0) saturate(100%) invert(64%) sepia(18%) saturate(548%) hue-rotate(46deg) brightness(91%) contrast(86%)',
+                            'brightness(0) saturate(100%) invert(65%) sepia(15%) saturate(520%) hue-rotate(50deg) brightness(92%) contrast(85%)',
                         }}
                       />
                     </div>
@@ -486,7 +486,7 @@ export default function ContactPage() {
 
                     {/* Section End Blob */}
                     <div className="w-full flex items-center justify-center py-3 sm:py-4 lg:py-5">
-                      <PageEndBlob color="#93a378" className="w-[120px] sm:w-[140px] lg:w-[163px] h-auto opacity-60" />
+                      <PageEndBlob color="#96a37c" className="w-[120px] sm:w-[140px] lg:w-[163px] h-auto opacity-60" />
                     </div>
                   </div>
                 ))}
@@ -494,20 +494,20 @@ export default function ContactPage() {
                 {/* Final CTA at bottom of FAQ scroll */}
                 <div className="w-full text-center flex flex-col gap-5 sm:gap-6 lg:gap-8 items-center pb-6 sm:pb-8 lg:pb-10">
                   <h2
-                    className="text-[28px] sm:text-[32px] lg:text-[36px] leading-normal text-[#93a378]"
+                    className="text-[28px] sm:text-[32px] lg:text-[36px] leading-normal text-[#96a37c]"
                     style={{ fontFamily: 'var(--font-saphira), serif' }}
                   >
                     We&apos;re here to help
                   </h2>
                   <p
-                    className="text-[14px] sm:text-[15px] lg:text-[16px] leading-[24px] text-[#93a378] max-w-[600px]"
+                    className="text-[14px] sm:text-[15px] lg:text-[16px] leading-[24px] text-[#96a37c] max-w-[600px]"
                     style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
                   >
                     Can&apos;t find the answer you&apos;re looking for? We&apos;re happy to discuss any questions or
                     concerns you might have about your healing journey.
                   </p>
                   <div className="flex flex-col gap-3 items-center">
-                    <Button text="Book your first session" size="large" colors={contactButtonColors} />
+                    <Button text="Book your first session" size="medium" colors={contactButtonColors} />
                   </div>
                 </div>
               </div>

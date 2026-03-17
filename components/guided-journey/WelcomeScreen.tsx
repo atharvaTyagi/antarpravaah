@@ -75,13 +75,13 @@ export default function WelcomeScreen({ onStartGuided, onSkipToBooking, onClose 
         <div className="flex flex-col md:flex-row items-center gap-4 w-full justify-center">
           <Button
             text="Help me find my path"
-            size="large"
+            size="medium"
             colors={buttonColors}
             onClick={onStartGuided}
           />
           <Button
             text="I know what I need"
-            size="large"
+            size="medium"
             colors={buttonColors}
             onClick={onSkipToBooking}
           />

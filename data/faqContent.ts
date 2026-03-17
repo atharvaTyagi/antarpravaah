@@ -10,7 +10,7 @@ export interface FaqSection {
 
 export const faqSections: FaqSection[] = [
   {
-    title: 'SESSIONS',
+    title: 'Sessions',
     faqs: [
       {
         question: 'How do I know which therapy is right for me?',
@@ -47,7 +47,7 @@ export const faqSections: FaqSection[] = [
     ],
   },
   {
-    title: 'BOOKING & PAYMENT',
+    title: 'Booking & Payment',
     faqs: [
       {
         question: 'How do I book a session?',
@@ -69,7 +69,7 @@ export const faqSections: FaqSection[] = [
     ],
   },
   {
-    title: 'EVENTS & TRAININGS',
+    title: 'Events & Trainings',
     faqs: [
       {
         question: 'What\'s the difference between an event and a training?',
@@ -90,7 +90,7 @@ export const faqSections: FaqSection[] = [
     ],
   },
   {
-    title: 'THE APPROACH',
+    title: 'The Approach',
     faqs: [
       {
         question: 'Is this spiritual or religious?',
@@ -115,7 +115,7 @@ export const faqSections: FaqSection[] = [
     ],
   },
   {
-    title: 'PRACTICAL QUESTIONS',
+    title: 'Practical Questions',
     faqs: [
       {
         question: 'Where are you located? Do you offer online sessions?',

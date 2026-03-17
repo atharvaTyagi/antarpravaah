@@ -440,7 +440,7 @@ export function ImmersionCard({ data, isMobile = false, onExpandedChange, onBook
           {/* Scrollable Content Area */}
           <div
             ref={scrollContainerRef}
-            className="flex-1 overflow-y-auto min-h-0 overscroll-contain"
+            className="flex-1 overflow-y-auto min-h-0 overscroll-contain no-scrollbar"
             style={{ WebkitOverflowScrolling: 'touch' }}
           >
             {/* About */}
@@ -690,7 +690,7 @@ export function TrainingCard({ data, isMobile = false, onExpandedChange, onBooki
           {/* Scrollable Content Area */}
           <div
             ref={scrollContainerRef}
-            className="flex-1 overflow-y-auto min-h-0 overscroll-contain"
+            className="flex-1 overflow-y-auto min-h-0 overscroll-contain no-scrollbar"
             style={{ WebkitOverflowScrolling: 'touch' }}
           >
             {/* Overview */}

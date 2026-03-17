@@ -58,6 +58,22 @@ export default function PathwaysCardStack({
   // Cooldown between card changes (prevents residual scroll)
   const scrollCooldown = 400;
 
+  // Stable ref to animate function so it can be called from card edge callbacks
+  const animateToIndexStable = useCallback((newIndex: number) => {
+    if (newIndex < 0 || newIndex >= cards.length) return;
+    if (isAnimatingRef.current) return;
+    const currentIndex = activeIndexRef.current;
+    if (newIndex === currentIndex) return;
+    isAnimatingRef.current = true;
+    prevIndexRef.current = currentIndex;
+    activeIndexRef.current = newIndex;
+    setActiveIndex(newIndex);
+    setTimeout(() => {
+      isAnimatingRef.current = false;
+      lastScrollTimeRef.current = Date.now();
+    }, 600);
+  }, [cards.length]);
+
   useEffect(() => {
     setIsClient(true);
   }, []);
@@ -199,9 +215,12 @@ export default function PathwaysCardStack({
       }
     };
 
+    // On desktop with pathways, PathwayCard handles scroll internally — only use Observer for mobile touch
+    const observerType = (!isMobile && pathways) ? 'touch,pointer' : 'wheel,touch,pointer';
+
     // Create Observer for scroll handling - starts disabled
     const pathwaysObserver = Observer.create({
-      type: 'wheel,touch,pointer',
+      type: observerType,
       wheelSpeed: -1,
       tolerance: 50,
       preventDefault: true,
@@ -217,7 +236,7 @@ export default function PathwaysCardStack({
       pathwaysObserver.kill();
       observerRef.current = null;
     };
-  }, [isClient, cards.length, onEdgeReached, isCardExpanded]);
+  }, [isClient, cards.length, onEdgeReached, isCardExpanded, isMobile, pathways]);
 
   // Animate card transitions when activeIndex changes
   useEffect(() => {
@@ -273,10 +292,32 @@ export default function PathwaysCardStack({
     }
   }, [activeIndex]);
 
+  // Handle edge reached from desktop PathwayCard inner scroll
+  const handleCardEdgeReached = useCallback((edge: 'start' | 'end') => {
+    const now = Date.now();
+    if (now - lastScrollTimeRef.current < scrollCooldown) return;
+    lastScrollTimeRef.current = now;
+
+    const currentIndex = activeIndexRef.current;
+    if (edge === 'end') {
+      if (currentIndex < cards.length - 1) {
+        animateToIndexStable(currentIndex + 1);
+      } else {
+        onEdgeReached?.('end');
+      }
+    } else {
+      if (currentIndex > 0) {
+        animateToIndexStable(currentIndex - 1);
+      } else {
+        onEdgeReached?.('start');
+      }
+    }
+  }, [cards.length, onEdgeReached, scrollCooldown, animateToIndexStable]);
+
   // Render cards with mobile-aware PathwayCard
   const renderCards = () => {
-    if (isMobile && pathways) {
-      // On mobile, render PathwayCard directly with mobile props
+    if (pathways) {
+      // Render PathwayCard directly for both mobile and desktop
       return pathways.map((pathway, index) => (
         <div
           key={pathway.id}
@@ -289,16 +330,17 @@ export default function PathwaysCardStack({
           <div className="w-full h-full max-h-full">
             <PathwayCard
               pathway={pathway}
-              isMobile={true}
-              onExpandedChange={handleCardExpandedChange}
+              isMobile={isMobile}
+              onExpandedChange={isMobile ? handleCardExpandedChange : undefined}
               onCtaClick={index === 0 ? onFirstCardCta : undefined}
+              onEdgeReached={!isMobile ? handleCardEdgeReached : undefined}
             />
           </div>
         </div>
       ));
     }
 
-    // Desktop: render pre-built cards
+    // Fallback: render pre-built cards (no scroll-through support)
     return cards.map((card, index) => (
       <div
         key={card.key}

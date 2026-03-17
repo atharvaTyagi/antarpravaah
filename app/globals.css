@@ -145,12 +145,12 @@ body {
 }
 
 /* Hide scrollbars (keep scroll behavior) */
-.no-scrollbar {
-  -ms-overflow-style: none; /* IE/Edge legacy */
-  scrollbar-width: none; /* Firefox */
-}
-.no-scrollbar::-webkit-scrollbar {
-  display: none; /* Chrome/Safari */
+@utility no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 /* Full viewport sections for GSAP scroll */

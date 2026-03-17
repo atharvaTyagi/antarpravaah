@@ -41,7 +41,11 @@ export default function InspirationScroll({ isActive = false, onEdgeReached, res
   const animatingRef = useRef(false);
   const observerRef = useRef<Observer | null>(null);
   const lastScrollTimeRef = useRef(0);
+  const onEdgeReachedRef = useRef(onEdgeReached);
   const [isClient, setIsClient] = useState(false);
+
+  // Keep ref in sync with latest prop without triggering re-renders
+  useEffect(() => { onEdgeReachedRef.current = onEdgeReached; }, [onEdgeReached]);
 
   const scrollCooldown = 400;
 
@@ -159,14 +163,14 @@ export default function InspirationScroll({ isActive = false, onEdgeReached, res
           animateToIndex(currentIndex + 1);
         } else {
           lastScrollTimeRef.current = now;
-          onEdgeReached?.('end');
+          onEdgeReachedRef.current?.('end');
         }
       } else {
         if (currentIndex > 0) {
           animateToIndex(currentIndex - 1);
         } else {
           lastScrollTimeRef.current = now;
-          onEdgeReached?.('start');
+          onEdgeReachedRef.current?.('start');
         }
       }
     };
@@ -187,7 +191,7 @@ export default function InspirationScroll({ isActive = false, onEdgeReached, res
       observer.kill();
       observerRef.current = null;
     };
-  }, [isClient, onEdgeReached]);
+  }, [isClient]);
 
   return (
     <div 

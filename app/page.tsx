@@ -474,45 +474,49 @@ export default function Home() {
               <div className="relative w-full h-full bg-[#f6edd0] flex items-center justify-center p-4 sm:px-6 lg:px-8">
                 <div className="w-full h-full sm:h-auto sm:max-w-[calc(100vw-64px)] lg:max-w-[1177px] flex items-center justify-center">
                   <div
-                    className="w-full h-full sm:h-auto rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#9ac1bf] p-6 sm:p-8 lg:p-10 text-center flex flex-col justify-center"
+                    className="w-full h-full sm:h-auto rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#a2c0bf] p-6 sm:p-8 lg:p-10 text-center flex flex-col justify-center"
                     style={{ isolation: 'isolate', clipPath: 'inset(0 round 16px)' }}
                   >
                     <div className="mb-6 sm:mb-8 lg:mb-10">
                       <p
-                        className="mb-2 sm:mb-2.5 lg:mb-3 text-[24px] sm:text-[30px] lg:text-[36px] leading-[1.0] text-[#354443]"
+                        className="mb-2 sm:mb-2.5 lg:mb-3 text-[24px] sm:text-[30px] lg:text-[36px] leading-[1.0] text-[#384443]"
                         style={{ fontFamily: 'var(--font-saphira), serif' }}
                       >
                         If you&apos;re ready
                       </p>
                       <p
-                        className="mb-2 sm:mb-2.5 lg:mb-3 text-[24px] sm:text-[30px] lg:text-[36px] leading-[1.0] text-[#354443]"
+                        className="mb-2 sm:mb-2.5 lg:mb-3 text-[24px] sm:text-[30px] lg:text-[36px] leading-[1.0] text-[#384443]"
                         style={{ fontFamily: 'var(--font-saphira), serif' }}
                       >
                         to stop searching
                       </p>
                       <p
-                        className="mb-2 sm:mb-2.5 lg:mb-3 text-[24px] sm:text-[30px] lg:text-[36px] leading-[1.0] text-[#354443]"
+                        className="mb-2 sm:mb-2.5 lg:mb-3 text-[24px] sm:text-[30px] lg:text-[36px] leading-[1.0] text-[#384443]"
                         style={{ fontFamily: 'var(--font-saphira), serif' }}
                       >
                         outside yourself
                       </p>
                       <p
-                        className="mb-2 sm:mb-2.5 lg:mb-3 text-[24px] sm:text-[30px] lg:text-[36px] leading-[1.0] text-[#354443]"
+                        className="mb-2 sm:mb-2.5 lg:mb-3 text-[24px] sm:text-[30px] lg:text-[36px] leading-[1.0] text-[#384443]"
                         style={{ fontFamily: 'var(--font-saphira), serif' }}
                       >
                         for answers...
                       </p>
                     </div>
                     <p
-                      className="mb-6 sm:mb-8 lg:mb-10 text-[24px] sm:text-[30px] lg:text-[36px] leading-[1.0] text-[#354443]"
+                      className="mb-6 sm:mb-8 lg:mb-10 text-[24px] sm:text-[30px] lg:text-[36px] leading-[1.0] text-[#384443]"
                       style={{ fontFamily: 'var(--font-saphira), serif' }}
                     >
                       You&apos;re in the right place.
                     </p>
                     <Button
                       text="Begin Your Journey"
-                      size="large"
-                      mode="dark"
+                      size="medium"
+                      colors={{
+                        fg: '#384443',
+                        fgHover: '#a2c0bf',
+                        bgHover: '#384443',
+                      }}
                       onClick={() => setShowGuidedJourney(true)}
                     />
                   </div>

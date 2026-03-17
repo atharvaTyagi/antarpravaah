@@ -10,9 +10,9 @@ if (typeof window !== 'undefined') {
 }
 
 const therapiesButtonColors = {
-  fg: '#645c42',
-  fgHover: '#d6c68e',
-  bgHover: '#645c42',
+  fg: '#635d45',
+  fgHover: '#d4c795',
+  bgHover: '#635d45',
 };
 
 // All text as individual lines for animation — order matches the original content
@@ -218,13 +218,9 @@ export default function TherapiesBlobScroll({
         <div className="relative flex items-center justify-center max-h-full w-full">
           {/* Blob background */}
           <img
-            src="/about_text_blob.svg"
+            src="/therapy_blob.svg"
             alt=""
             className="w-[680px] sm:w-[min(90vw,85vh)] lg:w-[min(85vw,80vh)] h-auto max-w-none"
-            style={{
-              filter:
-                'brightness(0) saturate(100%) invert(87%) sepia(11%) saturate(939%) hue-rotate(7deg) brightness(102%) contrast(85%)',
-            }}
           />
 
           {/* Text overlay */}
@@ -236,7 +232,7 @@ export default function TherapiesBlobScroll({
                   key={i}
                   ref={(el) => { lineRefs.current[i] = el; }}
                   className={[
-                    'block leading-[1.35] text-[#645c42]',
+                    'block leading-[1.35] text-[#635d45]',
                     line.type === 'opening'
                       ? 'text-[clamp(16px,3.8vw,24px)] sm:text-[clamp(24px,4vmin,42px)]'
                       : line.type === 'closing'
@@ -262,7 +258,7 @@ export default function TherapiesBlobScroll({
                 <Button
                   text="Book Your First Session"
                   onClick={onCtaClick}
-                  size="large"
+                  size="medium"
                   colors={therapiesButtonColors}
                 />
               </div>

@@ -609,7 +609,7 @@ export default function AboutPage() {
                   </p>
                   <Button
                     text="Begin Your Journey"
-                    size="large"
+                    size="medium"
                     colors={{ fg: '#474e3a', fgHover: '#93a378', bgHover: '#474e3a' }}
                     onClick={() => setIsModalOpen(true)}
                   />
@@ -644,8 +644,8 @@ export default function AboutPage() {
                       About Namita
                     </h1>
                     <p
-                      className="text-center text-[20px] lg:text-[24px] leading-[normal] text-[#474e3a] px-4 max-w-[680px]"
-                      style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
+                      className="text-center text-[20px] lg:text-[24px] leading-[normal] text-[#474e3a] px-4 max-w-[980px]"
+                      style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
                     >
                       Founder of Antar Pravaah | Healer &amp; Facilitator | Host at Aalayam, Himachal Pradesh
                     </p>
@@ -791,7 +791,7 @@ export default function AboutPage() {
                     </p>
                     <Button
                       text="Begin Your Journey"
-                      size="large"
+                      size="medium"
                       colors={{ fg: '#474e3a', fgHover: '#93a378', bgHover: '#474e3a' }}
                       onClick={() => setIsModalOpen(true)}
                     />

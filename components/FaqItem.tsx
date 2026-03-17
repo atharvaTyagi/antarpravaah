@@ -9,14 +9,14 @@ interface FaqItemProps {
 
 export default function FaqItem({ question, answer, isExpanded, onToggle }: FaqItemProps) {
   return (
-    <div className="w-full border-b border-[#93a378]/20">
+    <div className="w-full border-b border-[#96a37c]/20">
       <button
         onClick={onToggle}
-        className="w-full flex items-start justify-between gap-4 p-5 text-left hover:bg-[#93a378]/5 transition-colors"
+        className="w-full flex items-start justify-between gap-4 p-5 text-left hover:bg-[#96a37c]/5 transition-colors"
         aria-expanded={isExpanded}
       >
         <h3
-          className="flex-1 text-[24px] leading-normal text-[#93a378]"
+          className="flex-1 text-[24px] leading-normal text-[#96a37c]"
           style={{ fontFamily: 'var(--font-saphira), serif' }}
         >
           {question}
@@ -34,7 +34,7 @@ export default function FaqItem({ question, answer, isExpanded, onToggle }: FaqI
             className="w-[26px] h-[20px]"
             style={{
               filter:
-                'brightness(0) saturate(100%) invert(64%) sepia(18%) saturate(548%) hue-rotate(46deg) brightness(91%) contrast(86%)',
+                'brightness(0) saturate(100%) invert(65%) sepia(15%) saturate(520%) hue-rotate(50deg) brightness(92%) contrast(85%)',
             }}
           />
         </div>

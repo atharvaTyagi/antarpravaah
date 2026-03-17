@@ -76,7 +76,7 @@ export default function RecommendationScreen({ path, onScheduleCall, onClose }: 
         {/* Primary CTA */}
         <Button
           text={recommendation.primaryCta}
-          size="large"
+          size="medium"
           colors={buttonColors}
           onClick={onScheduleCall}
         />

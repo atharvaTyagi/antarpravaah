@@ -7,9 +7,9 @@ import Button from './Button';
 
 // Therapies page button colors matching the page theme
 const therapiesButtonColors = {
-  fg: '#645c42',      // Dark brown text in non-hovered state
-  fgHover: '#d6c68e', // Light gold text on hover
-  bgHover: '#645c42', // Dark brown background on hover
+  fg: '#635d45',      // Dark brown text in non-hovered state
+  fgHover: '#d4c795', // Light gold text on hover
+  bgHover: '#635d45', // Dark brown background on hover
 };
 
 // Arrow icons for mobile CTA
@@ -202,7 +202,7 @@ export default function TherapyCard({ therapy, isVisible = false, isMobile = fal
     if (typeof therapy.description === 'string') {
       return (
         <p
-          className="text-[#645c42] text-[14px] sm:text-[15px] lg:text-[16px] text-justify leading-[24px]"
+          className="text-[#635d45] text-[14px] sm:text-[15px] lg:text-[16px] text-justify leading-[24px]"
           style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
         >
           {therapy.description}
@@ -217,7 +217,7 @@ export default function TherapyCard({ therapy, isVisible = false, isMobile = fal
             return (
               <p
                 key={idx}
-                className="text-[#645c42] text-[14px] sm:text-[15px] lg:text-[16px] text-justify leading-[24px]"
+                className="text-[#635d45] text-[14px] sm:text-[15px] lg:text-[16px] text-justify leading-[24px]"
                 style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
               >
                 {item}
@@ -228,13 +228,13 @@ export default function TherapyCard({ therapy, isVisible = false, isMobile = fal
           return (
             <div key={idx} className="flex flex-col gap-2 sm:gap-3">
               <p
-                className="text-[#645c42] text-[14px] sm:text-[15px] lg:text-[16px]"
+                className="text-[#635d45] text-[14px] sm:text-[15px] lg:text-[16px]"
                 style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
               >
                 {descItem.heading}
               </p>
               <p
-                className="text-[#645c42] text-[14px] sm:text-[15px] lg:text-[16px] text-justify leading-[24px]"
+                className="text-[#635d45] text-[14px] sm:text-[15px] lg:text-[16px] text-justify leading-[24px]"
                 style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
               >
                 {descItem.text}
@@ -251,7 +251,7 @@ export default function TherapyCard({ therapy, isVisible = false, isMobile = fal
     return (
       <div 
         ref={cardRef} 
-        className="w-full h-full bg-[#d6c68e] rounded-[24px] overflow-hidden ios-radius-fix p-[40px] flex flex-col"
+        className="w-full h-full bg-[#d4c795] rounded-[24px] overflow-hidden ios-radius-fix p-[40px] flex flex-col"
       >
         {/* Icon centered at top */}
         <div className="w-full flex justify-center shrink-0 mb-4">
@@ -264,7 +264,7 @@ export default function TherapyCard({ therapy, isVisible = false, isMobile = fal
 
         {/* Title */}
         <h3
-          className="text-[36px] leading-[1.0] text-[#645c42] text-center shrink-0 mb-4"
+          className="text-[36px] leading-[1.0] text-[#635d45] text-center shrink-0 mb-4"
           style={{ fontFamily: 'var(--font-saphira), serif' }}
         >
           {therapy.title}
@@ -278,7 +278,7 @@ export default function TherapyCard({ therapy, isVisible = false, isMobile = fal
           style={{ WebkitOverflowScrolling: 'touch' }}
         >
           <div 
-            className="text-[#645c42] text-[16px] leading-[24px] text-justify"
+            className="text-[#635d45] text-[16px] leading-[24px] text-justify"
             style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
           >
             {typeof therapy.description === 'string' ? (
@@ -312,7 +312,7 @@ export default function TherapyCard({ therapy, isVisible = false, isMobile = fal
           <div className="mt-6 flex justify-center">
             <button
               onClick={onCtaClick}
-              className="group inline-flex items-center justify-center gap-2 p-3 text-[#645c42] hover:opacity-80 transition-opacity"
+              className="group inline-flex items-center justify-center gap-2 p-3 text-[#635d45] hover:opacity-80 transition-opacity"
               style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
             >
               <ArrowLeft className="w-5 h-4 shrink-0" />
@@ -332,7 +332,7 @@ export default function TherapyCard({ therapy, isVisible = false, isMobile = fal
   if (isCenter) {
     // Special layout for ASP (centered) - larger card with more padding (Desktop)
     return (
-      <div ref={cardRef} className="w-full h-full bg-[#d6c68e] rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] overflow-hidden ios-radius-fix flex flex-col items-center justify-start shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
+      <div ref={cardRef} className="w-full h-full bg-[#d4c795] rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] overflow-hidden ios-radius-fix flex flex-col items-center justify-start shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
         {/* Inner scroll container so content never clips */}
         <div className="w-full h-full overflow-y-auto overscroll-contain flex flex-col items-center justify-center px-6 sm:px-12 lg:px-20 py-6 sm:py-8 lg:py-10 gap-4 sm:gap-6 lg:gap-8">
           {/* Icon centered at top */}
@@ -348,18 +348,18 @@ export default function TherapyCard({ therapy, isVisible = false, isMobile = fal
           <div className="flex flex-col gap-3 sm:gap-4 lg:gap-5 items-center text-center max-w-full sm:max-w-[500px] lg:max-w-[600px] px-2 w-full">
             <h3
               ref={titleRef}
-              className="text-[clamp(1.75rem,4vw,3rem)] leading-[1.0] text-[#645c42]"
+              className="text-[clamp(1.75rem,4vw,3rem)] leading-[1.0] text-[#635d45]"
               style={{ fontFamily: 'var(--font-saphira), serif' }}
             >
               {therapy.title}
             </h3>
-            <div ref={descriptionRef} className="text-[#645c42] text-[clamp(0.8rem,1.4vw,1rem)] leading-[1.6] text-justify w-full">
+            <div ref={descriptionRef} className="text-[#635d45] text-[clamp(0.8rem,1.4vw,1rem)] leading-[1.6] text-justify w-full">
               {renderDescription()}
             </div>
 
             {/* CTA */}
             <div ref={ctaRef} className="mt-2 sm:mt-4">
-              <Button text={therapy.ctaText} size="large" colors={therapiesButtonColors} onClick={onCtaClick} />
+              <Button text={therapy.ctaText} size="medium" colors={therapiesButtonColors} onClick={onCtaClick} />
             </div>
           </div>
         </div>
@@ -369,20 +369,20 @@ export default function TherapyCard({ therapy, isVisible = false, isMobile = fal
 
   // Standard layout - Figma design: Icon top-right, content on left
   return (
-    <div ref={cardRef} className="w-full bg-[#d6c68e] rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] overflow-hidden ios-radius-fix shadow-[0_10px_30px_rgba(0,0,0,0.12)] p-4 sm:p-6 lg:p-8">
+    <div ref={cardRef} className="w-full bg-[#d4c795] rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] overflow-hidden ios-radius-fix shadow-[0_10px_30px_rgba(0,0,0,0.12)] p-4 sm:p-6 lg:p-8">
       <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 lg:gap-8">
         {/* Content - takes most of the space */}
         <div className="flex-1 flex flex-col gap-2 sm:gap-3">
           <h3
             ref={titleRef}
-            className="text-[32px] sm:text-[40px] lg:text-[48px] leading-tight text-[#645c42]"
+            className="text-[32px] sm:text-[40px] lg:text-[48px] leading-tight text-[#635d45]"
             style={{ fontFamily: 'var(--font-saphira), serif' }}
           >
             {therapy.title}
           </h3>
           <p
             ref={subtitleRef}
-            className="text-[18px] sm:text-[20px] lg:text-[24px] leading-normal text-[#645c42] tracking-[2.5px] sm:tracking-[3px] lg:tracking-[3.84px]"
+            className="text-[18px] sm:text-[20px] lg:text-[24px] leading-normal text-[#635d45] tracking-[2.5px] sm:tracking-[3px] lg:tracking-[3.84px]"
             style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
           >
             {therapy.subtitle}
@@ -397,7 +397,7 @@ export default function TherapyCard({ therapy, isVisible = false, isMobile = fal
           {therapy.bestFor.length > 0 && (
             <div ref={bestForRef} className="flex flex-col gap-1.5 sm:gap-2">
               <p
-                className="text-[#645c42] text-[11px] sm:text-[12px] uppercase tracking-[1.5px] sm:tracking-[1.92px]"
+                className="text-[#635d45] text-[11px] sm:text-[12px] uppercase tracking-[1.5px] sm:tracking-[1.92px]"
                 style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
               >
                 Best For
@@ -406,7 +406,7 @@ export default function TherapyCard({ therapy, isVisible = false, isMobile = fal
                 {therapy.bestFor.map((item, idx) => (
                   <li
                     key={idx}
-                    className="text-[#645c42] text-[11px] sm:text-[12px]"
+                    className="text-[#635d45] text-[11px] sm:text-[12px]"
                     style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
                   >
                     {item}
@@ -419,13 +419,13 @@ export default function TherapyCard({ therapy, isVisible = false, isMobile = fal
           {/* Session Duration */}
           <div ref={durationRef} className="flex flex-col gap-0.5 sm:gap-1">
             <p
-              className="text-[#645c42] text-[11px] sm:text-[12px] uppercase tracking-[1.5px] sm:tracking-[1.92px]"
+              className="text-[#635d45] text-[11px] sm:text-[12px] uppercase tracking-[1.5px] sm:tracking-[1.92px]"
               style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
             >
               Session Duration
             </p>
             <p
-              className="text-[#645c42] text-[11px] sm:text-[12px]"
+              className="text-[#635d45] text-[11px] sm:text-[12px]"
               style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
             >
               {therapy.duration}

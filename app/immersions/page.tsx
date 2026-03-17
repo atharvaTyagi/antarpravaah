@@ -613,7 +613,7 @@ function ImmersionsPageContent() {
                 Immersions & Trainings
               </h1>
               <h2
-                className="text-[14px] sm:text-[15px] lg:text-[16px] leading-normal text-[#6a3f33] tracking-[2.5px] sm:tracking-[3px] lg:tracking-[2.56px]"
+                className="text-[14px] sm:text-[15px] lg:text-[16px] leading-normal text-[#6a3f33]"
                 style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
               >
                 Gather, Learn, Transform Together
@@ -622,12 +622,12 @@ function ImmersionsPageContent() {
                 className="text-[14px] sm:text-[15px] lg:text-[16px] leading-[24px] text-center text-[#6a3f33] px-2"
                 style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
               >
-                <p className="mb-4">
+                <p className="mb-4 text-left" >
                   Healing deepens when experienced in community. Whether you&apos;re exploring a theme that
                   resonates with your journey, or stepping into the role of healer yourself, our immersions
                   & trainings create sacred containers for collective transformation.
                 </p>
-                <p>
+                <p className="mb-4 text-left" >
                   Here, you&apos;ll find workshops that illuminate life&apos;s patterns, training programs that
                   empower you to become your own healer, and gatherings that remind you—you&apos;re not alone on
                   this path.
@@ -715,8 +715,8 @@ function ImmersionsPageContent() {
                     Immersions
                   </h2>
                   <h3
-                    className="hidden md:block text-[14px] sm:text-[15px] lg:text-[16px] uppercase leading-normal tracking-[2.5px] sm:tracking-[3px] lg:tracking-[3.84px]"
-                    style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
+                    className="hidden md:block text-[14px] sm:text-[16px] lg:text-[24px] leading-normal"
+                    style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
                   >
                     Transformative Gatherings
                   </h3>
@@ -724,11 +724,11 @@ function ImmersionsPageContent() {
                     className="text-[14px] sm:text-[15px] lg:text-[16px] leading-[24px] text-center"
                     style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
                   >
-                    <p className="mb-3">
+                    <p className="mb-3 text-left">
                       Immersions at Antar Pravaah focus on meaningful themes without delving deeply into personal
                       histories. These gatherings create space for broader awareness.
                     </p>
-                    <p>
+                    <p className="mb-3 text-left">
                       Through group exploration, you&apos;ll gain insights into life patterns and connections,
                       supported by community energy.
                     </p>
@@ -892,8 +892,8 @@ function ImmersionsPageContent() {
                     Trainings
                   </h2>
                   <h3
-                    className="text-[14px] sm:text-[15px] lg:text-[16px] leading-[24px] md:uppercase md:leading-normal md:tracking-[2.5px] sm:tracking-[3px] lg:tracking-[3.84px]"
-                    style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: isMobile ? 500 : 300 }}
+                    className="text-[14px] sm:text-[15px] lg:text-[24px] leading-[24px] md:leading-normal"
+                    style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400}}
                   >
                     Become Your Own Healer
                   </h3>
@@ -901,10 +901,10 @@ function ImmersionsPageContent() {
                     className="text-[14px] sm:text-[15px] lg:text-[16px] leading-[24px] text-justify md:text-center"
                     style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
                   >
-                    <p className="mb-3">
+                    <p className="mb-3 text-left">
                       Our training programs offer more than certification—they offer transformation. As you learn to facilitate healing for others, you become your own most skilled healer.
                     </p>
-                    <p>
+                    <p className="mb-3 text-left">
                       Each training includes hands-on practice, personal healing work, mentorship, and certification.
                     </p>
                   </div>
@@ -1008,7 +1008,7 @@ function ImmersionsPageContent() {
               <div className="flex flex-col items-center gap-3 w-full sm:w-auto">
                 <Button
                   text="Explore Upcoming Immersions"
-                  size="large"
+                  size="medium"
                   onClick={() => goToSection(2, 'down')}
                   colors={{
                     fg: '#6a3f33',
@@ -1018,7 +1018,7 @@ function ImmersionsPageContent() {
                 />
                 <Button
                   text="View Training Programs"
-                  size="large"
+                  size="medium"
                   onClick={() => goToSection(4, 'down')}
                   colors={{
                     fg: '#6a3f33',

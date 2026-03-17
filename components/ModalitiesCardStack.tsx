@@ -336,34 +336,34 @@ export default function ModalitiesCardStack({
                 {/* ── Collapsed layer ── */}
                 <div
                   ref={(el) => { collapsedLayerRefs.current[i] = el; }}
-                  className="absolute inset-0 p-6 flex flex-col items-center justify-center"
+                  className="absolute inset-0 px-10 py-7 flex flex-col gap-4 items-start justify-end"
                 >
-                  <div className="flex-1 flex items-center justify-center min-h-0 w-full">
+                  <div className="flex-1 flex items-center justify-center min-h-0 w-full rounded-[24px] p-4">
                     <img
                       src={modality.iconSrc}
                       alt={modality.title}
-                      className="w-[60%] h-auto max-h-[30vh] object-contain"
+                      className="w-[70%] h-auto max-h-[260px] object-contain"
                     />
                   </div>
 
                   <h3
-                    className="text-[28px] leading-[1.0] text-[#645c42] text-center shrink-0 mt-4"
+                    className="text-[36px] leading-normal text-[#635d45] w-full shrink-0"
                     style={{ fontFamily: 'var(--font-saphira), serif' }}
                   >
                     {modality.title}
                   </h3>
 
                   <p
-                    className="text-[14px] leading-[1.5] text-[#645c42] text-center mt-2 shrink-0"
-                    style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
+                    className="text-[16px] leading-[24px] text-[#635d45] w-full shrink-0"
+                    style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
                   >
                     {modality.subtitle}
                   </p>
 
-                  <div className="mt-4 shrink-0">
+                  <div className="w-full shrink-0">
                     <button
                       onClick={() => expandCard(i)}
-                      className="inline-flex items-center justify-center gap-2 p-3 text-[#645c42] hover:opacity-80 transition-opacity"
+                      className="w-full inline-flex items-center justify-center gap-2 p-3 text-[#635d45] hover:opacity-80 transition-opacity"
                       style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
                     >
                       <ArrowLeft className="w-5 h-4 shrink-0" />

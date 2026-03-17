@@ -533,7 +533,7 @@ export default function TherapiesPage() {
                     className="text-[#645c42] text-[16px] leading-[24px] text-center"
                     style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
                   >
-                    <p className="mb-4">
+                    <p className="mb-4 text-left">
                       Combining bodywork and energy healing modalities opens powerful possibilities for
                       healing—from acute and chronic illnesses to pain management, trauma release, and
                       recovery from abuse. These therapies support the transformation of patterns related to
@@ -541,7 +541,7 @@ export default function TherapiesPage() {
                       integration, and bring awareness to inherited family dynamics that may still be
                       influencing your life.
                     </p>
-                    <p>
+                    <p className="mb-4 text-left">
                       Each session at Antar Pravaah is designed to meet you where you are, using natural
                       healing practices to support deep, lasting change.
                     </p>
@@ -609,7 +609,7 @@ export default function TherapiesPage() {
                   </h2>
 
                   <p
-                    className="text-[16px] leading-normal text-[#645c42] uppercase tracking-[2.56px]"
+                    className="text-[16px] leading-normal text-[#645c42]"
                     style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
                   >
                     Find your path
@@ -695,7 +695,7 @@ export default function TherapiesPage() {
                     className="text-[#645c42] text-[14px] sm:text-[15px] lg:text-[16px] leading-[24px] text-center px-2"
                     style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
                   >
-                    <p className="mb-3 sm:mb-4">
+                    <p className="mb-3 sm:mb-4 text-left">
                       Combining bodywork and energy healing modalities opens powerful possibilities for
                       healing—from acute and chronic illnesses to pain management, trauma release, and
                       recovery from abuse. These therapies support the transformation of patterns related to
@@ -703,7 +703,7 @@ export default function TherapiesPage() {
                       integration, and bring awareness to inherited family dynamics that may still be
                       influencing your life.
                     </p>
-                    <p>
+                    <p className="mb-4 text-left">
                       Each session at Antar Pravaah is designed to meet you where you are, using natural
                       healing practices to support deep, lasting change.
                     </p>
@@ -765,8 +765,8 @@ export default function TherapiesPage() {
                   </h2>
 
                   <p
-                    className="text-[14px] sm:text-[15px] lg:text-[16px] leading-normal text-[#645c42] uppercase tracking-[2px] sm:tracking-[2.3px] lg:tracking-[2.56px]"
-                    style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
+                    className="text-[16px] sm:text-[16px] lg:text-[24px] leading-normal text-[#645c42]"
+                    style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
                   >
                     Find your path
                   </p>
@@ -781,7 +781,7 @@ export default function TherapiesPage() {
                   </p>
 
                   <div className="flex flex-col gap-2 sm:gap-3 mt-2">
-                    <Button text="Schedule a Free Consultation" size="large" colors={therapiesButtonColors} onClick={handleOpenModalInitial} />
+                    <Button text="Schedule a Free Consultation" size="medium" colors={therapiesButtonColors} onClick={handleOpenModalInitial} />
                   </div>
                 </div>
               </div>

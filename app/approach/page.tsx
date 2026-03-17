@@ -313,17 +313,17 @@ export default function ApproachPage() {
                 className="w-full text-[14px] sm:text-[15px] lg:text-[16px] leading-[24px] text-center text-[#474e3a] px-2"
                 style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
               >
-                <p className="mb-4">
+                <p className="mb-4 text-left">
                   At Antar Pravaah, healing is a shared responsibility. We both do the work.
                   Transformation demands commitment and persistence. It&apos;s not force, it&apos;s flow, but
                   even in that, the commitment to follow the flow is integral to the work.
                 </p>
-                <p className="mb-4">
+                <p className="mb-4 text-left">
                   I have been doing this work for 20 years, and I can tell you with a fair bit of
                   certainty, it rarely works. Why? Because we want change to the extent of the
                   outermost limits of our own comfort zone.
                 </p>
-                <p>
+                <p className="text-left">
                   Healing or transformation works when you are willing to take baby steps out of your
                   comfortable space and step into the unfamiliar. The start is always from the place
                   where you are. Every step matters.
@@ -375,7 +375,7 @@ export default function ApproachPage() {
               {/* CTA Button */}
               <Button
                 text="Begin Your Journey"
-                size="large"
+                size="medium"
                 mode="light"
                 colors={approachButtonColors}
                 onClick={() => setIsModalOpen(true)}

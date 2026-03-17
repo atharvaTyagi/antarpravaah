@@ -37,9 +37,9 @@ interface ModalitiesScrollCardProps {
 
 // Button colors for therapies page
 const therapiesButtonColors = {
-  fg: '#645c42',
-  fgHover: '#d6c68e',
-  bgHover: '#645c42',
+  fg: '#635d45',
+  fgHover: '#d4c795',
+  bgHover: '#635d45',
 };
 
 export default function ModalitiesScrollCard({ 
@@ -253,7 +253,7 @@ export default function ModalitiesScrollCard({
       {sectionTitle && (
         <div className="mb-4 sm:mb-6 lg:mb-8 text-center w-full shrink-0">
           <h2
-            className="text-[clamp(1.75rem,4vw,3rem)] leading-[1.0] text-[#645c42]"
+            className="text-[clamp(1.75rem,4vw,3rem)] leading-[1.0] text-[#635d45]"
             style={{ fontFamily: 'var(--font-saphira), serif' }}
           >
             {sectionTitle}
@@ -274,7 +274,7 @@ export default function ModalitiesScrollCard({
           <div className="flex-1 flex flex-col lg:pr-6 min-h-0 overflow-hidden">
             {/* Title */}
             <h3
-              className="animate-content text-[clamp(1.25rem,3vw,2.5rem)] leading-[1.1] text-[#645c42] mb-2 sm:mb-3 shrink-0"
+              className="animate-content text-[clamp(1.25rem,3vw,2.5rem)] leading-[1.1] text-[#635d45] mb-2 sm:mb-3 shrink-0"
               style={{ fontFamily: 'var(--font-saphira), serif' }}
             >
               {currentModality.title}
@@ -282,7 +282,7 @@ export default function ModalitiesScrollCard({
 
             {/* Subtitle */}
             <p
-              className="animate-content text-[clamp(0.8rem,1.5vw,1.125rem)] leading-[1.3] text-[#645c42] mb-2 sm:mb-3 shrink-0"
+              className="animate-content text-[clamp(0.8rem,1.5vw,1.125rem)] leading-[1.3] text-[#635d45] mb-2 sm:mb-3 shrink-0"
               style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
             >
               {currentModality.subtitle}
@@ -290,7 +290,7 @@ export default function ModalitiesScrollCard({
 
             {/* Description - scrollable if content overflows */}
             <div
-              className="animate-content text-[clamp(0.75rem,1.2vw,0.9375rem)] leading-[1.55] text-[#645c42] text-justify mb-2 sm:mb-3 flex-shrink min-h-0 overflow-y-auto"
+              className="animate-content text-[clamp(0.75rem,1.2vw,0.9375rem)] leading-[1.55] text-[#635d45] text-justify mb-2 sm:mb-3 flex-shrink min-h-0 overflow-y-auto no-scrollbar"
               style={{ fontFamily: 'var(--font-graphik), sans-serif' }}
             >
               {currentModality.description.map((para, idx) => (
@@ -303,14 +303,14 @@ export default function ModalitiesScrollCard({
             {/* Best For Section */}
             <div className="animate-content mb-2 sm:mb-3 shrink-0">
               <p
-                className="text-[clamp(0.7rem,1.1vw,0.9375rem)] leading-[20px] text-[#645c42] mb-1"
+                className="text-[clamp(0.7rem,1.1vw,0.9375rem)] leading-[20px] text-[#635d45] mb-1"
                 style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
               >
                 Best For
               </p>
               <div className="flex flex-col sm:flex-row gap-0 sm:gap-8">
                 <ul
-                  className="list-disc list-inside text-[clamp(0.65rem,1vw,0.875rem)] leading-[20px] text-[#645c42]"
+                  className="list-disc list-inside text-[clamp(0.65rem,1vw,0.875rem)] leading-[20px] text-[#635d45]"
                   style={{ fontFamily: 'var(--font-graphik), sans-serif' }}
                 >
                   {currentModality.bestFor.column1.map((item, idx) => (
@@ -318,7 +318,7 @@ export default function ModalitiesScrollCard({
                   ))}
                 </ul>
                 <ul
-                  className="list-disc list-inside text-[clamp(0.65rem,1vw,0.875rem)] leading-[20px] text-[#645c42]"
+                  className="list-disc list-inside text-[clamp(0.65rem,1vw,0.875rem)] leading-[20px] text-[#635d45]"
                   style={{ fontFamily: 'var(--font-graphik), sans-serif' }}
                 >
                   {currentModality.bestFor.column2.map((item, idx) => (
@@ -331,13 +331,13 @@ export default function ModalitiesScrollCard({
             {/* Session Duration */}
             <div className="animate-content mb-2 sm:mb-3 shrink-0">
               <p
-                className="text-[clamp(0.7rem,1.1vw,0.9375rem)] leading-[20px] text-[#645c42]"
+                className="text-[clamp(0.7rem,1.1vw,0.9375rem)] leading-[20px] text-[#635d45]"
                 style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
               >
                 Session Duration
               </p>
               <p
-                className="text-[clamp(0.65rem,1vw,0.875rem)] leading-[20px] text-[#645c42]"
+                className="text-[clamp(0.65rem,1vw,0.875rem)] leading-[20px] text-[#635d45]"
                 style={{ fontFamily: 'var(--font-graphik), sans-serif' }}
               >
                 {currentModality.sessionDuration}
@@ -348,7 +348,7 @@ export default function ModalitiesScrollCard({
             <div className="animate-content mt-auto shrink-0">
               <Button 
                 text={currentModality.ctaText} 
-                size="large" 
+                size="medium" 
                 colors={therapiesButtonColors}
                 onClick={onCtaClick}
               />

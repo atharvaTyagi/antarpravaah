@@ -10,15 +10,15 @@ if (typeof window !== 'undefined') {
 }
 
 const aboutParagraphs = [
-  "I'm Namita, a healer and facilitator with decades of experience guiding people through life's physical, emotional, and energetic challenges. My journey began over twenty years ago in Public Relations, but a quiet inner calling led me to explore paths far beyond the ordinary—editing books, creating events, building ventures, and even running a home bakery. Each experience deepened my understanding of people, life, and the subtle energies that connect us all.",
+  "I'm Namita, a healer and facilitator with decades of experience guiding people through life's physical, emotional, and energetic challenges. My journey began over twenty years ago in Public Relations, but a quiet inner calling led me to explore paths far beyond the ordinary — editing books, creating events, building ventures, and even running a home bakery. Each experience deepened my understanding of people, life, and the subtle energies that connect us all.",
   
-  "The turning point came when I discovered Foot Reflexology. Following my intuition led me into a world of healing I hadn't anticipated, and over time, new modalities found me—each one expanding my understanding of energy, the body, and transformation. Today, I bring experience in Sujok, Acupuncture and Auricular Therapy, Access Bars & Body Processes, Access Energetic Facelift, Systemic Family Constellation Therapy, Shamanism, Transpersonal Regression Therapy, Transcendental Healing, and more.",
+  "The turning point came when I discovered Foot Reflexology. Following my intuition led me into a world of healing I hadn't anticipated, and over time, new modalities found me - each one expanding my understanding of energy, the body, and transformation. Today, I bring experience in Sujok, Acupuncture and Auricular Therapy, Access Bars & Body Processes, Access Energetic Facelift, Systemic Family Constellation Therapy, Shamanism, Transpersonal Regression Therapy, Transcendental Healing, and more.",
   
   "I have had the privilege of guiding hundreds of people across all ages and backgrounds through pain, trauma, grief, relationship struggles, fear, and more. The transformations are countless, yet the heart of the work is always the same: facilitating a remembrance back to themselves.",
   
-  "My work transcends any single technique. It is rooted in presence, intuition, and decades of inner practice. When we work together, you are not just learning a modality—you are reconnecting with yourself. You'll leave with clarity, presence, and the possibility that comes from remembering the wholeness you've always carried.",
+  "My work transcends any single technique. It is rooted in presence, intuition, and decades of inner practice. When we work together, you are not just learning a modality you are reconnecting with yourself. You'll leave with clarity, presence, and the possibility that comes from remembering the wholeness you've always carried.",
   
-  "Healing, to me, is not fixing—it's remembering. Not escaping—it's embracing. Whatever you carry, you are not alone, and I welcome you to this space of transformation."
+  "Healing, to me, is not fixing — it's remembering. Not escaping — it's embracing. Whatever you carry, you are not alone, and I welcome you to this space of transformation."
 ];
 
 interface AboutBlobScrollProps {
@@ -36,7 +36,13 @@ export default function AboutBlobScroll({ isActive = false, onEdgeReached, reset
   const animatingRef = useRef(false);
   const observerRef = useRef<Observer | null>(null);
   const lastScrollTimeRef = useRef(0);
+  const onEdgeReachedRef = useRef(onEdgeReached);
+  const onParagraphChangeRef = useRef(onParagraphChange);
   const [isClient, setIsClient] = useState(false);
+
+  // Keep refs in sync with latest props without triggering re-renders
+  useEffect(() => { onEdgeReachedRef.current = onEdgeReached; }, [onEdgeReached]);
+  useEffect(() => { onParagraphChangeRef.current = onParagraphChange; }, [onParagraphChange]);
 
   // Cooldown between paragraph changes (prevents residual scroll)
   const scrollCooldown = 400;
@@ -114,7 +120,7 @@ export default function AboutBlobScroll({ isActive = false, onEdgeReached, reset
     gsap.set(paragraphs[0], { autoAlpha: 1, y: 0 });
     
     // Notify initial paragraph
-    onParagraphChange?.(0);
+    onParagraphChangeRef.current?.(0);
 
     const animateToIndex = (newIndex: number, callback?: () => void) => {
       if (newIndex < 0 || newIndex >= paragraphs.length) return;
@@ -155,7 +161,7 @@ export default function AboutBlobScroll({ isActive = false, onEdgeReached, reset
 
       // Notify parent of paragraph change
       tl.call(() => {
-        onParagraphChange?.(newIndex);
+        onParagraphChangeRef.current?.(newIndex);
       }, [], '-=0.3'); // Call slightly before paragraph fully fades in
     };
 
@@ -173,7 +179,7 @@ export default function AboutBlobScroll({ isActive = false, onEdgeReached, reset
         } else {
           // At the end - notify parent to move to next section
           lastScrollTimeRef.current = now;
-          onEdgeReached?.('end');
+          onEdgeReachedRef.current?.('end');
         }
       } else {
         if (currentIndex > 0) {
@@ -181,7 +187,7 @@ export default function AboutBlobScroll({ isActive = false, onEdgeReached, reset
         } else {
           // At the start - notify parent to move to previous section
           lastScrollTimeRef.current = now;
-          onEdgeReached?.('start');
+          onEdgeReachedRef.current?.('start');
         }
       }
     };
@@ -205,7 +211,7 @@ export default function AboutBlobScroll({ isActive = false, onEdgeReached, reset
       blobObserver.kill();
       observerRef.current = null;
     };
-  }, [isClient, onEdgeReached]);
+  }, [isClient]);
 
   return (
     <div 

@@ -132,12 +132,16 @@ interface PathwayCardProps {
   onExpandedChange?: (expanded: boolean) => void;
   /** Optional callback for CTA button click (overrides href) */
   onCtaClick?: () => void;
+  /** Desktop only: called when inner scroll reaches top or bottom edge */
+  onEdgeReached?: (edge: 'start' | 'end') => void;
 }
 
-export default function PathwayCard({ pathway, isMobile = false, onExpandedChange, onCtaClick }: PathwayCardProps) {
+export default function PathwayCard({ pathway, isMobile = false, onExpandedChange, onCtaClick, onEdgeReached }: PathwayCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const desktopScrollRef = useRef<HTMLDivElement>(null);
+  const lastEdgeTimeRef = useRef(0);
 
   // Handle expand/collapse
   const handleExpand = useCallback(() => {
@@ -192,87 +196,128 @@ export default function PathwayCard({ pathway, isMobile = false, onExpandedChang
     };
   }, [isMobile, isExpanded]);
 
+  // Desktop: intercept wheel events on the scroll container to detect edge
+  useEffect(() => {
+    if (isMobile || !onEdgeReached || !desktopScrollRef.current) return;
+
+    const container = desktopScrollRef.current;
+    const edgeCooldown = 600;
+
+    const handleWheel = (e: WheelEvent) => {
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      const isAtTop = scrollTop <= 0;
+      const isAtBottom = scrollTop + clientHeight >= scrollHeight - 2;
+      const isScrollingDown = e.deltaY > 0;
+      const isScrollingUp = e.deltaY < 0;
+
+      if (isAtBottom && isScrollingDown) {
+        const now = Date.now();
+        if (now - lastEdgeTimeRef.current < edgeCooldown) return;
+        lastEdgeTimeRef.current = now;
+        onEdgeReached('end');
+      } else if (isAtTop && isScrollingUp) {
+        const now = Date.now();
+        if (now - lastEdgeTimeRef.current < edgeCooldown) return;
+        lastEdgeTimeRef.current = now;
+        onEdgeReached('start');
+      }
+    };
+
+    container.addEventListener('wheel', handleWheel, { passive: true });
+    return () => container.removeEventListener('wheel', handleWheel);
+  }, [isMobile, onEdgeReached]);
+
   // Desktop/tablet layout - full content visible
   if (!isMobile) {
     return (
       <div
-        className="relative flex items-end overflow-hidden ios-radius-fix rounded-[12px] sm:rounded-[16px] lg:rounded-[24px] border-[4px] sm:border-[8px] lg:border-[12px] border-[#9ac1bf] w-full h-full"
+        className="relative overflow-hidden ios-radius-fix rounded-[12px] sm:rounded-[16px] lg:rounded-[24px] border-[4px] sm:border-[8px] lg:border-[12px] border-[#9ac1bf] w-full h-full"
       >
-        <div className="absolute inset-0 -z-10">
+        {/* Background image */}
+        <div className="absolute inset-0">
           <img
             src={pathway.image}
             alt=""
+            className="w-full h-full object-cover"
             style={{ transform: 'scale(1.1)' }}
           />
         </div>
 
-        {/* Content Card - Figma specs: backdrop blur, 80% opacity dark bg */}
+        {/* Content Card - anchored bottom-left, fills height with flex col */}
         <div
-          className="w-full max-w-full sm:max-w-[70%] lg:max-w-[50%] rounded-[8px] sm:rounded-[12px] lg:rounded-[20px] bg-[rgba(53,68,67,0.8)] p-3 sm:p-4 lg:p-5 m-2 sm:m-4 lg:m-6 backdrop-blur-[4px] overflow-y-auto"
+          className="absolute bottom-0 left-0 flex flex-col rounded-[8px] sm:rounded-[12px] lg:rounded-[20px] bg-[rgba(53,68,67,0.8)] backdrop-blur-[4px] m-2 sm:m-4 lg:m-6 w-full sm:w-[70%] lg:w-[50%]"
           style={{
-            maxHeight: 'calc(100% - 1rem)',
+            maxHeight: 'calc(100% - 3rem)',
           }}
         >
-          {/* Title - 48px Safira March */}
-          <h3
-            className="mb-2 lg:mb-3 text-[clamp(1.5rem,4vw,3rem)] leading-[1.0] text-[#9ac1bf]"
-            style={{ fontFamily: 'var(--font-saphira), serif' }}
+          {/* Scrollable content area */}
+          <div
+            ref={desktopScrollRef}
+            className="flex-1 overflow-y-auto min-h-0 no-scrollbar p-3 sm:p-4 lg:p-5"
           >
-            {pathway.title}
-          </h3>
-          
-          {/* Subtitle - 24px Graphik Medium */}
-          <p
-            data-element="subtitle"
-            className="mb-2 lg:mb-3 text-[clamp(0.875rem,2vw,1.5rem)] leading-[1.2] text-[#9ac1bf]"
-            style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
-          >
-            {pathway.subtitle}
-          </p>
-          
-          {/* Description - 16px Graphik Regular, 24px line height */}
-          <div 
-            className="mb-2 lg:mb-3 text-justify text-[clamp(0.75rem,1.5vw,1rem)] leading-relaxed text-[#9ac1bf]"
-            style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
-          >
-            {pathway.description.map((para, idx) => (
-              <p key={idx} className={idx < pathway.description.length - 1 ? 'mb-2 lg:mb-3' : ''}>
-                {para}
-              </p>
-            ))}
-          </div>
-          
-          {/* What to Expect - 16px Graphik */}
-          <div 
-            className="mb-2 lg:mb-3 text-[clamp(0.75rem,1.5vw,1rem)] leading-relaxed text-[#9ac1bf]"
-            style={{ fontFamily: 'var(--font-graphik), sans-serif' }}
-          >
-            <p className="mb-1 font-medium">What to Expect:</p>
-            <ul className="list-inside list-disc space-y-0.5">
-              {pathway.whatToExpect.map((item, idx) => (
-                <li key={idx}>{item}</li>
+            {/* Title */}
+            <h3
+              className="mb-2 lg:mb-3 text-[clamp(1.5rem,4vw,3rem)] leading-[1.0] text-[#9ac1bf]"
+              style={{ fontFamily: 'var(--font-saphira), serif' }}
+            >
+              {pathway.title}
+            </h3>
+
+            {/* Subtitle */}
+            <p
+              data-element="subtitle"
+              className="mb-2 lg:mb-3 text-[clamp(0.875rem,2vw,1.5rem)] leading-[1.2] text-[#9ac1bf]"
+              style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
+            >
+              {pathway.subtitle}
+            </p>
+
+            {/* Description */}
+            <div
+              className="mb-2 lg:mb-3 text-justify text-[clamp(0.75rem,1.5vw,1rem)] leading-relaxed text-[#9ac1bf]"
+              style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
+            >
+              {pathway.description.map((para, idx) => (
+                <p key={idx} className={idx < pathway.description.length - 1 ? 'mb-2 lg:mb-3' : ''}>
+                  {para}
+                </p>
               ))}
-            </ul>
+            </div>
+
+            {/* What to Expect */}
+            <div
+              className="text-[clamp(0.75rem,1.5vw,1rem)] leading-relaxed text-[#9ac1bf]"
+              style={{ fontFamily: 'var(--font-graphik), sans-serif' }}
+            >
+              <p className="mb-1 font-medium">What to Expect:</p>
+              <ul className="list-inside list-disc space-y-0.5">
+                {pathway.whatToExpect.map((item, idx) => (
+                  <li key={idx}>{item}</li>
+                ))}
+              </ul>
+            </div>
           </div>
-          
-          {/* CTA Button */}
-          {onCtaClick ? (
-            <Button
-              text={pathway.ctaText}
-              onClick={onCtaClick}
-              mode="dark"
-              size="large"
-              colors={pathwaysButtonColors}
-            />
-          ) : (
-            <Button
-              text={pathway.ctaText}
-              href={pathway.ctaHref}
-              mode="dark"
-              size="large"
-              colors={pathwaysButtonColors}
-            />
-          )}
+
+          {/* CTA — always pinned at the bottom */}
+          <div className="shrink-0 px-3 sm:px-4 lg:px-5 pb-3 sm:pb-4 lg:pb-5 pt-2">
+            {onCtaClick ? (
+              <Button
+                text={pathway.ctaText}
+                onClick={onCtaClick}
+                mode="dark"
+                size="medium"
+                colors={pathwaysButtonColors}
+              />
+            ) : (
+              <Button
+                text={pathway.ctaText}
+                href={pathway.ctaHref}
+                mode="dark"
+                size="medium"
+                colors={pathwaysButtonColors}
+              />
+            )}
+          </div>
         </div>
       </div>
     );
@@ -383,7 +428,7 @@ export default function PathwayCard({ pathway, isMobile = false, onExpandedChang
             {/* Scrollable Content Area */}
             <div
               ref={scrollContainerRef}
-              className="flex-1 overflow-y-auto min-h-0 overscroll-contain"
+              className="flex-1 overflow-y-auto min-h-0 overscroll-contain no-scrollbar"
               style={{ WebkitOverflowScrolling: 'touch' }}
             >
               {/* Description */}

@@ -61,11 +61,11 @@ export const SECTION_THEMES: Record<SectionId, Theme> = {
   journey: {
     bg: '#f6edd0', // Light beige (from Figma)
     text: '#354443', // Dark teal text (from Figma)
-    accent: '#9ac1bf', // Teal accent (from Figma)
+    accent: '#a2c0bf', // Teal accent
     headerBg: '#354443', // Dark teal header (from Figma)
     headerOuterBg: '#f6edd0', // Light beige outer
-    headerText: '#9ac1bf', // Teal nav text and logo in journey section
-    logoColor: '#9ac1bf', // Exact teal logo color (inline SVG, no filter)
+    headerText: '#a2c0bf', // Teal nav text and logo in journey section
+    logoColor: '#a2c0bf', // Exact teal logo color (inline SVG, no filter)
   },
   'journey-footer': {
     bg: '#354443', // Dark teal background (footer bg)
@@ -113,66 +113,66 @@ export const SECTION_THEMES: Record<SectionId, Theme> = {
   },
   therapies: {
     bg: '#f6edd0', // Light beige
-    text: '#645c42', // Dark brown/yellow
+    text: '#635d45', // Dark olive
     accent: '#d6c68e', // Card background
-    headerBg: '#645c42', // Dark brown header
+    headerBg: '#635d45', // Dark olive header
     headerOuterBg: '#f6edd0', // Light beige outer
-    headerText: '#e9d89e', // Light gold nav text and logo
-    logoColor: '#e9d89e', // Light gold logo color
+    headerText: '#d4c795', // Warm gold nav text and logo
+    logoColor: '#d4c795', // Warm gold logo color
   },
   'therapies-intro': {
     bg: '#f6edd0', // Light beige
-    text: '#645c42', // Dark brown/yellow
+    text: '#635d45', // Dark olive
     accent: '#d6c68e', // Card background
-    headerBg: '#645c42', // Dark brown header
+    headerBg: '#635d45', // Dark olive header
     headerOuterBg: '#f6edd0', // Light beige outer
-    headerText: '#e9d89e', // Light gold nav text and logo
-    logoColor: '#e9d89e', // Light gold logo color
+    headerText: '#d4c795', // Warm gold nav text and logo
+    logoColor: '#d4c795', // Warm gold logo color
   },
   'therapies-asp': {
     bg: '#f6edd0', // Light beige
-    text: '#645c42', // Dark brown/yellow
+    text: '#635d45', // Dark olive
     accent: '#d6c68e', // Card background
-    headerBg: '#645c42', // Dark brown header
+    headerBg: '#635d45', // Dark olive header
     headerOuterBg: '#f6edd0', // Light beige outer
-    headerText: '#e9d89e', // Light gold nav text and logo
-    logoColor: '#e9d89e', // Light gold logo color
+    headerText: '#d4c795', // Warm gold nav text and logo
+    logoColor: '#d4c795', // Warm gold logo color
   },
   'therapies-modalities': {
     bg: '#f6edd0', // Light beige
-    text: '#645c42', // Dark brown/yellow
+    text: '#635d45', // Dark olive
     accent: '#d6c68e', // Card background
-    headerBg: '#645c42', // Dark brown header
+    headerBg: '#635d45', // Dark olive header
     headerOuterBg: '#f6edd0', // Light beige outer
-    headerText: '#e9d89e', // Light gold nav text and logo
-    logoColor: '#e9d89e', // Light gold logo color
+    headerText: '#d4c795', // Warm gold nav text and logo
+    logoColor: '#d4c795', // Warm gold logo color
   },
   'therapies-not-sure': {
     bg: '#f6edd0', // Light beige
-    text: '#645c42', // Dark brown/yellow
+    text: '#635d45', // Dark olive
     accent: '#d6c68e', // Card background
-    headerBg: '#645c42', // Dark brown header
+    headerBg: '#635d45', // Dark olive header
     headerOuterBg: '#f6edd0', // Light beige outer
-    headerText: '#e9d89e', // Light gold nav text and logo
-    logoColor: '#e9d89e', // Light gold logo color
+    headerText: '#d4c795', // Warm gold nav text and logo
+    logoColor: '#d4c795', // Warm gold logo color
   },
   'therapies-come-find-me': {
     bg: '#f6edd0', // Light beige
-    text: '#645c42', // Dark brown/yellow
+    text: '#635d45', // Dark olive
     accent: '#d6c68e', // Card background
-    headerBg: '#645c42', // Dark brown header
+    headerBg: '#635d45', // Dark olive header
     headerOuterBg: '#f6edd0', // Light beige outer
-    headerText: '#e9d89e', // Light gold nav text and logo
-    logoColor: '#e9d89e', // Light gold logo color
+    headerText: '#d4c795', // Warm gold nav text and logo
+    logoColor: '#d4c795', // Warm gold logo color
   },
   'therapies-footer': {
-    bg: '#645c42', // Dark brown background (footer bg)
-    text: '#e9d89e', // Light gold text
+    bg: '#635d45', // Dark olive background (footer bg)
+    text: '#d4c795', // Warm gold text — drives quick links label + link colors
     accent: '#f6edd0', // Light beige accent
-    headerBg: '#e9d89e', // Light gold header (light on dark section)
-    headerOuterBg: '#645c42', // Dark brown outer (matches footer bg)
-    headerText: '#645c42', // Dark brown text on light header
-    logoColor: '#645c42', // Dark brown logo on light header
+    headerBg: '#d4c795', // Warm gold header (light on dark section)
+    headerOuterBg: '#635d45', // Dark olive outer (matches footer bg)
+    headerText: '#635d45', // Dark olive text on light header
+    logoColor: '#635d45', // Dark olive logo on light header
   },
   approach: {
     bg: '#f6edd0', // Base White (from Figma)
@@ -337,39 +337,39 @@ export const SECTION_THEMES: Record<SectionId, Theme> = {
   },
   contact: {
     bg: '#f6edd0', // Base White/Cream (from Figma)
-    text: '#474e3a', // G800 Dark Green (from Figma)
-    accent: '#93a378', // G500 Soft Green (from Figma)
-    headerBg: '#474e3a', // Dark green header (from Figma)
+    text: '#494e3c', // Dark green
+    accent: '#96a37c', // Sage green accent
+    headerBg: '#494e3c', // Dark green header
     headerOuterBg: '#f6edd0', // Light beige outer
-    headerText: '#93a378', // Sage green nav text and logo
-    logoColor: '#93a378', // Sage green logo
+    headerText: '#96a37c', // Sage green nav text and logo
+    logoColor: '#96a37c', // Sage green logo
   },
   'contact-info': {
     bg: '#f6edd0', // Base White/Cream
-    text: '#474e3a', // G800 Dark Green
-    accent: '#93a378', // G500 Soft Green
-    headerBg: '#474e3a', // Dark green header
+    text: '#494e3c', // Dark green
+    accent: '#96a37c', // Sage green accent
+    headerBg: '#494e3c', // Dark green header
     headerOuterBg: '#f6edd0', // Light beige outer
-    headerText: '#93a378', // Sage green nav text and logo
-    logoColor: '#93a378', // Sage green logo
+    headerText: '#96a37c', // Sage green nav text and logo
+    logoColor: '#96a37c', // Sage green logo
   },
   'contact-cta': {
     bg: '#f6edd0', // Base White/Cream
-    text: '#474e3a', // G800 Dark Green
-    accent: '#93a378', // G500 Soft Green
-    headerBg: '#474e3a', // Dark green header
+    text: '#494e3c', // Dark green
+    accent: '#96a37c', // Sage green accent
+    headerBg: '#494e3c', // Dark green header
     headerOuterBg: '#f6edd0', // Light beige outer
-    headerText: '#93a378', // Sage green nav text and logo
-    logoColor: '#93a378', // Sage green logo
+    headerText: '#96a37c', // Sage green nav text and logo
+    logoColor: '#96a37c', // Sage green logo
   },
   faq: {
     bg: '#f6edd0', // Base White/Cream
-    text: '#474e3a', // G800 Dark Green
-    accent: '#93a378', // G500 Soft Green
-    headerBg: '#474e3a', // Dark green header
+    text: '#494e3c', // Dark green
+    accent: '#96a37c', // Sage green accent
+    headerBg: '#494e3c', // Dark green header
     headerOuterBg: '#f6edd0', // Light beige outer
-    headerText: '#93a378', // Sage green nav text and logo
-    logoColor: '#93a378', // Sage green logo
+    headerText: '#96a37c', // Sage green nav text and logo
+    logoColor: '#96a37c', // Sage green logo
   },
   'contact-footer': {
     bg: '#474e3a', // Dark green background (footer bg)

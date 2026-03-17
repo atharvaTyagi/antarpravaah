@@ -378,11 +378,19 @@ export default function WeWorkTogether({
               {/* CTA Card */}
               <Link
                 href="/approach"
-                className="work-card absolute inset-0 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#645c42] p-6 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex items-center justify-center cursor-pointer hover:bg-[#555141] transition-colors duration-300 group"
+                className="work-card absolute inset-0 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#645c42] p-6 sm:p-8 lg:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex items-center justify-center cursor-pointer hover:bg-[#d6c68e] transition-colors duration-300 group"
                 style={{ isolation: 'isolate', clipPath: 'inset(0 round 16px)', transform: 'translateZ(0)' }}
               >
                 <div className="pointer-events-none">
-                  <Button text="Explore Our Approach" size="large" mode="light" />
+                  <Button
+                    text="Explore Our Approach"
+                    size="medium"
+                    colors={{
+                      fg: '#d6c68e',
+                      fgHover: '#d6c68e',
+                      bgHover: '#645c42',
+                    }}
+                  />
                 </div>
               </Link>
             </div>

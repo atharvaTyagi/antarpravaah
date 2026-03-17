@@ -168,7 +168,7 @@ export default function Button({
 
   const style = {
     fontFamily: 'var(--font-graphik), sans-serif',
-    fontWeight: 300,
+    fontWeight: 400,
     // CSS variables used by Tailwind arbitrary values above.
     '--btn-fg': defaultTextColor,
     '--btn-fg-hover': hoverTextColor,

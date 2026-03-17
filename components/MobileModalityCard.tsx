@@ -62,7 +62,7 @@ function ModalityCtaButton({
   return (
     <button
       onClick={onClick}
-      className={`group inline-flex items-center justify-center gap-2 p-3 text-[#645c42] hover:opacity-80 transition-opacity ${fullWidth ? 'w-full' : ''}`}
+      className={`group inline-flex items-center justify-center gap-2 p-3 text-[#635d45] hover:opacity-80 transition-opacity ${fullWidth ? 'w-full' : ''}`}
       style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
     >
       <ArrowLeft className="w-5 h-4 shrink-0" />
@@ -153,35 +153,35 @@ export default function MobileModalityCard({
   // Collapsed State - Default view with icon, title, subtitle, Read More
   if (!isExpanded) {
     return (
-      <div className="bg-[#d6c68e] flex flex-col h-full w-[80vw] max-w-[340px] rounded-[24px] overflow-hidden ios-radius-fix p-6">
-        {/* Icon at top - takes flex-1 */}
-        <div className="flex-1 flex items-center justify-center min-h-0">
+      <div className="bg-[#d6c68e] flex flex-col gap-4 h-full w-[80vw] max-w-[340px] rounded-[24px] overflow-hidden ios-radius-fix px-10 py-7 items-start justify-end">
+        {/* Icon - fills available space */}
+        <div className="flex-1 flex items-center justify-center min-h-0 w-full rounded-[24px] p-4">
           <img
             src={data.iconSrc}
             alt={data.title}
-            className="w-[70%] h-auto max-h-[40vh] object-contain"
+            className="w-[280px] h-auto max-h-[260px] object-contain"
           />
         </div>
 
-        {/* Title */}
-        <h3
-          className="text-[28px] leading-[1.0] text-[#645c42] text-center shrink-0"
-          style={{ fontFamily: 'var(--font-saphira), serif' }}
-        >
-          {data.title}
-        </h3>
+        {/* Title + Subtitle + CTA */}
+        <div className="flex flex-col gap-4 items-start w-full shrink-0">
+          <h3
+            className="text-[36px] leading-normal text-[#635d45] w-full"
+            style={{ fontFamily: 'var(--font-saphira), serif' }}
+          >
+            {data.title}
+          </h3>
 
-        {/* Subtitle */}
-        <p
-          className="text-[14px] leading-[1.5] text-[#645c42] text-center mt-2 shrink-0"
-          style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
-        >
-          {data.subtitle}
-        </p>
+          <p
+            className="text-[16px] leading-[24px] text-[#635d45] w-full"
+            style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
+          >
+            {data.subtitle}
+          </p>
 
-        {/* Read More Button */}
-        <div className="mt-3 w-full shrink-0">
-          <ModalityCtaButton text="Read More" onClick={handleExpand} fullWidth />
+          <div className="w-full shrink-0">
+            <ModalityCtaButton text="Read More" onClick={handleExpand} fullWidth />
+          </div>
         </div>
       </div>
     );
@@ -193,14 +193,14 @@ export default function MobileModalityCard({
       {/* Header with Title and Close Button */}
       <div className="flex items-start justify-between mb-4 shrink-0">
         <h3
-          className="text-[36px] leading-[1.0] text-[#645c42] flex-1"
+          className="text-[36px] leading-[1.0] text-[#635d45] flex-1"
           style={{ fontFamily: 'var(--font-saphira), serif' }}
         >
           {data.title}
         </h3>
         <button
           onClick={handleClose}
-          className="flex-shrink-0 w-6 h-6 flex items-center justify-center text-[#645c42] hover:opacity-70 transition-opacity ml-4"
+          className="flex-shrink-0 w-6 h-6 flex items-center justify-center text-[#635d45] hover:opacity-70 transition-opacity ml-4"
           aria-label="Close details"
         >
           <img
@@ -218,12 +218,12 @@ export default function MobileModalityCard({
       {/* Scrollable Content Area */}
       <div
         ref={scrollContainerRef}
-        className="flex-1 overflow-y-auto min-h-0 overscroll-contain"
+        className="flex-1 overflow-y-auto min-h-0 overscroll-contain no-scrollbar"
         style={{ WebkitOverflowScrolling: 'touch' }}
       >
         {/* Subtitle */}
         <p
-          className="text-[16px] leading-[24px] text-[#645c42] mb-4"
+          className="text-[16px] leading-[24px] text-[#635d45] mb-4"
           style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
         >
           {data.subtitle}
@@ -231,7 +231,7 @@ export default function MobileModalityCard({
 
         {/* Description */}
         <div
-          className="text-[16px] leading-[24px] text-[#645c42] text-justify mb-4"
+          className="text-[16px] leading-[24px] text-[#635d45] text-justify mb-4"
           style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
         >
           {data.description.map((para, idx) => (
@@ -245,13 +245,13 @@ export default function MobileModalityCard({
         {(data.bestFor.column1.length > 0 || data.bestFor.column2.length > 0) && (
           <div className="mb-4">
             <p
-              className="text-[16px] leading-[24px] text-[#645c42] mb-2"
+              className="text-[16px] leading-[24px] text-[#635d45] mb-2"
               style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
             >
               Best For
             </p>
             <ul
-              className="list-disc list-inside text-[14px] leading-[22px] text-[#645c42]"
+              className="list-disc list-inside text-[14px] leading-[22px] text-[#635d45]"
               style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
             >
               {[...data.bestFor.column1, ...data.bestFor.column2].map((item, idx) => (
@@ -264,13 +264,13 @@ export default function MobileModalityCard({
         {/* Session Duration */}
         <div className="mb-4">
           <p
-            className="text-[16px] leading-[24px] text-[#645c42]"
+            className="text-[16px] leading-[24px] text-[#635d45]"
             style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
           >
             Session Duration
           </p>
           <p
-            className="text-[14px] leading-[22px] text-[#645c42]"
+            className="text-[14px] leading-[22px] text-[#635d45]"
             style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
           >
             {data.sessionDuration}
