@@ -301,32 +301,34 @@ export default function ModalitiesScrollCard({
             </div>
 
             {/* Best For Section */}
-            <div className="animate-content mb-2 sm:mb-3 shrink-0">
-              <p
-                className="text-[clamp(0.7rem,1.1vw,0.9375rem)] leading-[20px] text-[#635d45] mb-1"
-                style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
-              >
-                Best For
-              </p>
-              <div className="flex flex-col sm:flex-row gap-0 sm:gap-8">
-                <ul
-                  className="list-disc list-inside text-[clamp(0.65rem,1vw,0.875rem)] leading-[20px] text-[#635d45]"
-                  style={{ fontFamily: 'var(--font-graphik), sans-serif' }}
+            {(currentModality.bestFor.column1.length > 0 || currentModality.bestFor.column2.length > 0) && (
+              <div className="animate-content mb-2 sm:mb-3 shrink-0">
+                <p
+                  className="text-[clamp(0.7rem,1.1vw,0.9375rem)] leading-[20px] text-[#635d45] mb-1"
+                  style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
                 >
-                  {currentModality.bestFor.column1.map((item, idx) => (
-                    <li key={idx}>{item}</li>
-                  ))}
-                </ul>
-                <ul
-                  className="list-disc list-inside text-[clamp(0.65rem,1vw,0.875rem)] leading-[20px] text-[#635d45]"
-                  style={{ fontFamily: 'var(--font-graphik), sans-serif' }}
-                >
-                  {currentModality.bestFor.column2.map((item, idx) => (
-                    <li key={idx}>{item}</li>
-                  ))}
-                </ul>
+                  Best For
+                </p>
+                <div className="flex flex-col sm:flex-row gap-0 sm:gap-8">
+                  <ul
+                    className="list-disc list-inside text-[clamp(0.7rem,1.1vw,0.9375rem)] leading-[20px] text-[#635d45]"
+                    style={{ fontFamily: 'var(--font-graphik), sans-serif' }}
+                  >
+                    {currentModality.bestFor.column1.map((item, idx) => (
+                      <li key={idx}>{item}</li>
+                    ))}
+                  </ul>
+                  <ul
+                    className="list-disc list-inside text-[clamp(0.7rem,1.1vw,0.9375rem)] leading-[20px] text-[#635d45]"
+                    style={{ fontFamily: 'var(--font-graphik), sans-serif' }}
+                  >
+                    {currentModality.bestFor.column2.map((item, idx) => (
+                      <li key={idx}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Session Duration */}
             <div className="animate-content mb-2 sm:mb-3 shrink-0">

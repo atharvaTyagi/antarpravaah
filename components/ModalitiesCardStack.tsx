@@ -435,7 +435,7 @@ export default function ModalitiesCardStack({
                           Best For
                         </p>
                         <ul
-                          className="list-disc list-inside text-[13px] leading-[20px] text-[#645c42]"
+                          className="list-disc list-inside text-[14px] leading-[20px] text-[#645c42]"
                           style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
                         >
                           {[...modality.bestFor.column1, ...modality.bestFor.column2].map((item, idx) => (

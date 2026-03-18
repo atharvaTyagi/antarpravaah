@@ -251,7 +251,7 @@ export default function MobileModalityCard({
               Best For
             </p>
             <ul
-              className="list-disc list-inside text-[14px] leading-[22px] text-[#635d45]"
+              className="list-disc list-inside text-[16px] leading-[22px] text-[#635d45]"
               style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
             >
               {[...data.bestFor.column1, ...data.bestFor.column2].map((item, idx) => (
