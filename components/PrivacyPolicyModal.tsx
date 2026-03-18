@@ -242,7 +242,7 @@ export default function PrivacyPolicyModal({ isOpen, onClose }: PrivacyPolicyMod
               {/* Page end blob */}
               <div className="flex items-center justify-center py-3">
                 <img
-                  src="/page_end_blob.svg"
+                  src="/privacy_policy_blob.svg"
                   alt=""
                   className="w-[100px] md:w-[131px] h-auto"
                 />

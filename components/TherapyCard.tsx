@@ -274,7 +274,7 @@ export default function TherapyCard({ therapy, isVisible = false, isMobile = fal
         <div
           ref={scrollContainerRef}
           onScroll={handleScroll}
-          className="flex-1 overflow-y-auto min-h-0 overscroll-contain"
+          className="flex-1 overflow-y-auto min-h-0 overscroll-contain no-scrollbar"
           style={{ WebkitOverflowScrolling: 'touch' }}
         >
           <div 
