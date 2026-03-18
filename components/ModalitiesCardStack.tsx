@@ -218,7 +218,7 @@ export default function ModalitiesCardStack({
         y: yEnd,
         duration: 0.4,
         ease: 'power2.inOut',
-        onComplete: () => gsap.set(currentCard, { pointerEvents: 'none' }),
+        onComplete: () => { gsap.set(currentCard, { pointerEvents: 'none' }); },
       });
     }
 
