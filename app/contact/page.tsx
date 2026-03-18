@@ -6,6 +6,7 @@ import Button from '@/components/Button';
 import FaqItem from '@/components/FaqItem';
 import PageEndBlob from '@/components/PageEndBlob';
 import Footer from '@/components/Footer';
+import GuidedJourneyModal from '@/components/GuidedJourneyModal';
 import { faqSections } from '@/data/faqContent';
 import { useThemeStore } from '@/lib/stores/useThemeStore';
 import { SectionId } from '@/lib/themeConfig';
@@ -43,6 +44,7 @@ export default function ContactPage() {
   const [isAnimating, setIsAnimating] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [isFaqScrollActive, setIsFaqScrollActive] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [expandedFaq, setExpandedFaq] = useState<string | null>('0-0');
 
@@ -357,7 +359,7 @@ export default function ContactPage() {
                     style={{ fontFamily: 'var(--font-graphik), sans-serif' }}
                   >
                     <p className="text-[14px] sm:text-[15px] lg:text-[16px] leading-[20px] sm:leading-[22px] lg:leading-[24px] mb-0" style={{ fontWeight: 500 }}>Contact Number</p>
-                    <p className="text-[14px] sm:text-[15px] lg:text-[16px] leading-[20px] sm:leading-[22px] lg:leading-[24px]" style={{ fontWeight: 400 }}>+91 98765 43210</p>
+                    <p className="text-[14px] sm:text-[15px] lg:text-[16px] leading-[20px] sm:leading-[22px] lg:leading-[24px]" style={{ fontWeight: 400 }}>+91 98107 10036</p>
                   </div>
 
                   {/* Email */}
@@ -452,7 +454,7 @@ export default function ContactPage() {
                       <h3
                         className="text-[20px] sm:text-[22px] lg:text-[24px] leading-normal text-[#96a37c]"
                         style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
-                      >
+                      > 
                         {section.title}
                       </h3>
                     </div>
@@ -507,7 +509,7 @@ export default function ContactPage() {
                     concerns you might have about your healing journey.
                   </p>
                   <div className="flex flex-col gap-3 items-center">
-                    <Button text="Book your first session" size="medium" colors={contactButtonColors} />
+                    <Button text="Book your first session" size="medium" colors={contactButtonColors} onClick={() => setIsModalOpen(true)} />
                   </div>
                 </div>
               </div>
@@ -524,6 +526,7 @@ export default function ContactPage() {
 
         </div>
       </main>
+      <GuidedJourneyModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </>
   );
 }

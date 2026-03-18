@@ -387,7 +387,7 @@ export default function BookingScreen({
               onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
               className="bg-transparent border border-[#6b5d47] rounded-full px-6 py-3 text-[16px] text-[#f6edd0] text-center focus:outline-none focus:border-[#f6edd0] placeholder-[#6b5d47] transition-colors"
               style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
-              placeholder="+91 98765 43210"
+              placeholder="+91 98107 10036"
             />
           </div>
 

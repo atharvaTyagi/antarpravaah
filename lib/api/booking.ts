@@ -119,7 +119,7 @@ function validatePayload(payload: BookingPayload): { valid: boolean; errors: Rec
  * const result = await submitBooking({
  *   name: 'John Doe',
  *   email: 'john@example.com',
- *   phone: '+91 98765 43210',
+ *   phone: '+91 98107 10036',
  *   selectedDate: '2025-12-26',
  *   sessionType: 'Workshop'
  * });
