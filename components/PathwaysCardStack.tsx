@@ -215,8 +215,9 @@ export default function PathwaysCardStack({
       }
     };
 
-    // On desktop with pathways, PathwayCard handles scroll internally — only use Observer for mobile touch
-    const observerType = (!isMobile && pathways) ? 'touch,pointer' : 'wheel,touch,pointer';
+    // On desktop with pathways, PathwayCard handles wheel/edge logic internally.
+    // Keep observer limited to touch to avoid competing with desktop pointer/wheel interactions.
+    const observerType = (!isMobile && pathways) ? 'touch' : 'wheel,touch,pointer';
 
     // Create Observer for scroll handling - starts disabled
     const pathwaysObserver = Observer.create({

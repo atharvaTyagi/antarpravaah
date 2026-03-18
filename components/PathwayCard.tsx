@@ -202,8 +202,14 @@ export default function PathwayCard({ pathway, isMobile = false, onExpandedChang
 
     const container = desktopScrollRef.current;
     const edgeCooldown = 600;
+    const minDelta = 6;
 
     const handleWheel = (e: WheelEvent) => {
+      // Keep wheel ownership on the scrollable card content.
+      e.stopPropagation();
+
+      if (Math.abs(e.deltaY) < minDelta) return;
+
       const { scrollTop, scrollHeight, clientHeight } = container;
       const isAtTop = scrollTop <= 0;
       const isAtBottom = scrollTop + clientHeight >= scrollHeight - 2;
@@ -211,11 +217,13 @@ export default function PathwayCard({ pathway, isMobile = false, onExpandedChang
       const isScrollingUp = e.deltaY < 0;
 
       if (isAtBottom && isScrollingDown) {
+        e.preventDefault();
         const now = Date.now();
         if (now - lastEdgeTimeRef.current < edgeCooldown) return;
         lastEdgeTimeRef.current = now;
         onEdgeReached('end');
       } else if (isAtTop && isScrollingUp) {
+        e.preventDefault();
         const now = Date.now();
         if (now - lastEdgeTimeRef.current < edgeCooldown) return;
         lastEdgeTimeRef.current = now;
@@ -223,7 +231,7 @@ export default function PathwayCard({ pathway, isMobile = false, onExpandedChang
       }
     };
 
-    container.addEventListener('wheel', handleWheel, { passive: true });
+    container.addEventListener('wheel', handleWheel, { passive: false });
     return () => container.removeEventListener('wheel', handleWheel);
   }, [isMobile, onEdgeReached]);
 

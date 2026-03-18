@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { createPortal } from 'react-dom';
 
 interface PrivacyPolicyModalProps {
   isOpen: boolean;
@@ -9,6 +10,13 @@ interface PrivacyPolicyModalProps {
 }
 
 export default function PrivacyPolicyModal({ isOpen, onClose }: PrivacyPolicyModalProps) {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+    return () => setIsMounted(false);
+  }, []);
+
   // Prevent body scroll when modal is open, always restore on close/unmount
   useEffect(() => {
     if (!isOpen) return;
@@ -32,24 +40,37 @@ export default function PrivacyPolicyModal({ isOpen, onClose }: PrivacyPolicyMod
     };
   }, [isOpen]);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    if (!isOpen) return;
 
-  return (
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose();
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
+  if (!isOpen || !isMounted) return null;
+
+  const modalContent = (
     <>
       {/* Backdrop */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[100] bg-black/60"
+        className="fixed inset-0 z-[1000] bg-black/60 backdrop-blur-sm"
         onClick={onClose}
       />
 
       {/* Modal Container - No animation on container */}
-      <div className="fixed inset-0 z-[101] flex items-center justify-center p-4 md:p-8 pointer-events-none">
+      <div className="fixed inset-0 z-[1001] flex items-center justify-center p-4 md:p-8 pointer-events-none">
         <div
-          className="relative w-full max-w-[1097px] max-h-[70vh] overflow-y-auto no-scrollbar rounded-[24px] shadow-2xl pointer-events-auto bg-[#2d291f]"
+          className="relative w-full max-w-[1097px] max-h-[70vh] overflow-y-auto overscroll-contain no-scrollbar rounded-[24px] shadow-2xl pointer-events-auto bg-[#3e3629]"
           onClick={(e) => e.stopPropagation()}
+          onWheel={(e) => e.stopPropagation()}
+          onTouchMove={(e) => e.stopPropagation()}
         >
           <motion.div
             initial={{ opacity: 0 }}
@@ -274,4 +295,6 @@ export default function PrivacyPolicyModal({ isOpen, onClose }: PrivacyPolicyMod
       </div>
     </>
   );
+
+  return createPortal(modalContent, document.body);
 }

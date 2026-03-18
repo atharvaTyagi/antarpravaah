@@ -16,7 +16,7 @@ interface BookingCalendarProps {
   onSelectionChange?: (date: CalendarDate | null) => void;
 }
 
-export default function BookingCalendar({ sessionType, selectedDate, onSelectionChange }: BookingCalendarProps) {
+export default function BookingCalendar({ sessionType: _sessionType, selectedDate, onSelectionChange }: BookingCalendarProps) {
   // Get today's date to disable past dates
   const todayDate = today(getLocalTimeZone());
 
@@ -52,7 +52,7 @@ export default function BookingCalendar({ sessionType, selectedDate, onSelection
       />
 
       {/* Calendar Grid */}
-      <CalendarGrid state={state} sessionType={sessionType} />
+      <CalendarGrid state={state} />
     </div>
   );
 }
@@ -148,10 +148,9 @@ function CalendarHeader({ title, prevButtonProps, nextButtonProps }: CalendarHea
 
 interface CalendarGridProps {
   state: CalendarState | RangeCalendarState;
-  sessionType: SessionType;
 }
 
-function CalendarGrid({ state, sessionType }: CalendarGridProps) {
+function CalendarGrid({ state }: CalendarGridProps) {
   const { gridProps } = useCalendarGrid({} as AriaCalendarGridProps, state);
 
   const startDate = state.visibleRange.start;
@@ -188,7 +187,6 @@ function CalendarGrid({ state, sessionType }: CalendarGridProps) {
           state={state}
           date={date}
           currentMonth={startDate.month}
-          sessionType={sessionType}
         />
       ))}
     </div>
@@ -199,10 +197,9 @@ interface CalendarCellProps {
   state: CalendarState | RangeCalendarState;
   date: CalendarDate;
   currentMonth: number;
-  sessionType: SessionType;
 }
 
-function CalendarCell({ state, date, currentMonth, sessionType }: CalendarCellProps) {
+function CalendarCell({ state, date, currentMonth }: CalendarCellProps) {
   const ref = useRef<HTMLButtonElement>(null);
   const isOutsideMonth = date.month !== currentMonth;
 
@@ -228,19 +225,10 @@ function CalendarCell({ state, date, currentMonth, sessionType }: CalendarCellPr
 
   // Empty cell for dates outside the current month
   if (isOutsideMonth) {
-    return (
-      <div className="flex flex-col gap-[10px] items-center justify-center p-[20px] rounded-[24px] border border-[#f6edd0] opacity-40">
-        <p
-          className="text-[24px] leading-[100%] text-[#f6edd0] text-center"
-          style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400 }}
-        >
-          -
-        </p>
-      </div>
-    );
+    return <div role={cellRole} aria-hidden className="pointer-events-none" />;
   }
 
-  // Selected state with label
+  // Selected state (date only, no labels)
   if (isSelected) {
     return (
       <div role={cellRole}>
@@ -248,22 +236,14 @@ function CalendarCell({ state, date, currentMonth, sessionType }: CalendarCellPr
           {...domProps}
           onClick={handleClick}
           ref={ref}
-          className="w-full flex flex-col gap-[10px] items-center justify-center p-[20px] rounded-[24px] bg-[#2d291f] border border-[#f6edd0] cursor-pointer hover:bg-[#3e3629] transition-colors"
+          className="w-full flex flex-col gap-[10px] items-center justify-center p-[20px] rounded-[24px] bg-[#f4edd3] cursor-pointer"
         >
           <p
-            className="text-[12px] leading-[100%] text-[#f6edd0] text-center"
+            className="text-[24px] leading-[100%] text-[#2d291f] text-center"
             style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400 }}
           >
-            Immersion Title
+            {formattedDate}
           </p>
-          <div className="bg-[#f6edd0] px-[8px] py-[2px] rounded-[40px]">
-            <p
-              className="text-[12px] leading-[100%] text-[#2d291f] text-center"
-              style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
-            >
-              {sessionType === 'workshop' ? 'Workshop' : 'Training'}
-            </p>
-          </div>
         </button>
       </div>
     );

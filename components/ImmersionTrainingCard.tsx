@@ -234,7 +234,7 @@ export function ImmersionCard({ data, isMobile = false, onExpandedChange, onBook
   // Desktop layout
   if (!isMobile) {
     return (
-      <div className="flex h-full min-w-[320px] sm:min-w-[600px] lg:min-w-[900px] flex-col justify-between gap-3 sm:gap-4 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d58761] p-3 sm:p-4">
+      <div className="flex h-full w-full min-w-0 flex-col justify-between gap-3 sm:gap-4 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d58761] p-3 sm:p-4">
         <div className="flex flex-col lg:flex-row gap-3 sm:gap-4 flex-1">
           {/* Left column: Info box + Image */}
           <div className="flex flex-1 flex-col gap-3 sm:gap-4">
