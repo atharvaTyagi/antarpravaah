@@ -1,203 +1,817 @@
 'use client';
 
-import { useEffect } from 'react';
-import Lenis from 'lenis';
-import Section from '@/components/Section';
+import { useEffect, useRef, useState, useCallback, useLayoutEffect } from 'react';
+import { gsap } from 'gsap';
 import Button from '@/components/Button';
 import PageEndBlob from '@/components/PageEndBlob';
 import FadeInImage from '@/components/FadeInImage';
-import splashVector from '@/app/assets/splash_vector.svg';
-import aboutDashedBackground from '@/app/assets/about_dashed_background.svg';
-import namitaOne from '@/app/assets/namita_one.svg';
-import namitaTwo from '@/app/assets/namita_two.svg';
-import namitaThree from '@/app/assets/namita_three.svg';
-import namitaFour from '@/app/assets/namita_four.svg';
-import namitaFive from '@/app/assets/namita_five.svg';
-import namitaSix from '@/app/assets/namita_six.svg';
+import AboutBlobScroll from '@/components/AboutBlobScroll';
+import InspirationScroll from '@/components/InspirationScroll';
+import Footer from '@/components/Footer';
+import GuidedJourneyModal from '@/components/GuidedJourneyModal';
+import { getCloudinaryUrl } from '@/lib/cloudinary';
+import { useThemeStore } from '@/lib/stores/useThemeStore';
+import { SectionId } from '@/lib/themeConfig';
+
+// Section configuration - different for mobile vs desktop
+const SECTIONS_MOBILE: { id: string; type: 'static' | 'blob-scroll' | 'inspiration-scroll' | 'footer'; themeId: SectionId }[] = [
+  { id: 'about-intro', type: 'static', themeId: 'about-intro' },
+  { id: 'about-photos-1', type: 'static', themeId: 'about-body' },
+  { id: 'about-body', type: 'blob-scroll', themeId: 'about-body' },
+  { id: 'about-photos-2', type: 'static', themeId: 'about-body' },
+  { id: 'inspiration', type: 'inspiration-scroll', themeId: 'inspiration' },
+  { id: 'about-cta', type: 'static', themeId: 'about-cta' },
+  { id: 'footer', type: 'footer', themeId: 'about-footer' },
+];
+
+const SECTIONS_DESKTOP: { id: string; type: 'static' | 'blob-scroll' | 'footer'; themeId: SectionId }[] = [
+  { id: 'about-intro', type: 'static', themeId: 'about-intro' },
+  { id: 'about-body', type: 'blob-scroll', themeId: 'about-body' },
+  { id: 'inspiration', type: 'static', themeId: 'inspiration' },
+  { id: 'about-cta', type: 'static', themeId: 'about-cta' },
+  { id: 'footer', type: 'footer', themeId: 'about-footer' },
+];
 
 export default function AboutPage() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const sectionsRef = useRef<HTMLDivElement[]>([]);
+  const imageRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const mobilePhotos1Ref = useRef<(HTMLDivElement | null)[]>([]);
+  const mobilePhotos1Revealed = useRef(false);
+  const mobilePhotos2Ref = useRef<(HTMLDivElement | null)[]>([]);
+  const mobilePhotos2Revealed = useRef(false);
+
+  const setTheme = useThemeStore((state) => state.setTheme);
+
+  const [isMobile, setIsMobile] = useState(false);
+  const [currentSection, setCurrentSection] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [isReady, setIsReady] = useState(false);
+  const [isBlobScrollActive, setIsBlobScrollActive] = useState(false);
+  const [isInspirationScrollActive, setIsInspirationScrollActive] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Track scroll reset states
+  const [blobResetToStart, setBlobResetToStart] = useState(false);
+  const [blobResetToEnd, setBlobResetToEnd] = useState(false);
+  const [inspirationResetToStart, setInspirationResetToStart] = useState(false);
+  const [inspirationResetToEnd, setInspirationResetToEnd] = useState(false);
+
+  const lastScrollTimeRef = useRef<number>(0);
+  const sectionScrollCooldown = 800;
+
+  // Get current sections based on viewport
+  const SECTIONS = isMobile ? SECTIONS_MOBILE : SECTIONS_DESKTOP;
+
+  // Initialize and check mobile
   useEffect(() => {
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      orientation: 'vertical',
-      gestureOrientation: 'vertical',
-      smoothWheel: true,
-      wheelMultiplier: 1,
-      touchMultiplier: 2,
-      infinite: false,
-    });
+    if (typeof window === 'undefined') return;
 
-    function raf(time: number) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
 
-    requestAnimationFrame(raf);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    // Set initial theme
+    setTheme(SECTIONS_DESKTOP[0].themeId);
+
+    const readyTimeout = setTimeout(() => setIsReady(true), 100);
 
     return () => {
-      lenis.destroy();
+      window.removeEventListener('resize', checkMobile);
+      clearTimeout(readyTimeout);
+    };
+  }, [setTheme]);
+
+  // Navigate to a specific section
+  const goToSection = useCallback((index: number, direction: 'up' | 'down' = 'down') => {
+    if (isAnimating) return;
+    if (index < 0 || index >= SECTIONS.length) return;
+
+    const container = containerRef.current;
+    const targetSection = sectionsRef.current[index];
+    if (!container || !targetSection) return;
+
+    setIsAnimating(true);
+    setIsBlobScrollActive(false);
+    setIsInspirationScrollActive(false);
+
+    setTheme(SECTIONS[index].themeId);
+
+    const targetY = -targetSection.offsetTop;
+
+    gsap.to(container, {
+      y: targetY,
+      duration: 0.7,
+      ease: 'power2.inOut',
+      onComplete: () => {
+        setCurrentSection(index);
+
+        const section = SECTIONS[index];
+        
+        if (section.type === 'blob-scroll') {
+          if (direction === 'down') {
+            setBlobResetToStart(true);
+            setTimeout(() => setBlobResetToStart(false), 100);
+          } else {
+            setBlobResetToEnd(true);
+            setTimeout(() => setBlobResetToEnd(false), 100);
+          }
+          setTimeout(() => setIsBlobScrollActive(true), 400);
+        } else if (section.type === 'inspiration-scroll') {
+          if (direction === 'down') {
+            setInspirationResetToStart(true);
+            setTimeout(() => setInspirationResetToStart(false), 100);
+          } else {
+            setInspirationResetToEnd(true);
+            setTimeout(() => setInspirationResetToEnd(false), 100);
+          }
+          setTimeout(() => setIsInspirationScrollActive(true), 400);
+        }
+
+        lastScrollTimeRef.current = Date.now();
+        setIsAnimating(false);
+      },
+    });
+  }, [isAnimating, SECTIONS, setTheme]);
+
+  // Handle blob scroll edge reached
+  const handleBlobEdgeReached = useCallback((edge: 'start' | 'end') => {
+    if (isAnimating) return;
+    const now = Date.now();
+    if (now - lastScrollTimeRef.current < sectionScrollCooldown) return;
+
+    setIsBlobScrollActive(false);
+
+    if (edge === 'end') {
+      goToSection(currentSection + 1, 'down');
+    } else if (edge === 'start') {
+      goToSection(currentSection - 1, 'up');
+    }
+  }, [isAnimating, currentSection, goToSection]);
+
+  // Handle inspiration scroll edge reached
+  const handleInspirationEdgeReached = useCallback((edge: 'start' | 'end') => {
+    if (isAnimating) return;
+    const now = Date.now();
+    if (now - lastScrollTimeRef.current < sectionScrollCooldown) return;
+
+    setIsInspirationScrollActive(false);
+
+    if (edge === 'end') {
+      goToSection(currentSection + 1, 'down');
+    } else if (edge === 'start') {
+      goToSection(currentSection - 1, 'up');
+    }
+  }, [isAnimating, currentSection, goToSection]);
+
+  // Handle paragraph change in blob scroll (desktop only)
+  const handleParagraphChange = useCallback((paragraphIndex: number) => {
+    if (isMobile) return; // Only sync on desktop
+    
+    const images = imageRefs.current.filter(Boolean) as HTMLDivElement[];
+    if (images.length === 0) return;
+
+    // Map paragraph index to image index
+    // Paragraph 0 -> Image 0 (first image already visible)
+    // Paragraph 1 -> Image 1
+    // Paragraph 2 -> Image 2
+    // Paragraph 3 -> Image 3
+    // Paragraph 4 -> Image 4
+    // We have 6 images total, so paragraph 4 can reveal both image 4 and 5
+    
+    if (paragraphIndex === 0) {
+      // First paragraph - show first image
+      gsap.to(images[0], { autoAlpha: 1, duration: 0.5, ease: 'power2.out' });
+    } else if (paragraphIndex === 1) {
+      // Second paragraph - show second image
+      gsap.to(images[1], { autoAlpha: 1, duration: 0.5, ease: 'power2.out' });
+    } else if (paragraphIndex === 2) {
+      // Third paragraph - show third and fourth images
+      gsap.to([images[2], images[3]], { autoAlpha: 1, duration: 0.5, ease: 'power2.out', stagger: 0.15 });
+    } else if (paragraphIndex === 3) {
+      // Fourth paragraph - show fifth image
+      gsap.to(images[4], { autoAlpha: 1, duration: 0.5, ease: 'power2.out' });
+    } else if (paragraphIndex === 4) {
+      // Fifth paragraph - show sixth image
+      gsap.to(images[5], { autoAlpha: 1, duration: 0.5, ease: 'power2.out' });
+    }
+  }, [isMobile]);
+
+  // Handle scroll input
+  const handleScroll = useCallback((deltaY: number) => {
+    if (isAnimating) return;
+
+    const section = SECTIONS[currentSection];
+    
+    if (section.type === 'blob-scroll' && isBlobScrollActive) return;
+    if (section.type === 'inspiration-scroll' && isInspirationScrollActive) return;
+
+    const isScrollingDown = deltaY > 0;
+    const now = Date.now();
+    if (now - lastScrollTimeRef.current < sectionScrollCooldown) return;
+    lastScrollTimeRef.current = now;
+
+    if (isScrollingDown) {
+      goToSection(currentSection + 1, 'down');
+    } else {
+      goToSection(currentSection - 1, 'up');
+    }
+  }, [isAnimating, currentSection, SECTIONS, isBlobScrollActive, isInspirationScrollActive, goToSection]);
+
+  // Handle mobile viewport height (accounts for browser toolbar)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const setViewportHeight = () => {
+      // Get the actual viewport height accounting for mobile browser toolbars
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    };
+
+    setViewportHeight();
+    window.addEventListener('resize', setViewportHeight);
+    window.addEventListener('orientationchange', setViewportHeight);
+
+    return () => {
+      window.removeEventListener('resize', setViewportHeight);
+      window.removeEventListener('orientationchange', setViewportHeight);
     };
   }, []);
 
-  const resolveAssetSrc = (asset: unknown) =>
-    (asset as { src?: string } | undefined)?.src ?? (asset as string);
+  // Initialize images on desktop - hide all except first
+  useEffect(() => {
+    if (isMobile) return; // Only on desktop
+    
+    const images = imageRefs.current.filter(Boolean) as HTMLDivElement[];
+    if (images.length === 0) return;
 
-  const splashVectorSrc = resolveAssetSrc(splashVector);
-  const aboutDashedBackgroundSrc = resolveAssetSrc(aboutDashedBackground);
-  const namitaOneSrc = resolveAssetSrc(namitaOne);
-  const namitaTwoSrc = resolveAssetSrc(namitaTwo);
-  const namitaThreeSrc = resolveAssetSrc(namitaThree);
-  const namitaFourSrc = resolveAssetSrc(namitaFour);
-  const namitaFiveSrc = resolveAssetSrc(namitaFive);
-  const namitaSixSrc = resolveAssetSrc(namitaSix);
+    // Set initial state: first image visible, rest hidden
+    gsap.set(images[0], { autoAlpha: 1 });
+    gsap.set(images.slice(1), { autoAlpha: 0 });
+  }, [isMobile, isReady]);
+
+  // Handle blob reset states for images
+  useEffect(() => {
+    if (isMobile) return;
+    if (!blobResetToStart && !blobResetToEnd) return;
+
+    const images = imageRefs.current.filter(Boolean) as HTMLDivElement[];
+    if (images.length === 0) return;
+
+    if (blobResetToStart) {
+      // Reset to start: only first image visible
+      gsap.set(images[0], { autoAlpha: 1 });
+      gsap.set(images.slice(1), { autoAlpha: 0 });
+    } else if (blobResetToEnd) {
+      // Reset to end: all images visible
+      gsap.set(images, { autoAlpha: 1 });
+    }
+  }, [blobResetToStart, blobResetToEnd, isMobile]);
+
+  // Staggered reveal for mobile Photo Cluster 1 when section becomes active
+  useEffect(() => {
+    if (!isMobile) return;
+    if (currentSection !== 1) {
+      // Reset when leaving the section so it can replay on re-entry
+      mobilePhotos1Revealed.current = false;
+      const photos = mobilePhotos1Ref.current.filter(Boolean) as HTMLDivElement[];
+      if (photos.length > 0) {
+        gsap.set(photos, { autoAlpha: 0 });
+      }
+      return;
+    }
+    // Entering section 1 — reveal images one by one
+    if (mobilePhotos1Revealed.current) return;
+    mobilePhotos1Revealed.current = true;
+
+    const photos = mobilePhotos1Ref.current.filter(Boolean) as HTMLDivElement[];
+    if (photos.length === 0) return;
+
+    // Ensure they start hidden, then stagger in
+    gsap.set(photos, { autoAlpha: 0 });
+    gsap.to(photos, {
+      autoAlpha: 1,
+      duration: 0.6,
+      stagger: 0.35,
+      ease: 'power2.out',
+      delay: 0.2, // small delay after section transition lands
+    });
+  }, [currentSection, isMobile]);
+
+  // Staggered reveal for mobile Photo Cluster 2 when section becomes active
+  useEffect(() => {
+    if (!isMobile) return;
+    if (currentSection !== 3) {
+      // Reset when leaving the section so it can replay on re-entry
+      mobilePhotos2Revealed.current = false;
+      const photos = mobilePhotos2Ref.current.filter(Boolean) as HTMLDivElement[];
+      if (photos.length > 0) {
+        gsap.set(photos, { autoAlpha: 0 });
+      }
+      return;
+    }
+    // Entering section 3 — reveal images one by one
+    if (mobilePhotos2Revealed.current) return;
+    mobilePhotos2Revealed.current = true;
+
+    const photos = mobilePhotos2Ref.current.filter(Boolean) as HTMLDivElement[];
+    if (photos.length === 0) return;
+
+    // Ensure they start hidden, then stagger in
+    gsap.set(photos, { autoAlpha: 0 });
+    gsap.to(photos, {
+      autoAlpha: 1,
+      duration: 0.6,
+      stagger: 0.35,
+      ease: 'power2.out',
+      delay: 0.2, // small delay after section transition lands
+    });
+  }, [currentSection, isMobile]);
+
+  // Setup wheel/touch event handlers
+  useLayoutEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (!isReady) return;
+
+    document.body.style.overflow = 'hidden';
+
+    const handleWheel = (e: WheelEvent) => {
+      const section = SECTIONS[currentSection];
+      if ((section.type === 'blob-scroll' && isBlobScrollActive) ||
+          (section.type === 'inspiration-scroll' && isInspirationScrollActive)) {
+        return;
+      }
+      e.preventDefault();
+      handleScroll(e.deltaY);
+    };
+
+    let lastTouchY = 0;
+    const handleTouchStart = (e: TouchEvent) => {
+      lastTouchY = e.touches[0].clientY;
+    };
+    const handleTouchMove = (e: TouchEvent) => {
+      const section = SECTIONS[currentSection];
+      if ((section.type === 'blob-scroll' && isBlobScrollActive) ||
+          (section.type === 'inspiration-scroll' && isInspirationScrollActive)) {
+        return;
+      }
+      e.preventDefault();
+      const currentY = e.touches[0].clientY;
+      const deltaY = lastTouchY - currentY;
+      lastTouchY = currentY;
+      handleScroll(deltaY * 2);
+    };
+
+    window.addEventListener('wheel', handleWheel, { passive: false });
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
+
+    return () => {
+      document.body.style.overflow = '';
+      window.removeEventListener('wheel', handleWheel);
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
+    };
+  }, [isReady, currentSection, SECTIONS, isBlobScrollActive, isInspirationScrollActive, handleScroll]);
+
+  // Section height class name - uses CSS with proper fallbacks
+  const sectionClass = "section-height";
 
   return (
-    <main className="relative min-h-screen">
-      <div className="relative z-10 w-full pt-[188px]">
-        <Section id="about" className="w-full bg-[#f6edd0] pb-24">
-          <div className="mx-auto max-w-[1177px] px-8 pt-10">
-            <div className="flex flex-col items-center gap-10 rounded-[24px] py-10">
-              {/* Top mark (placeholder using existing splash vector asset) */}
-              <div className="h-[204px] w-[241px]">
-                <img
-                  src={splashVectorSrc}
-                  alt=""
-                  className="block h-full w-full object-contain opacity-40"
+    <>
+      <style jsx global>{`
+        :root {
+          --header-height: 90px;
+          --vh: 1vh; /* Fallback, will be set by JS */
+        }
+        @media (min-width: 640px) {
+          :root {
+            --header-height: 108px;
+          }
+        }
+        @media (min-width: 1024px) {
+          :root {
+            --header-height: 148px;
+          }
+        }
+        
+        /* Section height classes that work across all mobile browsers */
+        .section-height {
+          /* Fallback for older browsers */
+          height: calc(100vh - var(--header-height, 90px));
+          min-height: calc(100vh - var(--header-height, 90px));
+          /* JS-calculated height (most reliable for mobile) */
+          height: calc(var(--vh, 1vh) * 100 - var(--header-height, 90px));
+          min-height: calc(var(--vh, 1vh) * 100 - var(--header-height, 90px));
+        }
+        
+        /* Use dvh where supported (modern browsers) */
+        @supports (height: 100dvh) {
+          .section-height {
+            height: calc(100dvh - var(--header-height, 90px));
+            min-height: calc(100dvh - var(--header-height, 90px));
+          }
+        }
+        
+        /* Main container positioning */
+        .main-container {
+          position: fixed;
+          top: var(--header-height, 90px);
+          left: 0;
+          right: 0;
+          bottom: 0;
+          /* Fallback */
+          height: calc(100vh - var(--header-height, 90px));
+          height: calc(var(--vh, 1vh) * 100 - var(--header-height, 90px));
+        }
+        
+        @supports (height: 100dvh) {
+          .main-container {
+            height: calc(100dvh - var(--header-height, 90px));
+          }
+        }
+      `}</style>
+
+      <main className="main-container overflow-hidden bg-[#f6edd0] z-[30]">
+        <div ref={containerRef} className="will-change-transform">
+          
+          {/* ===== MOBILE LAYOUT ===== */}
+          {isMobile ? (
+            <>
+              {/* Section 1: Introduction */}
+              <div
+                ref={(el) => { if (el) sectionsRef.current[0] = el; }}
+                className={`relative flex flex-col items-center justify-center px-5 bg-[#f6edd0] ${sectionClass}`}
+              >
+                <div className="flex flex-col items-center gap-10">
+                  <div className="w-[127px] h-[107px]">
+                    <img src="/about_splash_vector.svg" alt="" className="w-full h-full object-contain" />
+                  </div>
+                  <h1
+                    className="text-[24px] leading-[1.0] text-[#93a378] text-center"
+                    style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400 }}
+                  >
+                    About Namita
+                  </h1>
+                  <p
+                    className="text-[16px] leading-[24px] text-[#474e3a] text-center"
+                    style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
+                  >
+                    Founder of Antar Pravaah | Healer &amp; Facilitator | Host at Aalayam, Himachal Pradesh
+                  </p>
+                </div>
+              </div>
+
+              {/* Section 2: Photo Cluster 1 */}
+              <div
+                ref={(el) => { if (el) sectionsRef.current[1] = el; }}
+                className={`relative flex items-center justify-center px-5 bg-[#474e3a] ${sectionClass}`}
+              >
+                <div className="pointer-events-none absolute inset-0 overflow-hidden">
+                  <img src="/about_dashed_background.svg" alt="" className="h-full w-full object-cover" />
+                </div>
+                <div className="relative w-[353px] h-[400px] z-10">
+                  {/* Bottom left */}
+                  <div
+                    ref={(el) => { mobilePhotos1Ref.current[0] = el; }}
+                    className="absolute left-0 bottom-0 h-[152px] w-[146px] overflow-hidden rounded-full"
+                    style={{ visibility: 'hidden' }}
+                  >
+                    <img
+                      src={getCloudinaryUrl('antarpravaah/about/namita_one')}
+                      alt="Namita"
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                  {/* Top center */}
+                  <div
+                    ref={(el) => { mobilePhotos1Ref.current[1] = el; }}
+                    className="absolute left-1/2 -translate-x-1/2 top-0 h-[221px] w-[212px] overflow-hidden rounded-full"
+                    style={{ visibility: 'hidden' }}
+                  >
+                    <img
+                      src={getCloudinaryUrl('antarpravaah/about/namita_two')}
+                      alt="Namita"
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                  {/* Bottom right */}
+                  <div
+                    ref={(el) => { mobilePhotos1Ref.current[2] = el; }}
+                    className="absolute right-0 bottom-[10px] h-[123px] w-[117px] overflow-hidden rounded-full"
+                    style={{ visibility: 'hidden' }}
+                  >
+                    <img
+                      src={getCloudinaryUrl('antarpravaah/about/namita_three')}
+                      alt="Namita"
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 3: Blob with paragraphs */}
+              <div
+                ref={(el) => { if (el) sectionsRef.current[2] = el; }}
+                className={`relative flex items-center justify-center bg-[#474e3a] overflow-hidden ${sectionClass}`}
+              >
+                <div className="pointer-events-none absolute inset-0 overflow-hidden">
+                  <img src="/about_dashed_background.svg" alt="" className="h-full w-full object-cover" />
+                </div>
+                <AboutBlobScroll
+                  isActive={isBlobScrollActive}
+                  onEdgeReached={handleBlobEdgeReached}
+                  resetToStart={blobResetToStart}
+                  resetToEnd={blobResetToEnd}
                 />
               </div>
 
-              <h1
-                className="text-center text-[48px] leading-[1.0] text-[#93a378]"
-                style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400 }}
+              {/* Section 4: Photo Cluster 2 */}
+              <div
+                ref={(el) => { if (el) sectionsRef.current[3] = el; }}
+                className={`relative flex items-center justify-center px-5 bg-[#474e3a] ${sectionClass}`}
               >
-                About Namita
-              </h1>
-
-              <p
-                className="text-center text-[24px] leading-[normal] text-[#474e3a]"
-                style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 300 }}
-              >
-                Founder of Antar Pravaah | Healer &amp; Facilitator | Host at Aalayam, Himachal Pradesh
-              </p>
-
-              {/* Photo row 1 (Figma sizes) — overlaps into the green band slightly */}
-              <div className="relative z-10 -mb-[140px] flex flex-col items-center justify-center gap-6 md:flex-row md:items-end md:gap-10">
-                <div className="h-[289px] w-[276px] overflow-hidden rounded-full">
-                  <FadeInImage src={namitaOneSrc} alt="" className="h-full w-full object-cover" />
+                <div className="pointer-events-none absolute inset-0 overflow-hidden">
+                  <img src="/about_dashed_background.svg" alt="" className="h-full w-full object-cover" />
                 </div>
-                <div className="h-[419px] w-[400px] overflow-hidden rounded-full">
-                  <FadeInImage src={namitaTwoSrc} alt="" className="h-full w-full object-cover" />
-                </div>
-                <div className="h-[233px] w-[222px] overflow-hidden rounded-full">
-                  <FadeInImage src={namitaThreeSrc} alt="" className="h-full w-full object-cover" />
+                <div className="relative w-[353px] h-[400px] z-10">
+                  {/* Top left */}
+                  <div
+                    ref={(el) => { mobilePhotos2Ref.current[0] = el; }}
+                    className="absolute left-0 top-[20px] h-[140px] w-[134px] overflow-hidden rounded-full"
+                    style={{ visibility: 'hidden' }}
+                  >
+                    <img
+                      src={getCloudinaryUrl('antarpravaah/about/namita_four')}
+                      alt="Namita"
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                  {/* Bottom center */}
+                  <div
+                    ref={(el) => { mobilePhotos2Ref.current[1] = el; }}
+                    className="absolute left-1/2 -translate-x-1/2 bottom-0 h-[221px] w-[212px] overflow-hidden rounded-full"
+                    style={{ visibility: 'hidden' }}
+                  >
+                    <img
+                      src={getCloudinaryUrl('antarpravaah/about/namita_five')}
+                      alt="Namita"
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                  {/* Top right */}
+                  <div
+                    ref={(el) => { mobilePhotos2Ref.current[2] = el; }}
+                    className="absolute right-0 top-0 h-[159px] w-[152px] overflow-hidden rounded-full"
+                    style={{ visibility: 'hidden' }}
+                  >
+                    <img
+                      src={getCloudinaryUrl('antarpravaah/about/namita_six')}
+                      alt="Namita"
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
 
-          {/* Deep green band with swirl + body circle */}
-          <div className="relative w-full bg-[#474e3a] pt-[200px] pb-24">
-            {}
-            <div className="pointer-events-none absolute inset-0 overflow-hidden">
-              <img
-                src={aboutDashedBackgroundSrc}
-                alt=""
-                className="h-full w-full object-cover"
-              />
-            </div>
+              {/* Section 5: My Inspiration (scrollable) */}
+              <div
+                ref={(el) => { if (el) sectionsRef.current[4] = el; }}
+                className={`relative flex items-center justify-center px-5 py-10 bg-[#f6edd0] ${sectionClass}`}
+              >
+                <div className="w-full h-[560px]">
+                  <InspirationScroll
+                    isActive={isInspirationScrollActive}
+                    onEdgeReached={handleInspirationEdgeReached}
+                    resetToStart={inspirationResetToStart}
+                    resetToEnd={inspirationResetToEnd}
+                  />
+                </div>
+              </div>
 
-            <div className="relative mx-auto max-w-[1177px] px-8">
-              <div className="flex flex-col items-center gap-14">
-                <div className="relative flex w-full justify-center">
-                  <div className="flex h-[640px] w-[640px] max-w-full items-center justify-center rounded-full bg-[#93a378] p-10">
-                    <div className="w-[315px] max-w-full text-justify text-[#474e3a]">
-                      <p
-                        className="mb-2 text-[24px] leading-[normal]"
-                        style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400 }}
-                      >
-                        Hi !
+              {/* Section 6: CTA */}
+              <div
+                ref={(el) => { if (el) sectionsRef.current[5] = el; }}
+                className={`relative flex flex-col items-center justify-center px-5 bg-[#f6edd0] ${sectionClass}`}
+              >
+                <div className="flex flex-col items-center gap-6">
+                  <div className="py-5">
+                    <PageEndBlob color="#474e3a" className="h-10 w-auto opacity-60" />
+                  </div>
+                  <p
+                    className="text-[36px] leading-[1.0] text-[#93a378] text-center"
+                    style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400 }}
+                  >
+                    Whatever you carry, you&apos;re not alone.
+                  </p>
+                  <Button
+                    text="Begin Your Journey"
+                    size="medium"
+                    colors={{ fg: '#474e3a', fgHover: '#93a378', bgHover: '#474e3a' }}
+                    onClick={() => setIsModalOpen(true)}
+                  />
+                </div>
+              </div>
+
+              {/* Section 7: Footer */}
+              <div
+                ref={(el) => { if (el) sectionsRef.current[6] = el; }}
+                className={`relative flex items-center bg-[#474e3a] ${sectionClass}`}
+              >
+                <Footer />
+              </div>
+            </>
+          ) : (
+            /* ===== DESKTOP LAYOUT ===== */
+            <>
+              {/* Section 1: Introduction */}
+              <div
+                ref={(el) => { if (el) sectionsRef.current[0] = el; }}
+                className={`relative flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 bg-[#f6edd0] ${sectionClass}`}
+              >
+                <div className="mx-auto max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1177px]">
+                  <div className="flex flex-col items-center gap-6 sm:gap-8 lg:gap-10 py-6 sm:py-8 lg:py-10">
+                    <div className="w-[30%] lg:w-[241px] max-w-[241px]">
+                      <img src="/about_splash_vector.svg" alt="" className="block w-full h-auto object-contain" />
+                    </div>
+                    <h1
+                      className="text-center text-[40px] lg:text-[48px] leading-[1.0] text-[#93a378]"
+                      style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400 }}
+                    >
+                      About Namita
+                    </h1>
+                    <p
+                      className="text-center text-[20px] lg:text-[24px] leading-[normal] text-[#474e3a] px-4 max-w-[980px]"
+                      style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
+                    >
+                      Founder of Antar Pravaah | Healer &amp; Facilitator | Host at Aalayam, Himachal Pradesh
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 2: Photos & Blob */}
+              <div
+                ref={(el) => { if (el) sectionsRef.current[1] = el; }}
+                className={`relative flex items-center justify-center bg-[#474e3a] overflow-hidden ${sectionClass}`}
+              >
+                <div className="pointer-events-none absolute inset-0 overflow-hidden">
+                  <img src="/about_dashed_background.svg" alt="" className="h-full w-full object-cover" />
+                </div>
+
+                <div className="relative z-10 w-full h-full flex items-center justify-center">
+                  {/* Upper-left image */}
+                  <div 
+                    ref={(el) => { imageRefs.current[0] = el; }}
+                    className="absolute top-[18%] left-[16%] sm:top-[20%] sm:left-[20%] lg:top-[18%] lg:left-[22%]"
+                  >
+                    <div className="h-[150px] w-[143px] lg:h-[200px] lg:w-[191px] overflow-hidden rounded-full">
+                      <img src={getCloudinaryUrl('antarpravaah/about/namita_one')} alt="Namita" className="h-full w-full object-cover" />
+                    </div>
+                  </div>
+
+                  {/* Upper-right image */}
+                  <div 
+                    ref={(el) => { imageRefs.current[1] = el; }}
+                    className="absolute top-[16%] right-[18%] sm:top-[18%] sm:right-[22%] lg:top-[16%] lg:right-[24%]"
+                  >
+                    <div className="h-[136px] w-[130px] lg:h-[180px] lg:w-[172px] overflow-hidden rounded-full">
+                      <img src={getCloudinaryUrl('antarpravaah/about/namita_two')} alt="Namita" className="h-full w-full object-cover" />
+                    </div>
+                  </div>
+
+                  {/* Left-middle image */}
+                  <div 
+                    ref={(el) => { imageRefs.current[2] = el; }}
+                    className="absolute top-[38%] left-[8%] sm:top-[40%] sm:left-[10%] lg:top-[38%] lg:left-[12%]"
+                  >
+                    <div className="h-[164px] w-[157px] lg:h-[218px] lg:w-[208px] overflow-hidden rounded-full">
+                      <img src={getCloudinaryUrl('antarpravaah/about/namita_three')} alt="Namita" className="h-full w-full object-cover" />
+                    </div>
+                  </div>
+
+                  {/* Right-middle image */}
+                  <div 
+                    ref={(el) => { imageRefs.current[3] = el; }}
+                    className="absolute top-[36%] right-[8%] sm:top-[38%] sm:right-[10%] lg:top-[36%] lg:right-[12%]"
+                  >
+                    <div className="h-[150px] w-[143px] lg:h-[200px] lg:w-[191px] overflow-hidden rounded-full">
+                      <img src={getCloudinaryUrl('antarpravaah/about/namita_four')} alt="Namita" className="h-full w-full object-cover" />
+                    </div>
+                  </div>
+
+                  {/* Lower-left image */}
+                  <div 
+                    ref={(el) => { imageRefs.current[4] = el; }}
+                    className="absolute bottom-[18%] left-[18%] sm:bottom-[20%] sm:left-[22%] lg:bottom-[18%] lg:left-[24%]"
+                  >
+                    <div className="h-[143px] w-[136px] lg:h-[191px] lg:w-[182px] overflow-hidden rounded-full">
+                      <img src={getCloudinaryUrl('antarpravaah/about/namita_five')} alt="Namita" className="h-full w-full object-cover" />
+                    </div>
+                  </div>
+
+                  {/* Lower-right image */}
+                  <div 
+                    ref={(el) => { imageRefs.current[5] = el; }}
+                    className="absolute bottom-[16%] right-[16%] sm:bottom-[18%] sm:right-[20%] lg:bottom-[16%] lg:right-[22%]"
+                  >
+                    <div className="h-[157px] w-[150px] lg:h-[209px] lg:w-[200px] overflow-hidden rounded-full">
+                      <img src={getCloudinaryUrl('antarpravaah/about/namita_six')} alt="Namita" className="h-full w-full object-cover" />
+                    </div>
+                  </div>
+
+                  <AboutBlobScroll
+                    isActive={isBlobScrollActive}
+                    onEdgeReached={handleBlobEdgeReached}
+                    resetToStart={blobResetToStart}
+                    resetToEnd={blobResetToEnd}
+                    onParagraphChange={handleParagraphChange}
+                  />
+                </div>
+              </div>
+
+              {/* Section 3: My Inspiration */}
+              <div
+                ref={(el) => { if (el) sectionsRef.current[2] = el; }}
+                className={`relative flex items-center justify-center px-4 sm:px-6 lg:px-8 bg-[#f6edd0] ${sectionClass}`}
+              >
+                <div className="w-full h-[85%] sm:h-[80%] lg:h-[85%] max-w-[calc(100vw-32px)] sm:max-w-[calc(100vw-48px)] lg:max-w-[calc(100vw-64px)] bg-[#93a378] rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] overflow-hidden ios-radius-fix px-6 sm:px-12 lg:px-20 py-8 sm:py-12 lg:py-16 flex items-center justify-center">
+                  <div className="flex flex-col gap-6 sm:gap-8 lg:gap-10 items-center justify-center text-[#474e3a] text-center max-w-[900px]">
+                    <h2
+                      className="text-[40px] lg:text-[56px] leading-[1.0]"
+                      style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400 }}
+                    >
+                      My inspiration
+                    </h2>
+                    <div 
+                      className="text-[16px] lg:text-[18px] leading-[24px] sm:leading-[28px] lg:leading-[32px] space-y-4 sm:space-y-5 lg:space-y-6"
+                      style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
+                    >
+                      <p>
+                        This work is not mine alone. I would not be here were it not for the Grace, guidance and support of my Guru and the lineage of the tradition of which I am a part.
                       </p>
-                      <div
-                        className="space-y-3 text-[12px] leading-[normal]"
-                        style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
-                      >
-                        <p>
-                          I’m Namita, a healer and facilitator with decades of experience guiding people through
-                          life’s physical, emotional, and energetic challenges. My journey began over twenty years ago
-                          in Public Relations, but a quiet inner calling led me to explore paths far beyond the
-                          ordinary—editing books, creating events, building ventures, and even running a home bakery.
-                          Each experience deepened my understanding of people, life, and the subtle energies that
-                          connect us all.
-                        </p>
-                        <p>
-                          The turning point came when I discovered Foot Reflexology. Following my intuition led me
-                          into a world of healing I hadn’t anticipated, and over time, new modalities found
-                          me—each one expanding my understanding of energy, the body, and transformation. Today, I
-                          bring experience in Sujok, Acupuncture and Auricular Therapy, Access Bars &amp; Body
-                          Processes, Access Energetic Facelift, Systemic Family Constellation Therapy, Shamanism,
-                          Transpersonal Regression Therapy, Transcendental Healing, and more.
-                        </p>
-                        <p>
-                          I have had the privilege of guiding hundreds of people across all ages and backgrounds
-                          through pain, trauma, grief, relationship struggles, fear, and more. The transformations are
-                          countless, yet the heart of the work is always the same: facilitating a remembrance back to
-                          themselves.
-                        </p>
-                        <p>
-                          My work transcends any single technique. It is rooted in presence, intuition, and decades of
-                          inner practice. When we work together, you are not just learning a modality—you are
-                          reconnecting with yourself. You’ll leave with clarity, presence, and the possibility that
-                          comes from remembering the wholeness you’ve always carried.
-                        </p>
-                        <p>
-                          Healing, to me, is not fixing—it’s remembering. Not escaping—it’s embracing. Whatever you
-                          carry, you are not alone, and I welcome you to this space of transformation.
-                        </p>
-                      </div>
+                      <p>
+                        <a href="http://www.rikhiapeeth.in" target="_blank" rel="noopener noreferrer" className="underline font-medium hover:opacity-80 transition-opacity">
+                          http://www.rikhiapeeth.in
+                        </a>
+                        <br />
+                        <a href="https://www.biharyoga.net/index.php" target="_blank" rel="noopener noreferrer" className="underline font-medium hover:opacity-80 transition-opacity">
+                          https://www.biharyoga.net/index.php
+                        </a>
+                      </p>
+                      <p>
+                        With stalwarts like Swami Sivananda Saraswati, Swami Satyananda Saraswati, Swami Niranjananda Saraswati and Swami Satyasangananda Saraswati lighting the path, I am left only to walk in their footsteps. It changed my life. The work is theirs, I am merely the face of it.
+                      </p>
+                      <p>
+                        My teachers whose enlightened minds, passion, zeal and spirit of seva drive me every single day to show up. Namita Unnikrishnan, Dr. BN Jha, Dr. H Bhojraj, Urmimala Deb, Ritu Kabra, Marina Toledo, Dain Heer, Gary Douglas and the countless people who walked through my door trusting me with their body, mind and soul. I am grateful. So grateful.
+                      </p>
                     </div>
                   </div>
                 </div>
+              </div>
 
-                {/* Photo row 2 (Figma sizes) — slightly spills out of the green band */}
-                <div className="relative z-10 -mb-[160px] flex flex-col items-center justify-center gap-6 md:flex-row md:items-start md:gap-10">
-                  <div className="h-[266px] w-[254px] overflow-hidden rounded-full">
-                    <FadeInImage src={namitaFourSrc} alt="" className="h-full w-full object-cover" />
-                  </div>
-                  <div className="h-[419px] w-[400px] overflow-hidden rounded-full">
-                    <FadeInImage src={namitaFiveSrc} alt="" className="h-full w-full object-cover" />
-                  </div>
-                  <div className="h-[327px] w-[312px] overflow-hidden rounded-full">
-                    <FadeInImage src={namitaSixSrc} alt="" className="h-full w-full object-cover" />
+              {/* Section 4: CTA */}
+              <div
+                ref={(el) => { if (el) sectionsRef.current[3] = el; }}
+                className={`relative flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 bg-[#f6edd0] ${sectionClass}`}
+              >
+                <div className="mx-auto max-w-full sm:max-w-[calc(100vw-64px)] lg:max-w-[1177px]">
+                  <div className="flex flex-col items-center gap-4 sm:gap-5 lg:gap-6 py-6 sm:py-8 lg:py-10">
+                    <div className="flex items-center justify-center py-3 sm:py-4 lg:py-5">
+                      <PageEndBlob color="#474e3a" className="h-8 sm:h-9 lg:h-10 w-auto opacity-60" />
+                    </div>
+                    <p
+                      className="max-w-full sm:max-w-[680px] lg:max-w-[799px] text-center text-[32px] lg:text-[36px] leading-[normal] text-[#93a378] px-4"
+                      style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400 }}
+                    >
+                      Whatever you carry, you&apos;re not alone.
+                    </p>
+                    <Button
+                      text="Begin Your Journey"
+                      size="medium"
+                      colors={{ fg: '#474e3a', fgHover: '#93a378', bgHover: '#474e3a' }}
+                      onClick={() => setIsModalOpen(true)}
+                    />
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
 
-          {/* CTA */}
-          <div className="mx-auto max-w-[1177px] px-8 pt-[220px]">
-            <div className="flex flex-col items-center gap-6 py-10">
-              <div className="flex items-center justify-center py-5">
-                <PageEndBlob className="h-10 w-auto opacity-60" />
-              </div>
-              <p
-                className="max-w-[799px] text-center text-[48px] leading-[normal] text-[#93a378]"
-                style={{ fontFamily: 'var(--font-saphira), serif', fontWeight: 400 }}
+              {/* Section 5: Footer */}
+              <div
+                ref={(el) => { if (el) sectionsRef.current[4] = el; }}
+                className={`relative flex items-center bg-[#474e3a] ${sectionClass}`}
               >
-                If you feel called, I welcome you. Whatever you carry, you&apos;re not alone.
-              </p>
-              <Button
-                text="Begin Your Journey"
-                size="small"
-                colors={{ fg: '#93a378', fgHover: '#474e3a', bgHover: '#93a378' }}
-                href="/#journey"
-              />
-            </div>
-          </div>
-        </Section>
-      </div>
-    </main>
+                <Footer />
+              </div>
+            </>
+          )}
+        </div>
+      </main>
+
+      <GuidedJourneyModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+    </>
   );
 }
-

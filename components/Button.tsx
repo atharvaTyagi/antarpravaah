@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 
-type ButtonSize = 'small' | 'large';
+type ButtonSize = 'small' | 'medium' | 'large';
 type ButtonMode = 'light' | 'dark';
 
 type CommonProps = {
@@ -130,21 +130,33 @@ export default function Button({
   ...rest
 }: ButtonProps) {
   const isLarge = size === 'large';
+  const isMedium = size === 'medium';
   const defaultTextColor = colors?.fg ?? (mode === 'light' ? '#f6edd0' : '#2d291f');
   const hoverTextColor = colors?.fgHover ?? (mode === 'light' ? '#2d291f' : '#f6edd0');
   const hoverBgColor = colors?.bgHover ?? (mode === 'light' ? '#f6edd0' : '#2d291f');
 
   const labelClasses = isLarge
-    ? 'text-[24px] tracking-[3.84px] rounded-[8px]'
-    : 'text-[12px] tracking-[1.92px] rounded-[4px]';
+    ? 'text-[18px] sm:text-[20px] lg:text-[24px] tracking-[2.5px] sm:tracking-[3px] lg:tracking-[3.84px] rounded-[10px] sm:rounded-[11px] lg:rounded-[12px]'
+    : isMedium
+    ? 'text-[16px] sm:text-[18px] tracking-[2px] sm:tracking-[2.88px] rounded-[9px] sm:rounded-[10px]'
+    : 'text-[11px] sm:text-[12px] tracking-[1.5px] sm:tracking-[1.92px] rounded-[7px] sm:rounded-[8px]';
 
-  const iconSizeClasses = isLarge ? 'w-[28px] h-[21px]' : 'w-[13px] h-[10px]';
-  const pillSizeClasses = isLarge ? 'w-[8px] h-[9px]' : 'w-[6px] h-[7px]';
+  const iconSizeClasses = isLarge 
+    ? 'w-[22px] h-[17px] sm:w-[25px] sm:h-[19px] lg:w-[28px] lg:h-[21px]' 
+    : isMedium
+    ? 'w-[17px] h-[13px] sm:w-[20px] sm:h-[16px]'
+    : 'w-[11px] h-[8px] sm:w-[13px] sm:h-[10px]';
+  const pillSizeClasses = isLarge 
+    ? 'w-[7px] h-[8px] sm:w-[7.5px] sm:h-[8.5px] lg:w-[8px] lg:h-[9px]' 
+    : isMedium
+    ? 'w-[6px] h-[7px] sm:w-[6.5px] sm:h-[7.5px]'
+    : 'w-[5px] h-[6px] sm:w-[6px] sm:h-[7px]';
   const slotSizeClasses = iconSizeClasses;
 
   const rootClasses = [
-    'group inline-flex items-center justify-center p-2 select-none',
-    isLarge ? 'gap-2' : 'gap-1',
+    'group inline-flex items-center justify-center select-none',
+    isLarge ? 'p-2 sm:p-2' : isMedium ? 'p-1.5 sm:p-2' : 'p-1.5 sm:p-2',
+    isLarge ? 'gap-2 sm:gap-2' : isMedium ? 'gap-1 sm:gap-1.5' : 'gap-0.5 sm:gap-1',
     'uppercase transition-colors duration-150',
     disabled ? 'opacity-40 pointer-events-none' : 'hover:opacity-100',
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#9ac1bf] focus-visible:ring-offset-transparent',
@@ -156,7 +168,7 @@ export default function Button({
 
   const style = {
     fontFamily: 'var(--font-graphik), sans-serif',
-    fontWeight: 300,
+    fontWeight: 400,
     // CSS variables used by Tailwind arbitrary values above.
     '--btn-fg': defaultTextColor,
     '--btn-fg-hover': hoverTextColor,
@@ -175,7 +187,7 @@ export default function Button({
         />
       </span>
       <span
-        className={`px-1 py-1 ${labelClasses} whitespace-nowrap transition-colors duration-150 group-hover:bg-[var(--btn-bg-hover)] group-hover:text-[color:var(--btn-fg-hover)]`}
+        className={`px-2 py-1.5 ${labelClasses} transition-colors duration-150 group-hover:bg-[var(--btn-bg-hover)] group-hover:text-[color:var(--btn-fg-hover)] text-center max-w-[200px] sm:max-w-none sm:whitespace-nowrap leading-[1.3]`}
       >
         {text}
       </span>

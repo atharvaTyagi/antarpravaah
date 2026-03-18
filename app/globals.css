@@ -3,6 +3,39 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Custom Fonts */
+@font-face {
+  font-family: 'Safira March Personal Use Only';
+  src: url('/fonts/Safira March Personal Use Only.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Graphik';
+  src: url('/fonts/GraphikLight.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Graphik';
+  src: url('/fonts/GraphikRegular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Graphik';
+  src: url('/fonts/GraphikMedium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -47,9 +80,32 @@
 }
 
 /* Custom font variables - update these when font files are available */
+html {
+  scroll-behavior: smooth;
+}
+
+:root {
+  /* Header height CSS variables for responsive layouts */
+  --header-height: 90px;
+  /* Viewport height fallback for mobile browsers with dynamic toolbars */
+  --vh: 1vh;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --header-height: 108px;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --header-height: 148px;
+  }
+}
+
 :root {
   --font-saphira: 'Safira March Personal Use Only', Georgia, serif;
-  --font-graphik: 'Graphik Trial', Arial, Helvetica, sans-serif;
+  --font-graphik: 'Graphik', Arial, Helvetica, sans-serif;
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -89,12 +145,100 @@ body {
 }
 
 /* Hide scrollbars (keep scroll behavior) */
-.no-scrollbar {
-  -ms-overflow-style: none; /* IE/Edge legacy */
-  scrollbar-width: none; /* Firefox */
+@utility no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
-.no-scrollbar::-webkit-scrollbar {
+
+/* Full viewport sections for GSAP scroll */
+.homepage-section {
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+}
+
+/* Snap scroll wrapper */
+.snap-scroll-wrapper {
+  scroll-snap-type: y proximity;
+}
+
+/* Snap sections */
+.snap-section {
+  scroll-snap-align: start;
+  scroll-snap-stop: normal;
+}
+
+/* Smooth scrolling with iOS momentum */
+@supports (-webkit-overflow-scrolling: touch) {
+  .snap-scroll-wrapper {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Ensure pinned sections work correctly */
+.pin-spacer {
+  scroll-snap-align: none !important;
+}
+
+/* Fixed container architecture for homepage */
+.main-container {
+  position: fixed;
+  top: var(--header-height, 90px);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  height: calc(100vh - var(--header-height, 90px));
+  height: calc(var(--vh, 1vh) * 100 - var(--header-height, 90px));
+  /* touch-action: none tells the iOS compositor to surrender touch ownership to JS
+     before the gesture begins, allowing GSAP Observer's preventDefault to work reliably */
+  touch-action: none;
+}
+
+@supports (height: 100dvh) {
+  .main-container {
+    height: calc(100dvh - var(--header-height, 90px));
+  }
+}
+
+/* Section height for fixed container sections */
+.section-height {
+  height: calc(100vh - var(--header-height, 90px));
+  min-height: calc(100vh - var(--header-height, 90px));
+  height: calc(var(--vh, 1vh) * 100 - var(--header-height, 90px));
+  min-height: calc(var(--vh, 1vh) * 100 - var(--header-height, 90px));
+  touch-action: none;
+}
+
+@supports (height: 100dvh) {
+  .section-height {
+    height: calc(100dvh - var(--header-height, 90px));
+    min-height: calc(100dvh - var(--header-height, 90px));
+  }
+}
+
+/* Hide scrollbar but keep functionality */
+.hide-scrollbar,
+.scrollbar-hide {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.hide-scrollbar::-webkit-scrollbar,
+.scrollbar-hide::-webkit-scrollbar {
   display: none; /* Chrome/Safari */
+}
+
+/* iOS Safari border-radius fix for elements inside transformed parents.
+   WebKit fails to clip border-radius + overflow:hidden when a parent has
+   will-change:transform or an active CSS transform. Adding a mask-image
+   forces a proper compositing mask that respects the radius. */
+.ios-radius-fix {
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+  mask-image: radial-gradient(white, black);
 }
 
 /* Next.js portal positioning */
@@ -142,6 +286,9 @@ nextjs-portal {
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    /* bg-background removed: BackgroundWrapper's fixed div handles background.
+       Applying it here would paint over the z-0 fixed div in Safari. */
+    @apply text-foreground;
+    background-color: transparent;
   }
 }

@@ -1,0 +1,583 @@
+[
+  {
+    "fields": [
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              },
+              {
+                "flag": "min",
+                "constraint": 10
+              },
+              {
+                "flag": "max",
+                "constraint": 500
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "The thought or pondering text",
+        "name": "content",
+        "type": "text"
+      },
+      {
+        "options": {
+          "hotspot": true
+        },
+        "description": "Optional image for this thought",
+        "name": "image",
+        "type": "image"
+      },
+      {
+        "description": "The date this thought was published",
+        "name": "publishedAt",
+        "type": "datetime"
+      },
+      {
+        "initialValue": false,
+        "description": "Set to true to make this thought visible on the website",
+        "name": "published",
+        "type": "boolean"
+      }
+    ],
+    "name": "thought",
+    "type": "document"
+  },
+  {
+    "fields": [
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "Name of the person giving the testimonial",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "The workshop or service they attended",
+        "name": "workshop",
+        "type": "string",
+        "title": "Workshop / Service"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              },
+              {
+                "flag": "min",
+                "constraint": 20
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "The testimonial content",
+        "name": "testimonial",
+        "type": "text"
+      },
+      {
+        "description": "The date this testimonial was published",
+        "name": "publishedAt",
+        "type": "datetime"
+      },
+      {
+        "initialValue": false,
+        "description": "Set to true to make this testimonial visible on the website",
+        "name": "published",
+        "type": "boolean"
+      }
+    ],
+    "name": "testimonial",
+    "type": "document"
+  },
+  {
+    "fields": [
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "The name of the immersion or workshop",
+        "name": "title",
+        "type": "string"
+      },
+      {
+        "options": {
+          "source": "title",
+          "maxLength": 96
+        },
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "custom"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "URL-friendly identifier (auto-generated from title)",
+        "hidden": true,
+        "name": "slug",
+        "type": "slug"
+      },
+      {
+        "options": {
+          "list": [
+            {
+              "title": "Immersion",
+              "value": "immersion"
+            },
+            {
+              "title": "Workshop",
+              "value": "workshop"
+            }
+          ],
+          "layout": "radio"
+        },
+        "initialValue": "immersion",
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "valid",
+                "constraint": [
+                  "immersion",
+                  "workshop"
+                ]
+              },
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "Is this an immersion or a workshop?",
+        "name": "type",
+        "type": "string"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "e.g., \"2 Days\", \"6 Hours (10AM - 4PM)\", \"3 Hours\"",
+        "name": "duration",
+        "type": "string"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "e.g., \"English\", \"English and Hindi\"",
+        "name": "language",
+        "type": "string"
+      },
+      {
+        "rows": 3,
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "Age requirements and prior experience needed. Use line breaks for multiple lines.",
+        "name": "prerequisite",
+        "type": "text"
+      },
+      {
+        "options": {
+          "list": [
+            {
+              "title": "In-person",
+              "value": "In-person"
+            },
+            {
+              "title": "Online",
+              "value": "Online"
+            },
+            {
+              "title": "Hybrid",
+              "value": "Hybrid"
+            }
+          ]
+        },
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "valid",
+                "constraint": [
+                  "In-person",
+                  "Online",
+                  "Hybrid"
+                ]
+              },
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "e.g., \"In-person\", \"Online\", \"Hybrid\"",
+        "name": "format",
+        "type": "string"
+      },
+      {
+        "rows": 6,
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              },
+              {
+                "flag": "min",
+                "constraint": 50
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "Detailed description of the immersion/workshop",
+        "name": "about",
+        "type": "text"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              },
+              {
+                "flag": "min",
+                "constraint": 1
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "List of key takeaways or experiences",
+        "of": [
+          {
+            "type": "string"
+          }
+        ],
+        "name": "whatToExpect",
+        "type": "array"
+      },
+      {
+        "options": {
+          "hotspot": true
+        },
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "Featured image for the card",
+        "fields": [
+          {
+            "description": "Alternative text for accessibility",
+            "name": "alt",
+            "type": "string",
+            "title": "Alt Text"
+          }
+        ],
+        "name": "image",
+        "type": "image"
+      },
+      {
+        "initialValue": "Reserve your spot",
+        "description": "Text for the call-to-action button",
+        "name": "ctaText",
+        "type": "string",
+        "title": "CTA Button Text"
+      },
+      {
+        "initialValue": 0,
+        "description": "Lower numbers appear first in the carousel",
+        "name": "order",
+        "type": "number",
+        "title": "Display Order"
+      },
+      {
+        "initialValue": false,
+        "description": "Set to true to make this visible on the website",
+        "name": "published",
+        "type": "boolean"
+      }
+    ],
+    "name": "immersion",
+    "type": "document",
+    "title": "Immersion / Workshop"
+  },
+  {
+    "fields": [
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "The name of the training program",
+        "name": "title",
+        "type": "string"
+      },
+      {
+        "options": {
+          "source": "title",
+          "maxLength": 96
+        },
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "custom"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "URL-friendly identifier (auto-generated from title)",
+        "hidden": true,
+        "name": "slug",
+        "type": "slug"
+      },
+      {
+        "rows": 3,
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "Duration details. Use line breaks for multiple lines (e.g., \"Total 30 hours\\n3-hour Classes\\nTwice a month\")",
+        "name": "duration",
+        "type": "text"
+      },
+      {
+        "rows": 3,
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "Requirements to join. Use line breaks for multiple lines.",
+        "name": "prerequisites",
+        "type": "text"
+      },
+      {
+        "options": {
+          "list": [
+            {
+              "title": "In-person",
+              "value": "In-person"
+            },
+            {
+              "title": "Online",
+              "value": "Online"
+            },
+            {
+              "title": "Hybrid - Online & In-person",
+              "value": "Hybrid - Online & In-person"
+            }
+          ]
+        },
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "valid",
+                "constraint": [
+                  "In-person",
+                  "Online",
+                  "Hybrid - Online & In-person"
+                ]
+              },
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "e.g., \"In-person\", \"Online\", \"Hybrid - Online & In-person\"",
+        "name": "format",
+        "type": "string"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "e.g., \"English\", \"English and Hindi\", \"English & Hindi\"",
+        "name": "language",
+        "type": "string"
+      },
+      {
+        "rows": 4,
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              },
+              {
+                "flag": "min",
+                "constraint": 30
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "Brief description of the training program",
+        "name": "overview",
+        "type": "text"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              },
+              {
+                "flag": "min",
+                "constraint": 1
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "List of key learning outcomes",
+        "of": [
+          {
+            "type": "string"
+          }
+        ],
+        "name": "whatYoullLearn",
+        "type": "array",
+        "title": "What You'll Learn"
+      },
+      {
+        "initialValue": "Enroll in this Training",
+        "description": "Text for the call-to-action button",
+        "name": "ctaText",
+        "type": "string",
+        "title": "CTA Button Text"
+      },
+      {
+        "initialValue": 0,
+        "description": "Lower numbers appear first in the carousel",
+        "name": "order",
+        "type": "number",
+        "title": "Display Order"
+      },
+      {
+        "initialValue": false,
+        "description": "Set to true to make this visible on the website",
+        "name": "published",
+        "type": "boolean"
+      }
+    ],
+    "name": "training",
+    "type": "document",
+    "title": "Training Program"
+  }
+]

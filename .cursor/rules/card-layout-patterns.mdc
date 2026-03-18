@@ -1,0 +1,69 @@
+---
+description: Card layout patterns with fixed heights, proper centering, and responsive scaling
+globs: components/**/*.tsx
+alwaysApply: false
+---
+
+# Card Layout Patterns
+
+## Fixed Height Cards with Content Scaling
+
+To keep cards within bounds with proper content scaling:
+
+```tsx
+// Fixed card height based on viewport
+<div className="h-[calc(100vh-220px)] max-h-[700px] overflow-hidden">
+  <div className="h-full flex flex-col p-5 sm:p-6 lg:p-8">
+    {/* Content fills available space */}
+    <div className="flex-1 flex flex-col overflow-hidden">
+      {/* Scrollable area if needed */}
+      <div className="flex-shrink overflow-y-auto">
+        {/* Long content */}
+      </div>
+    </div>
+    {/* Fixed bottom elements */}
+    <div className="mt-auto shrink-0">
+      <Button />
+    </div>
+  </div>
+</div>
+```
+
+## Bottom-Aligned CTA and Icon Layout
+
+For CTA (left) and icon (right) aligned to bottom:
+
+```tsx
+<div className="h-full flex flex-col lg:flex-row">
+  {/* Left: Content column */}
+  <div className="flex-1 flex flex-col">
+    {/* Content... */}
+    <div className="mt-auto">
+      <Button />
+    </div>
+  </div>
+  
+  {/* Right: Icon aligned to bottom */}
+  <div className="lg:w-[240px] flex items-end justify-center">
+    <img className="animate-icon" />
+  </div>
+</div>
+```
+
+## Centered Card Container
+
+```tsx
+<div className="w-full flex flex-col items-center">
+  <div className="w-full max-w-[1200px] bg-[#d6c68e] rounded-[24px]">
+    {/* Card content */}
+  </div>
+</div>
+```
+
+## Key Classes
+
+- `shrink-0` - Prevent element from shrinking
+- `flex-shrink` or `flex-1` - Allow element to shrink/grow
+- `overflow-hidden` on card, `overflow-y-auto` on scrollable content
+- `mt-auto` - Push element to bottom of flex container
+- `items-end` - Align flex children to bottom

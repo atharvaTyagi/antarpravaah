@@ -39,3 +39,22 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Image backups (do not commit large SVG originals)
+/public-svg-backup
+
+# Cloudinary mapping
+cloudinary-urls.json
+
+# Claude Code temp files
+tmpclaude-*
+
+nul
+
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
