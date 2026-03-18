@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
-import Image from 'next/image';
 import gsap from 'gsap';
 import { Observer } from 'gsap/dist/Observer';
 import { DotLottieReact, type DotLottie } from '@lottiefiles/dotlottie-react';
@@ -222,45 +221,34 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
             transform: 'translateZ(0)',
           }}
         >
-          <div className="relative w-[680px] aspect-square max-w-none sm:w-[clamp(360px,min(95vw,75dvh),760px)] sm:aspect-auto sm:h-[clamp(360px,min(95vw,75dvh),760px)]">
-            <div className="w-full h-full relative">
-              <Image
+          <div className="relative flex items-center justify-center">
+            <div className="relative">
+              <img
                 src="/splash_blob.svg"
                 alt=""
-                fill
-                sizes="(max-width: 640px) 680px, 760px"
-                className="object-contain"
-                aria-hidden={true}
-                priority
+                className="w-[640px] sm:w-[400px] md:w-[480px] lg:w-[560px] h-auto max-w-none"
+                aria-hidden
               />
-              <div
-                className="absolute top-1/2 left-1/2 text-center z-10"
-                style={{
-                  transform: 'translate(-50%, -50%)',
-                  width: '80%',
-                  maxHeight: '85%',
-                  padding: 'clamp(28px, 10%, 72px)',
-                  overflow: 'hidden',
-                }}
-              >
-                <p
-                  className="leading-[1.55] text-[#4a3833]"
-                  style={{
-                    fontFamily: 'var(--font-saphira), serif',
-                    fontWeight: 400,
-                    fontSize: 'clamp(14px, 3.4vw, 22px)',
-                  }}
-                >
-                  {TEXT_LINES.map((line, i) => (
-                    <span
-                      key={i}
-                      ref={(el) => { lineRefs.current[i] = el; }}
-                      style={{ display: 'block', opacity: 0 }}
-                    >
-                      {line}
-                    </span>
-                  ))}
-                </p>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="relative w-full max-w-[320px] sm:max-w-[250px] md:max-w-[300px] lg:max-w-[350px] h-[320px] sm:h-[250px] md:h-[300px] lg:h-[350px] text-center z-10 flex items-center justify-center">
+                  <p
+                    className="w-full text-justify sm:text-center leading-[24px] text-[#4a3833] text-[20px] md:text-[20px] lg:text-[24px]"
+                    style={{
+                      fontFamily: 'var(--font-saphira), serif',
+                      fontWeight: 400,
+                    }}
+                  >
+                    {TEXT_LINES.map((line, i) => (
+                      <span
+                        key={i}
+                        ref={(el) => { lineRefs.current[i] = el; }}
+                        style={{ display: 'block', opacity: 0 }}
+                      >
+                        {line}
+                      </span>
+                    ))}
+                  </p>
+                </div>
               </div>
             </div>
           </div>

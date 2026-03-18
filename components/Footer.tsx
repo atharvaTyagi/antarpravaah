@@ -69,7 +69,7 @@ export default function Footer() {
               className="text-[11px] sm:text-[12px] leading-normal text-center tracking-[1.5px] sm:tracking-[1.92px] uppercase"
               style={{ color: footerText, fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
             >
-              ©2022 Prakritee & ©Antar Pravaah. All Rights Reserved.
+              ©2022 Prakritee & ©2025 Antar Pravaah. All Rights Reserved.
             </div>
             <button
               onClick={() => setIsPrivacyModalOpen(true)}

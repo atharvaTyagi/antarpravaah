@@ -336,12 +336,12 @@ export default function PathwayCard({ pathway, isMobile = false, onExpandedChang
     <div
       className="relative flex flex-col overflow-hidden ios-radius-fix rounded-[24px] border-[16px] border-[#9ac1bf] w-full h-full"
     >
-      {/* Background Image with blur */}
+      {/* Background Image - fills entire card, cropping is fine */}
       <div className="absolute inset-0 -z-10">
         <img
           src={pathway.image}
           alt=""
-          style={{ transform: 'scale(1.1)' }}
+          className="w-full h-full object-cover"
         />
       </div>
 
