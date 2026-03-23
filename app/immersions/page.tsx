@@ -4,7 +4,6 @@ import { useEffect, useRef, useState, useCallback, useLayoutEffect, Suspense } f
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import { gsap } from 'gsap';
-import { Observer } from 'gsap/dist/Observer';
 import Button from '@/components/Button';
 import PageEndBlob from '@/components/PageEndBlob';
 import Footer from '@/components/Footer';
@@ -15,10 +14,6 @@ import { useThemeStore } from '@/lib/stores/useThemeStore';
 import { SectionId } from '@/lib/themeConfig';
 import { useImmersions, useTrainings } from '@/sanity/lib/queries';
 
-// Register GSAP plugins
-if (typeof window !== 'undefined') {
-  gsap.registerPlugin(Observer);
-}
 
 // Immersions data
 const immersionsData: ImmersionData[] = [
@@ -140,8 +135,8 @@ const SECTIONS: { id: string; type: 'static' | 'carousel' | 'footer'; themeId: S
 function ImmersionsPageContent() {
   const containerRef = useRef<HTMLDivElement>(null);
   const sectionsRef = useRef<HTMLDivElement[]>([]);
-  const immersionsCarouselRef = useRef<HTMLDivElement>(null);
-  const trainingsCarouselRef = useRef<HTMLDivElement>(null);
+  const immersionsCarouselScrollRef = useRef<HTMLDivElement>(null);
+  const trainingsCarouselScrollRef = useRef<HTMLDivElement>(null);
   const searchParams = useSearchParams();
   
   const setTheme = useThemeStore((state) => state.setTheme);
@@ -195,28 +190,14 @@ function ImmersionsPageContent() {
   const [hasScrolledToTarget, setHasScrolledToTarget] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Carousel scroll positions (in pixels for desktop, card index for mobile snap)
-  const immersionsScrollX = useRef(0);
-  const trainingsScrollX = useRef(0);
-  const immersionsMaxScroll = useRef(0);
-  const trainingsMaxScroll = useRef(0);
-
-  // Mobile snap carousel state
-  const immersionsCardIndex = useRef(0);
-  const trainingsCardIndex = useRef(0);
-  const immersionsObserverRef = useRef<Observer | null>(null);
-  const trainingsObserverRef = useRef<Observer | null>(null);
-  const carouselAnimatingRef = useRef(false);
+  const currentSectionRef = useRef(currentSection);
 
   const lastScrollTimeRef = useRef<number>(0);
   const sectionScrollCooldown = 800; // ms cooldown for section changes
-  const carouselScrollCooldown = 400; // ms cooldown for carousel card changes
 
-  // Get header height based on screen size
-  const getHeaderHeight = useCallback(() => {
-    if (typeof window === 'undefined') return 90;
-    return window.innerWidth >= 1024 ? 148 : window.innerWidth >= 640 ? 108 : 90;
-  }, []);
+  /** Touch: once a horizontal drag is detected on a carousel strip, allow native overflow-x scroll */
+  const touchCarouselAxisRef = useRef<'h' | 'v' | null>(null);
+  const touchStartRef = useRef({ x: 0, y: 0 });
 
   // Check if mobile on mount and resize
   useEffect(() => {
@@ -241,26 +222,9 @@ function ImmersionsPageContent() {
     };
   }, [setTheme]);
 
-  // Calculate max scroll for carousels
-  useLayoutEffect(() => {
-    if (!isReady) return;
-    
-    const calculateMaxScroll = () => {
-      if (immersionsCarouselRef.current) {
-        const containerWidth = immersionsCarouselRef.current.parentElement?.clientWidth || window.innerWidth;
-        immersionsMaxScroll.current = Math.max(0, immersionsCarouselRef.current.scrollWidth - containerWidth);
-      }
-      if (trainingsCarouselRef.current) {
-        const containerWidth = trainingsCarouselRef.current.parentElement?.clientWidth || window.innerWidth;
-        trainingsMaxScroll.current = Math.max(0, trainingsCarouselRef.current.scrollWidth - containerWidth);
-      }
-    };
-
-    calculateMaxScroll();
-    window.addEventListener('resize', calculateMaxScroll);
-    
-    return () => window.removeEventListener('resize', calculateMaxScroll);
-  }, [isReady]);
+  useEffect(() => {
+    currentSectionRef.current = currentSection;
+  }, [currentSection]);
 
   // Handle card expanded change - lock/unlock scrolling
   const handleCardExpandedChange = useCallback((expanded: boolean) => {
@@ -271,7 +235,7 @@ function ImmersionsPageContent() {
   // Handle opening booking modal
   const handleOpenBookingModal = useCallback(() => {
     setIsModalOpen(true);
-  }, []);
+  }, [setIsModalOpen]);
 
   // Navigate to a specific section
   const goToSection = useCallback((index: number, direction: 'up' | 'down' = 'down') => {
@@ -297,42 +261,18 @@ function ImmersionsPageContent() {
       onComplete: () => {
         setCurrentSection(index);
         
-        // Reset carousel position when entering from the appropriate direction
+        // Reset native horizontal scroll when entering a carousel section
         const section = SECTIONS[index];
         if (section.type === 'carousel') {
           if (section.id === 'immersions-carousel') {
-            if (isMobile) {
-              // Mobile snap: reset to first or last card
-              const targetIndex = direction === 'down' ? 0 : activeImmersions.length - 1;
-              immersionsCardIndex.current = targetIndex;
-              const cardWidth = getCardWidth('immersions');
-              if (immersionsCarouselRef.current && cardWidth > 0) {
-                gsap.set(immersionsCarouselRef.current, { x: -targetIndex * cardWidth });
-              }
-            } else {
-              // Desktop: reset scroll position
-              const targetX = direction === 'down' ? 0 : immersionsMaxScroll.current;
-              immersionsScrollX.current = targetX;
-              if (immersionsCarouselRef.current) {
-                gsap.set(immersionsCarouselRef.current, { x: -targetX });
-              }
+            const el = immersionsCarouselScrollRef.current;
+            if (el) {
+              el.scrollLeft = direction === 'down' ? 0 : Math.max(0, el.scrollWidth - el.clientWidth);
             }
           } else if (section.id === 'trainings-carousel') {
-            if (isMobile) {
-              // Mobile snap: reset to first or last card
-              const targetIndex = direction === 'down' ? 0 : activeTrainings.length - 1;
-              trainingsCardIndex.current = targetIndex;
-              const cardWidth = getCardWidth('trainings');
-              if (trainingsCarouselRef.current && cardWidth > 0) {
-                gsap.set(trainingsCarouselRef.current, { x: -targetIndex * cardWidth });
-              }
-            } else {
-              // Desktop: reset scroll position
-              const targetX = direction === 'down' ? 0 : trainingsMaxScroll.current;
-              trainingsScrollX.current = targetX;
-              if (trainingsCarouselRef.current) {
-                gsap.set(trainingsCarouselRef.current, { x: -targetX });
-              }
+            const el = trainingsCarouselScrollRef.current;
+            if (el) {
+              el.scrollLeft = direction === 'down' ? 0 : Math.max(0, el.scrollWidth - el.clientWidth);
             }
           }
         }
@@ -341,7 +281,7 @@ function ImmersionsPageContent() {
         setIsAnimating(false);
       },
     });
-  }, [isAnimating, getHeaderHeight, setTheme]);
+  }, [isAnimating, setTheme]);
 
   // Handle scroll to target section from query parameter
   useEffect(() => {
@@ -369,162 +309,21 @@ function ImmersionsPageContent() {
     }
   }, [isReady, hasScrolledToTarget, searchParams, currentSection, goToSection]);
 
-  // Get card width for snap scrolling (mobile)
-  const getCardWidth = useCallback((carouselType: 'immersions' | 'trainings') => {
-    const carouselRef = carouselType === 'immersions' ? immersionsCarouselRef : trainingsCarouselRef;
-    if (!carouselRef.current) return 0;
-
-    const cards = carouselRef.current.querySelectorAll('.carousel-card');
-    if (cards.length === 0) return 0;
-
-    const firstCard = cards[0] as HTMLElement;
-    const gap = 16; // 4 * 4px = 16px on mobile (gap-4)
-    return firstCard.offsetWidth + gap;
-  }, []);
-
-  // Update carousel position smoothly
-  const updateCarouselPosition = useCallback((carouselType: 'immersions' | 'trainings', delta: number) => {
-    const carouselRef = carouselType === 'immersions' ? immersionsCarouselRef : trainingsCarouselRef;
-    const scrollXRef = carouselType === 'immersions' ? immersionsScrollX : trainingsScrollX;
-    const maxScroll = carouselType === 'immersions' ? immersionsMaxScroll.current : trainingsMaxScroll.current;
-
-    if (!carouselRef.current) return { atStart: false, atEnd: false };
-
-    // Calculate new position
-    const scrollSpeed = isMobile ? 1.5 : 2;
-    const newX = Math.max(0, Math.min(maxScroll, scrollXRef.current + delta * scrollSpeed));
-    scrollXRef.current = newX;
-
-    // Animate to new position
-    gsap.to(carouselRef.current, {
-      x: -newX,
-      duration: 0.3,
-      ease: 'power2.out',
-      overwrite: true,
-    });
-
-    return {
-      atStart: newX <= 0,
-      atEnd: newX >= maxScroll,
-    };
-  }, [isMobile]);
-
-  // Handle mobile snap carousel scrolling
-  const handleCarouselSnap = useCallback((carouselType: 'immersions' | 'trainings', direction: 'up' | 'down') => {
-    const now = Date.now();
-    if (now - lastScrollTimeRef.current < carouselScrollCooldown) return 'blocked';
-    if (carouselAnimatingRef.current) return 'blocked';
-
-    const carouselRef = carouselType === 'immersions' ? immersionsCarouselRef : trainingsCarouselRef;
-    const cardIndexRef = carouselType === 'immersions' ? immersionsCardIndex : trainingsCardIndex;
-    const itemCount = carouselType === 'immersions' ? activeImmersions.length : activeTrainings.length;
-
-    if (!carouselRef.current || itemCount === 0) return 'blocked';
-
-    const cardWidth = getCardWidth(carouselType);
-    if (cardWidth === 0) return 'blocked';
-
-    const currentIndex = cardIndexRef.current;
-
-    if (direction === 'down') {
-      // Scrolling down = move to next card
-      if (currentIndex < itemCount - 1) {
-        carouselAnimatingRef.current = true;
-        const newIndex = currentIndex + 1;
-        cardIndexRef.current = newIndex;
-
-        gsap.to(carouselRef.current, {
-          x: -newIndex * cardWidth,
-          duration: 0.5,
-          ease: 'power2.out',
-          onComplete: () => {
-            carouselAnimatingRef.current = false;
-            lastScrollTimeRef.current = Date.now();
-          },
-        });
-        return 'handled';
-      } else {
-        // At end, allow section transition
-        return 'edge-end';
-      }
-    } else {
-      // Scrolling up = move to previous card
-      if (currentIndex > 0) {
-        carouselAnimatingRef.current = true;
-        const newIndex = currentIndex - 1;
-        cardIndexRef.current = newIndex;
-
-        gsap.to(carouselRef.current, {
-          x: -newIndex * cardWidth,
-          duration: 0.5,
-          ease: 'power2.out',
-          onComplete: () => {
-            carouselAnimatingRef.current = false;
-            lastScrollTimeRef.current = Date.now();
-          },
-        });
-        return 'handled';
-      } else {
-        // At start, allow section transition
-        return 'edge-start';
-      }
-    }
-  }, [activeImmersions.length, activeTrainings.length, getCardWidth]);
-
-  // Handle scroll input
+  // Handle scroll input (vertical only — carousels use native horizontal overflow)
   const handleScroll = useCallback((deltaY: number) => {
     if (isCardExpanded || isAnimating) return;
+    if (deltaY === 0) return;
 
-    const section = SECTIONS[currentSection];
-    const isScrollingDown = deltaY > 0;
+    const now = Date.now();
+    if (now - lastScrollTimeRef.current < sectionScrollCooldown) return;
+    lastScrollTimeRef.current = now;
 
-    if (section.type === 'carousel') {
-      const carouselType = section.id === 'immersions-carousel' ? 'immersions' : 'trainings';
-
-      // Mobile: use snap scrolling
-      if (isMobile) {
-        const direction = isScrollingDown ? 'down' : 'up';
-        const result = handleCarouselSnap(carouselType, direction);
-
-        if (result === 'edge-end' && isScrollingDown) {
-          const now = Date.now();
-          if (now - lastScrollTimeRef.current > sectionScrollCooldown) {
-            lastScrollTimeRef.current = now;
-            goToSection(currentSection + 1, 'down');
-          }
-        } else if (result === 'edge-start' && !isScrollingDown) {
-          const now = Date.now();
-          if (now - lastScrollTimeRef.current > sectionScrollCooldown) {
-            lastScrollTimeRef.current = now;
-            goToSection(currentSection - 1, 'up');
-          }
-        }
-      } else {
-        // Desktop: use free scrolling
-        const { atStart, atEnd } = updateCarouselPosition(carouselType, deltaY);
-
-        const now = Date.now();
-        const canChangeSection = now - lastScrollTimeRef.current > sectionScrollCooldown;
-
-        if (isScrollingDown && atEnd && canChangeSection) {
-          goToSection(currentSection + 1, 'down');
-        } else if (!isScrollingDown && atStart && canChangeSection) {
-          goToSection(currentSection - 1, 'up');
-        }
-      }
+    if (deltaY > 0) {
+      goToSection(currentSection + 1, 'down');
     } else {
-      // Static section - change sections with cooldown
-      const now = Date.now();
-      if (now - lastScrollTimeRef.current < sectionScrollCooldown) return;
-      lastScrollTimeRef.current = now;
-
-      if (isScrollingDown) {
-        goToSection(currentSection + 1, 'down');
-      } else {
-        goToSection(currentSection - 1, 'up');
-      }
+      goToSection(currentSection - 1, 'up');
     }
-  }, [isCardExpanded, isAnimating, currentSection, isMobile, handleCarouselSnap, updateCarouselPosition, goToSection]);
+  }, [isCardExpanded, isAnimating, currentSection, goToSection]);
 
   // Setup GSAP Observer for scroll/touch handling
   useLayoutEffect(() => {
@@ -534,38 +333,91 @@ function ImmersionsPageContent() {
     // Lock scroll for this page (GSAP takes over)
     document.body.style.overflow = 'hidden';
 
-    // Wheel event handler for continuous scrolling
     const handleWheel = (e: WheelEvent) => {
+      if (isCardExpanded) return;
       e.preventDefault();
-      if (!isCardExpanded) {
-        handleScroll(e.deltaY);
+
+      const idx = currentSectionRef.current;
+      const section = SECTIONS[idx];
+      if (section?.type === 'carousel' && Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+        const el =
+          section.id === 'immersions-carousel'
+            ? immersionsCarouselScrollRef.current
+            : trainingsCarouselScrollRef.current;
+        if (el) {
+          el.scrollLeft += e.deltaX;
+        }
+        return;
       }
+
+      handleScroll(e.deltaY);
     };
 
-    // Touch event handlers
+    // Touch: vertical pans drive section changes; horizontal pans on carousel strips use native scroll
     let lastTouchY = 0;
     const handleTouchStart = (e: TouchEvent) => {
-      lastTouchY = e.touches[0].clientY;
+      const t = e.touches[0];
+      lastTouchY = t.clientY;
+      touchStartRef.current = { x: t.clientX, y: t.clientY };
+      touchCarouselAxisRef.current = null;
     };
+
+    const getActiveCarouselScrollEl = (): HTMLElement | null => {
+      const idx = currentSectionRef.current;
+      const section = SECTIONS[idx];
+      if (section?.type !== 'carousel') return null;
+      return section.id === 'immersions-carousel'
+        ? immersionsCarouselScrollRef.current
+        : trainingsCarouselScrollRef.current;
+    };
+
     const handleTouchMove = (e: TouchEvent) => {
-      e.preventDefault();
-      if (!isCardExpanded) {
-        const currentY = e.touches[0].clientY;
-        const deltaY = lastTouchY - currentY;
-        lastTouchY = currentY;
-        handleScroll(deltaY * 2); // Multiply for sensitivity
+      if (isCardExpanded) return;
+
+      const touch = e.touches[0];
+      const scrollEl = getActiveCarouselScrollEl();
+      const target = e.target as Node | null;
+
+      if (scrollEl && target && scrollEl.contains(target)) {
+        const dx = touch.clientX - touchStartRef.current.x;
+        const dy = touch.clientY - touchStartRef.current.y;
+
+        if (touchCarouselAxisRef.current === null) {
+          if (Math.abs(dx) < 10 && Math.abs(dy) < 10) {
+            return;
+          }
+          touchCarouselAxisRef.current = Math.abs(dx) > Math.abs(dy) ? 'h' : 'v';
+        }
+
+        if (touchCarouselAxisRef.current === 'h') {
+          return;
+        }
       }
+
+      e.preventDefault();
+      const currentY = touch.clientY;
+      const deltaY = lastTouchY - currentY;
+      lastTouchY = currentY;
+      handleScroll(deltaY * 2);
+    };
+
+    const handleTouchEnd = () => {
+      touchCarouselAxisRef.current = null;
     };
 
     window.addEventListener('wheel', handleWheel, { passive: false });
     window.addEventListener('touchstart', handleTouchStart, { passive: true });
     window.addEventListener('touchmove', handleTouchMove, { passive: false });
+    window.addEventListener('touchend', handleTouchEnd, { passive: true });
+    window.addEventListener('touchcancel', handleTouchEnd, { passive: true });
 
     return () => {
       document.body.style.overflow = '';
       window.removeEventListener('wheel', handleWheel);
       window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
+      window.removeEventListener('touchcancel', handleTouchEnd);
     };
   }, [isReady, isCardExpanded, handleScroll]);
 
@@ -787,16 +639,17 @@ function ImmersionsPageContent() {
               </div>
             </div>
 
-            {/* Carousel */}
-            <div className="flex-1 flex items-center overflow-hidden">
+            {/* Carousel — native horizontal scroll; vertical wheel/touch changes section */}
+            <div className="flex-1 flex min-h-0 items-stretch">
               <div
-                ref={immersionsCarouselRef}
-                className="flex gap-4 sm:gap-5 lg:gap-6 will-change-transform h-full pl-4 sm:pl-6 lg:pl-8 pr-4 sm:pr-6 lg:pr-8 py-4"
+                ref={immersionsCarouselScrollRef}
+                className="no-scrollbar min-h-0 w-full flex-1 snap-x snap-mandatory overflow-x-auto overflow-y-hidden overscroll-x-contain py-4 pl-4 pr-4 touch-pan-x sm:pl-6 sm:pr-6 lg:pl-8 lg:pr-8"
               >
+                <div className="flex h-full min-h-0 gap-4 sm:gap-5 lg:gap-6">
                 {activeImmersions.map((immersion) => (
                   <div
                     key={immersion._id || immersion.id}
-                    className="carousel-card shrink-0 h-full"
+                    className="carousel-card shrink-0 snap-center h-full"
                     style={{ width: isMobile ? 'calc(100vw - 32px)' : desktopCardWidth }}
                   >
                     <ImmersionCard
@@ -807,6 +660,7 @@ function ImmersionsPageContent() {
                     />
                   </div>
                 ))}
+                </div>
               </div>
             </div>
           </div>
@@ -955,17 +809,18 @@ function ImmersionsPageContent() {
               </div>
             </div>
 
-            {/* Carousel */}
-            <div className="flex-1 flex items-center overflow-hidden">
+            {/* Carousel — native horizontal scroll; vertical wheel/touch changes section */}
+            <div className="flex-1 flex min-h-0 items-stretch">
               <div
-                ref={trainingsCarouselRef}
-                className="flex gap-4 sm:gap-5 lg:gap-6 will-change-transform h-full pl-4 sm:pl-6 lg:pl-8 pr-4 sm:pr-6 lg:pr-8 py-4"
+                ref={trainingsCarouselScrollRef}
+                className="no-scrollbar min-h-0 w-full flex-1 snap-x snap-mandatory overflow-x-auto overflow-y-hidden overscroll-x-contain py-4 pl-4 pr-4 touch-pan-x sm:pl-6 sm:pr-6 lg:pl-8 lg:pr-8"
               >
+                <div className="flex h-full min-h-0 gap-4 sm:gap-5 lg:gap-6">
                 {activeTrainings.map((training) => (
                   <div
                     key={training._id || training.id}
-                    className="carousel-card shrink-0 h-full"
-                    style={{ width: isMobile ? 'calc(100vw - 32px)' : 'auto' }}
+                    className="carousel-card shrink-0 snap-center h-full"
+                    style={{ width: isMobile ? 'calc(100vw - 32px)' : desktopCardWidth }}
                   >
                     <TrainingCard
                       data={training}
@@ -975,6 +830,7 @@ function ImmersionsPageContent() {
                     />
                   </div>
                 ))}
+                </div>
               </div>
             </div>
           </div>

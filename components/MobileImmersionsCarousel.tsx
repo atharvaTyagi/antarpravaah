@@ -1,13 +1,6 @@
 'use client';
 
-import React, { useLayoutEffect, useRef, useState, useEffect, useCallback, ReactNode } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-// Register GSAP plugins
-if (typeof window !== 'undefined') {
-  gsap.registerPlugin(ScrollTrigger);
-}
+import React, { useEffect, useRef, useState, useCallback, ReactNode } from 'react';
 
 // Arrow icons for carousel navigation
 function ArrowLeft({ className }: { className?: string }) {
@@ -67,18 +60,12 @@ interface MobileImmersionsCarouselProps {
 export default function MobileImmersionsCarousel({
   title,
   children,
-  id,
   onCardExpandedChange,
 }: MobileImmersionsCarouselProps) {
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const carouselRef = useRef<HTMLDivElement | null>(null);
-  const [isReady, setIsReady] = useState(false);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isCardExpanded, setIsCardExpanded] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const scrollTriggerRef = useRef<ScrollTrigger | null>(null);
 
-  // Check if mobile on mount and resize
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
@@ -92,124 +79,52 @@ export default function MobileImmersionsCarousel({
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    if (children.length === 0) return;
-    
-    const readyTimeout = setTimeout(() => {
-      setIsReady(true);
-    }, 100);
+  const handleCardExpandedChange = useCallback(
+    (expanded: boolean) => {
+      setIsCardExpanded(expanded);
+      onCardExpandedChange?.(expanded);
 
-    return () => {
-      clearTimeout(readyTimeout);
-    };
+      if (expanded) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = '';
+      }
+    },
+    [onCardExpandedChange]
+  );
+
+  const scrollByCard = useCallback((direction: -1 | 1) => {
+    const el = scrollRef.current;
+    if (!el || children.length === 0) return;
+
+    const card = el.querySelector('.carousel-card') as HTMLElement | null;
+    const gap = 16;
+    const step = card ? card.offsetWidth + gap : el.clientWidth * 0.85;
+
+    el.scrollBy({ left: direction * step, behavior: 'smooth' });
   }, [children.length]);
 
-  // Handle card expanded change - lock/unlock scroll
-  const handleCardExpandedChange = useCallback((expanded: boolean) => {
-    setIsCardExpanded(expanded);
-    onCardExpandedChange?.(expanded);
-    
-    if (expanded) {
-      // Lock scroll when card is expanded
-      document.body.style.overflow = 'hidden';
-    } else {
-      // Restore scroll when card is collapsed
-      document.body.style.overflow = '';
-    }
-  }, [onCardExpandedChange]);
+  const carouselRow = (
+    <div className="flex h-full min-h-0 gap-4">
+      {children.map((child, index) => (
+        <div
+          key={index}
+          className="carousel-card shrink-0 snap-center"
+          style={{
+            width: isMobile ? 'calc(100vw - 32px)' : 'calc(60vw - 64px)',
+          }}
+        >
+          {React.isValidElement(child)
+            ? React.cloneElement(
+                child as React.ReactElement<{ onExpandedChange?: (expanded: boolean) => void }>,
+                { onExpandedChange: handleCardExpandedChange }
+              )
+            : child}
+        </div>
+      ))}
+    </div>
+  );
 
-  // Setup horizontal scroll animation with snap to each card (mobile only)
-  useLayoutEffect(() => {
-    if (typeof window === 'undefined') return;
-    if (!isReady || !isMobile) return;
-    if (children.length === 0) return;
-
-    const container = containerRef.current;
-    const carousel = carouselRef.current;
-    if (!container || !carousel) return;
-
-    // Wait for layout to settle
-    const setupTimeout = setTimeout(() => {
-      const cards = carousel.querySelectorAll('.carousel-card');
-      const cardCount = cards.length;
-      
-      if (cardCount === 0) return;
-      
-      // Calculate total horizontal scroll distance
-      const scrollWidth = carousel.scrollWidth - window.innerWidth + 40;
-
-      // Create timeline for horizontal scroll
-      const tl = gsap.timeline();
-      
-      tl.to(carousel, {
-        x: -scrollWidth,
-        ease: 'none',
-      });
-
-      // Create snap points for each card (equally distributed)
-      const snapPoints = Array.from({ length: cardCount }, (_, i) => i / (cardCount - 1));
-
-      // Get header height for proper positioning
-      const headerHeight = 90;
-      
-      // Create horizontal scroll animation with snap
-      const st = ScrollTrigger.create({
-        id: `${id}-CAROUSEL`,
-        trigger: container,
-        pin: true,
-        pinSpacing: true,
-        scrub: 0.5,
-        animation: tl,
-        start: `top top+=${headerHeight}`,
-        end: () => `+=${scrollWidth}`,
-        invalidateOnRefresh: true,
-        anticipatePin: 1,
-        snap: {
-          snapTo: snapPoints,
-          duration: { min: 0.2, max: 0.4 },
-          delay: 0.1,
-          ease: 'power2.inOut',
-        },
-        onUpdate: (self) => {
-          // Don't update if card is expanded (prevents scroll while reading)
-          if (isCardExpanded) return;
-          
-          // Update active index based on progress
-          const progress = self.progress;
-          const newIndex = Math.min(
-            Math.floor(progress * cardCount),
-            cardCount - 1
-          );
-          if (newIndex !== activeIndex) {
-            setActiveIndex(newIndex);
-          }
-        },
-      });
-
-      scrollTriggerRef.current = st;
-
-      // Refresh ScrollTrigger after setup
-      ScrollTrigger.refresh();
-
-      return () => {
-        st.kill();
-        tl.kill();
-      };
-    }, 300);
-
-    return () => {
-      clearTimeout(setupTimeout);
-      // Clean up ScrollTriggers for this component
-      ScrollTrigger.getAll().forEach((st) => {
-        if (st.vars.id === `${id}-CAROUSEL`) {
-          st.kill();
-        }
-      });
-    };
-  }, [isReady, isMobile, children.length, id, isCardExpanded, activeIndex]);
-
-  // Desktop layout - simple horizontal scroll
   if (!isMobile) {
     return (
       <div className="flex flex-col gap-6 sm:gap-8">
@@ -222,75 +137,74 @@ export default function MobileImmersionsCarousel({
           </div>
         </div>
 
-        <div className="no-scrollbar flex gap-4 sm:gap-5 overflow-x-auto pb-4 px-4 sm:px-6 lg:px-16">
-          {children}
+        <div className="no-scrollbar flex snap-x snap-mandatory gap-4 sm:gap-5 overflow-x-auto pb-4 px-4 sm:px-6 lg:px-16 touch-pan-x overscroll-x-contain">
+          {children.map((child, index) => (
+            <div
+              key={index}
+              className="shrink-0 snap-center"
+              style={{ width: 'calc(60vw - 64px)' }}
+            >
+              {React.isValidElement(child)
+                ? React.cloneElement(
+                    child as React.ReactElement<{ onExpandedChange?: (expanded: boolean) => void }>,
+                    { onExpandedChange: handleCardExpandedChange }
+                  )
+                : child}
+            </div>
+          ))}
         </div>
       </div>
     );
   }
 
-  // Mobile layout - pinned horizontal scroll carousel
   return (
-    <div 
-      ref={containerRef}
-      className="relative w-full flex flex-col justify-start overflow-hidden"
-      style={{ 
+    <div
+      className="relative flex w-full flex-col justify-start overflow-hidden"
+      style={{
         minHeight: 'calc(100vh - 90px)',
         height: 'calc(100vh - 90px)',
       }}
     >
-      {/* Header with title and nav arrows */}
-      <div className="flex items-center justify-between px-4 pt-6 pb-4 shrink-0">
+      <div className="flex shrink-0 items-center justify-between px-4 pb-4 pt-6">
         <div
-          className="text-[24px] leading-normal text-[#d58761] flex-1"
+          className="flex-1 text-[24px] leading-normal text-[#d58761]"
           style={{ fontFamily: 'var(--font-saphira), serif' }}
         >
           {title}
         </div>
-        
-        {/* Navigation arrows */}
+
         <div className="flex items-center gap-0">
-          <button 
-            className="p-3 text-[#d58761] opacity-60"
-            aria-label="Previous"
+          <button
+            type="button"
+            className="p-3 text-[#d58761] opacity-60 disabled:opacity-30"
+            aria-label="Previous card"
+            disabled={isCardExpanded}
+            onClick={() => scrollByCard(-1)}
           >
-            <ArrowLeft className="w-7 h-5 rotate-180" />
+            <ArrowLeft className="h-5 w-7 rotate-180" />
           </button>
-          <button 
-            className="p-3 text-[#d58761]"
-            aria-label="Next"
+          <button
+            type="button"
+            className="p-3 text-[#d58761] disabled:opacity-30"
+            aria-label="Next card"
+            disabled={isCardExpanded}
+            onClick={() => scrollByCard(1)}
           >
-            <ArrowRight className="w-7 h-5" />
+            <ArrowRight className="h-5 w-7" />
           </button>
         </div>
       </div>
 
-      {/* Carousel Track */}
-      <div className="flex-1 flex items-center w-full px-4 overflow-hidden">
+      <div className="flex min-h-0 w-full flex-1 items-stretch px-4">
         <div
-          ref={carouselRef}
-          className="flex gap-4 will-change-transform"
+          ref={scrollRef}
+          className="no-scrollbar min-h-0 w-full flex-1 snap-x snap-mandatory overflow-x-auto overflow-y-hidden overscroll-x-contain touch-pan-x"
         >
-          {children.map((child, index) => (
-            <div
-              key={index}
-              className="carousel-card shrink-0"
-              style={{
-                width: 'calc(100vw - 32px)',
-              }}
-            >
-              {/* Clone child and inject onExpandedChange prop */}
-              {React.isValidElement(child)
-                ? React.cloneElement(child as React.ReactElement<{ onExpandedChange?: (expanded: boolean) => void }>, { onExpandedChange: handleCardExpandedChange })
-                : child
-              }
-            </div>
-          ))}
+          {carouselRow}
         </div>
       </div>
 
-      {/* Bottom padding */}
-      <div className="pb-4 shrink-0" />
+      <div className="shrink-0 pb-4" />
     </div>
   );
 }
