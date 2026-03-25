@@ -231,108 +231,108 @@ export function ImmersionCard({ data, isMobile = false, onExpandedChange, onBook
     };
   }, [isMobile, isExpanded]);
 
-  // Desktop / tablet layout (carousel fills height; CTA stays visible, image uses fixed aspect ratio)
+  // Desktop / tablet: two columns — left: title, pill, meta, image; right: About, What To Expect, CTA
   if (!isMobile) {
     return (
-      <div className="flex h-full max-h-full min-h-0 w-full min-w-0 flex-col rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d58761] p-3 sm:p-4">
-        <div className="no-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain">
-          <div className="flex flex-col gap-3 sm:gap-4 md:flex-row md:items-start">
-            {/* Left column: Info box + Image (image never flex-stretches into the text column) */}
-            <div className="flex min-w-0 flex-1 flex-col gap-3 sm:gap-4 md:max-w-[48%] lg:max-w-none">
-              <div className="flex flex-col gap-3 rounded-lg border border-[#6a3f33] p-3">
-                <div className="flex flex-col gap-2">
-                  <h4
-                    className="text-[22px] sm:text-[26px] lg:text-[32px] leading-tight text-[#6a3f33]"
-                    style={{ fontFamily: 'var(--font-saphira), serif' }}
-                  >
-                    {data.title}
-                  </h4>
-                  <span
-                    className="inline-flex w-fit items-center justify-center rounded-full bg-[#6a3f33] px-2 py-0.5 text-[10px] sm:text-[11px] lg:text-[12px] text-[#d58761]"
-                    style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
-                  >
-                    {data.type === 'immersion' ? 'Immersion' : 'Workshop'}
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3 text-[#6a3f33]" style={{ lineHeight: '20px' }}>
-                  <div className="flex flex-col gap-0.5">
-                    <p className="text-[13px] sm:text-[14px] lg:text-[15px]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}>
-                      Duration
-                    </p>
-                    <p className="text-[13px] sm:text-[14px] lg:text-[15px] whitespace-pre-line" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
-                      {data.duration}
-                    </p>
-                  </div>
-                  <div className="flex flex-col gap-0.5">
-                    <p className="text-[13px] sm:text-[14px] lg:text-[15px]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}>
-                      Language
-                    </p>
-                    <p className="text-[13px] sm:text-[14px] lg:text-[15px] whitespace-pre-line" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
-                      {data.language}
-                    </p>
-                  </div>
-                  <div className="flex flex-col gap-0.5">
-                    <p className="text-[13px] sm:text-[14px] lg:text-[15px]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}>
-                      Prerequisite
-                    </p>
-                    <p className="text-[13px] sm:text-[14px] lg:text-[15px] whitespace-pre-line" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
-                      {data.prerequisite}
-                    </p>
-                  </div>
-                  <div className="flex flex-col gap-0.5">
-                    <p className="text-[13px] sm:text-[14px] lg:text-[15px]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}>
-                      Format
-                    </p>
-                    <p className="text-[13px] sm:text-[14px] lg:text-[15px]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
-                      {data.format}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {(data.imageUrl || data.image) && (
-                <div className="relative w-full shrink-0 overflow-hidden rounded-2xl aspect-[5/3] max-h-[min(280px,32vh)]">
-                  <Image
-                    src={data.imageUrl || data.image || ''}
-                    alt={data.title}
-                    fill
-                    sizes="(max-width: 900px) 85vw, (max-width: 1200px) 40vw, 32vw"
-                    quality={85}
-                    loading="lazy"
-                    className="object-cover"
-                  />
-                </div>
-              )}
+      <div className="flex h-full max-h-full min-h-0 w-full min-w-0 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d58761] p-3 sm:p-4 gap-3 md:gap-4 lg:gap-5">
+        {/* Left column: title, pill, meta, image */}
+        <div className="flex min-h-0 min-w-0 shrink-0 flex-col gap-3 md:w-[46%] lg:w-[44%]">
+          {/* Info box */}
+          <div className="flex flex-col gap-3 rounded-lg border border-[#6a3f33] p-3">
+            <div className="flex flex-col gap-2">
+              <h4
+                className="text-[22px] sm:text-[26px] lg:text-[32px] leading-tight text-[#6a3f33]"
+                style={{ fontFamily: 'var(--font-saphira), serif' }}
+              >
+                {data.title}
+              </h4>
+              <span
+                className="inline-flex w-fit items-center justify-center rounded-full bg-[#6a3f33] px-2 py-0.5 text-[10px] sm:text-[11px] lg:text-[12px] text-[#d58761]"
+                style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
+              >
+                {data.type === 'immersion' ? 'Immersion' : 'Workshop'}
+              </span>
             </div>
 
-            {/* Right column: About and What To Expect */}
-            <div className="flex min-w-0 flex-1 flex-col gap-3 text-[#6a3f33] md:pt-0" style={{ lineHeight: '20px' }}>
-              <div className="flex flex-col gap-1.5">
-                <p className="text-[13px] sm:text-[14px] lg:text-[15px]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
-                  About
-                </p>
+            <div className="grid grid-cols-2 gap-3 text-[#6a3f33]" style={{ lineHeight: '20px' }}>
+              <div className="flex flex-col gap-0.5">
                 <p className="text-[13px] sm:text-[14px] lg:text-[15px]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}>
-                  {data.about}
+                  Duration
+                </p>
+                <p className="text-[13px] sm:text-[14px] lg:text-[15px] whitespace-pre-line" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                  {data.duration}
                 </p>
               </div>
-
-              <div className="flex flex-col gap-1.5">
-                <p className="text-[13px] sm:text-[14px] lg:text-[15px]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
-                  What To Expect
+              <div className="flex flex-col gap-0.5">
+                <p className="text-[13px] sm:text-[14px] lg:text-[15px]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}>
+                  Language
                 </p>
-                <ul className="ml-4 list-disc text-[13px] sm:text-[14px] lg:text-[15px]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}>
-                  {data.whatToExpect.map((item, idx) => (
-                    <li key={idx}>{item}</li>
-                  ))}
-                </ul>
+                <p className="text-[13px] sm:text-[14px] lg:text-[15px] whitespace-pre-line" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                  {data.language}
+                </p>
+              </div>
+              <div className="flex flex-col gap-0.5">
+                <p className="text-[13px] sm:text-[14px] lg:text-[15px]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}>
+                  Prerequisite
+                </p>
+                <p className="text-[13px] sm:text-[14px] lg:text-[15px] whitespace-pre-line" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                  {data.prerequisite}
+                </p>
+              </div>
+              <div className="flex flex-col gap-0.5">
+                <p className="text-[13px] sm:text-[14px] lg:text-[15px]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}>
+                  Format
+                </p>
+                <p className="text-[13px] sm:text-[14px] lg:text-[15px]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                  {data.format}
+                </p>
               </div>
             </div>
           </div>
+
+          {/* Image fills remaining left-column space */}
+          {(data.imageUrl || data.image) && (
+            <div className="relative min-h-0 flex-1 overflow-hidden rounded-2xl">
+              <Image
+                src={data.imageUrl || data.image || ''}
+                alt={data.title}
+                fill
+                sizes="(max-width: 900px) 46vw, (max-width: 1200px) 40vw, 32vw"
+                quality={85}
+                loading="lazy"
+                className="object-cover object-center"
+              />
+            </div>
+          )}
         </div>
 
-        <div className="flex shrink-0 justify-end border-t border-[#6a3f33]/20 pt-3 sm:pt-4">
-          <CtaButton text={data.ctaText} onClick={onBookingClick} singleLine />
+        {/* Right column: About, What To Expect, CTA */}
+        <div className="flex min-w-0 flex-1 flex-col justify-between gap-3 text-[#6a3f33]" style={{ lineHeight: '20px' }}>
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-1.5">
+              <p className="text-[13px] sm:text-[14px] lg:text-[15px]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                About
+              </p>
+              <p className="text-[13px] sm:text-[14px] lg:text-[15px]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}>
+                {data.about}
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <p className="text-[13px] sm:text-[14px] lg:text-[15px]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                What To Expect
+              </p>
+              <ul className="ml-4 list-disc text-[13px] sm:text-[14px] lg:text-[15px]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}>
+                {data.whatToExpect.map((item, idx) => (
+                  <li key={idx}>{item}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <div className="flex justify-end">
+            <CtaButton text={data.ctaText} onClick={onBookingClick} singleLine />
+          </div>
         </div>
       </div>
     );
@@ -463,7 +463,7 @@ export function ImmersionCard({ data, isMobile = false, onExpandedChange, onBook
                   sizes="(max-width: 768px) 100vw, 90vw"
                   quality={85}
                   loading="lazy"
-                  className="object-cover"
+                  className="object-contain object-left object-bottom"
                 />
               </div>
             )}
@@ -595,7 +595,7 @@ export function TrainingCard({ data, isMobile = false, onExpandedChange, onBooki
           </div>
         </div>
 
-        <div className="flex shrink-0 justify-center border-t border-[#6a3f33]/20 pt-4">
+        <div className="flex shrink-0 justify-center">
           <CtaButton text={data.ctaText} onClick={onBookingClick} singleLine />
         </div>
       </div>

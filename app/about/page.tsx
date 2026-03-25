@@ -664,61 +664,61 @@ export default function AboutPage() {
 
                 <div className="relative z-10 w-full h-full flex items-center justify-center">
                   {/* Upper-left image */}
-                  <div 
+                  <div
                     ref={(el) => { imageRefs.current[0] = el; }}
-                    className="absolute top-[18%] left-[16%] sm:top-[20%] sm:left-[20%] lg:top-[18%] lg:left-[22%]"
+                    className="absolute top-[18%] left-[16%] sm:top-[20%] sm:left-[20%] lg:top-[10%] lg:left-[20%]"
                   >
-                    <div className="h-[150px] w-[143px] lg:h-[200px] lg:w-[191px] overflow-hidden rounded-full">
+                    <div className="h-[150px] w-[143px] lg:h-[170px] lg:w-[162px] overflow-hidden rounded-full">
                       <img src={getCloudinaryUrl('antarpravaah/about/namita_one')} alt="Namita" className="h-full w-full object-cover" />
                     </div>
                   </div>
 
                   {/* Upper-right image */}
-                  <div 
+                  <div
                     ref={(el) => { imageRefs.current[1] = el; }}
-                    className="absolute top-[16%] right-[18%] sm:top-[18%] sm:right-[22%] lg:top-[16%] lg:right-[24%]"
+                    className="absolute top-[16%] right-[18%] sm:top-[18%] sm:right-[22%] lg:top-[10%] lg:right-[20%]"
                   >
-                    <div className="h-[136px] w-[130px] lg:h-[180px] lg:w-[172px] overflow-hidden rounded-full">
+                    <div className="h-[136px] w-[130px] lg:h-[155px] lg:w-[148px] overflow-hidden rounded-full">
                       <img src={getCloudinaryUrl('antarpravaah/about/namita_two')} alt="Namita" className="h-full w-full object-cover" />
                     </div>
                   </div>
 
                   {/* Left-middle image */}
-                  <div 
+                  <div
                     ref={(el) => { imageRefs.current[2] = el; }}
-                    className="absolute top-[38%] left-[8%] sm:top-[40%] sm:left-[10%] lg:top-[38%] lg:left-[12%]"
+                    className="absolute top-[38%] left-[8%] sm:top-[40%] sm:left-[10%] lg:top-[50%] lg:-translate-y-1/2 lg:left-[4%]"
                   >
-                    <div className="h-[164px] w-[157px] lg:h-[218px] lg:w-[208px] overflow-hidden rounded-full">
+                    <div className="h-[164px] w-[157px] lg:h-[188px] lg:w-[180px] overflow-hidden rounded-full">
                       <img src={getCloudinaryUrl('antarpravaah/about/namita_three')} alt="Namita" className="h-full w-full object-cover" />
                     </div>
                   </div>
 
                   {/* Right-middle image */}
-                  <div 
+                  <div
                     ref={(el) => { imageRefs.current[3] = el; }}
-                    className="absolute top-[36%] right-[8%] sm:top-[38%] sm:right-[10%] lg:top-[36%] lg:right-[12%]"
+                    className="absolute top-[36%] right-[8%] sm:top-[38%] sm:right-[10%] lg:top-[50%] lg:-translate-y-1/2 lg:right-[4%]"
                   >
-                    <div className="h-[150px] w-[143px] lg:h-[200px] lg:w-[191px] overflow-hidden rounded-full">
+                    <div className="h-[150px] w-[143px] lg:h-[170px] lg:w-[162px] overflow-hidden rounded-full">
                       <img src={getCloudinaryUrl('antarpravaah/about/namita_four')} alt="Namita" className="h-full w-full object-cover" />
                     </div>
                   </div>
 
                   {/* Lower-left image */}
-                  <div 
+                  <div
                     ref={(el) => { imageRefs.current[4] = el; }}
-                    className="absolute bottom-[18%] left-[18%] sm:bottom-[20%] sm:left-[22%] lg:bottom-[18%] lg:left-[24%]"
+                    className="absolute bottom-[18%] left-[18%] sm:bottom-[20%] sm:left-[22%] lg:bottom-[10%] lg:left-[20%]"
                   >
-                    <div className="h-[143px] w-[136px] lg:h-[191px] lg:w-[182px] overflow-hidden rounded-full">
+                    <div className="h-[143px] w-[136px] lg:h-[163px] lg:w-[156px] overflow-hidden rounded-full">
                       <img src={getCloudinaryUrl('antarpravaah/about/namita_five')} alt="Namita" className="h-full w-full object-cover" />
                     </div>
                   </div>
 
                   {/* Lower-right image */}
-                  <div 
+                  <div
                     ref={(el) => { imageRefs.current[5] = el; }}
-                    className="absolute bottom-[16%] right-[16%] sm:bottom-[18%] sm:right-[20%] lg:bottom-[16%] lg:right-[22%]"
+                    className="absolute bottom-[16%] right-[16%] sm:bottom-[18%] sm:right-[20%] lg:bottom-[10%] lg:right-[20%]"
                   >
-                    <div className="h-[157px] w-[150px] lg:h-[209px] lg:w-[200px] overflow-hidden rounded-full">
+                    <div className="h-[157px] w-[150px] lg:h-[179px] lg:w-[171px] overflow-hidden rounded-full">
                       <img src={getCloudinaryUrl('antarpravaah/about/namita_six')} alt="Namita" className="h-full w-full object-cover" />
                     </div>
                   </div>
