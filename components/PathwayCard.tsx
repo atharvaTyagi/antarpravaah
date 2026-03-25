@@ -205,9 +205,6 @@ export default function PathwayCard({ pathway, isMobile = false, onExpandedChang
     const minDelta = 6;
 
     const handleWheel = (e: WheelEvent) => {
-      // Keep wheel ownership on the scrollable card content.
-      e.stopPropagation();
-
       if (Math.abs(e.deltaY) < minDelta) return;
 
       const { scrollTop, scrollHeight, clientHeight } = container;
@@ -218,16 +215,21 @@ export default function PathwayCard({ pathway, isMobile = false, onExpandedChang
 
       if (isAtBottom && isScrollingDown) {
         e.preventDefault();
+        e.stopPropagation();
         const now = Date.now();
         if (now - lastEdgeTimeRef.current < edgeCooldown) return;
         lastEdgeTimeRef.current = now;
         onEdgeReached('end');
       } else if (isAtTop && isScrollingUp) {
         e.preventDefault();
+        e.stopPropagation();
         const now = Date.now();
         if (now - lastEdgeTimeRef.current < edgeCooldown) return;
         lastEdgeTimeRef.current = now;
         onEdgeReached('start');
+      } else {
+        // Mid-scroll: keep ownership so the page doesn't change section
+        e.stopPropagation();
       }
     };
 
@@ -235,11 +237,50 @@ export default function PathwayCard({ pathway, isMobile = false, onExpandedChang
     return () => container.removeEventListener('wheel', handleWheel);
   }, [isMobile, onEdgeReached]);
 
+  // Desktop: forward wheel events from the outer card (background/image area) to the inner scroll container
+  const handleOuterWheel = useCallback((e: React.WheelEvent) => {
+    const el = desktopScrollRef.current;
+    if (!el) return;
+    // Only handle events that originated outside the inner scroll container
+    if (el.contains(e.target as Node)) return;
+    const atTop = el.scrollTop <= 0;
+    const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1;
+    if ((e.deltaY > 0 && !atBottom) || (e.deltaY < 0 && !atTop)) {
+      e.stopPropagation();
+      el.scrollTop += e.deltaY;
+    }
+  }, []);
+
+  const outerTouchStartRef = useRef<{ y: number } | null>(null);
+
+  const handleOuterTouchStart = useCallback((e: React.TouchEvent) => {
+    const el = desktopScrollRef.current;
+    if (el && el.contains(e.target as Node)) return;
+    outerTouchStartRef.current = { y: e.touches[0].clientY };
+  }, []);
+
+  const handleOuterTouchMove = useCallback((e: React.TouchEvent) => {
+    const el = desktopScrollRef.current;
+    if (!el || !outerTouchStartRef.current) return;
+    if (el.contains(e.target as Node)) return;
+    const deltaY = outerTouchStartRef.current.y - e.touches[0].clientY;
+    outerTouchStartRef.current = { y: e.touches[0].clientY };
+    const atTop = el.scrollTop <= 0;
+    const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1;
+    if ((deltaY > 0 && !atBottom) || (deltaY < 0 && !atTop)) {
+      e.stopPropagation();
+      el.scrollTop += deltaY;
+    }
+  }, []);
+
   // Desktop/tablet layout - full content visible
   if (!isMobile) {
     return (
       <div
         className="relative overflow-hidden ios-radius-fix rounded-[12px] sm:rounded-[16px] lg:rounded-[24px] border-[4px] sm:border-[8px] lg:border-[12px] border-[#9ac1bf] w-full h-full"
+        onWheel={handleOuterWheel}
+        onTouchStart={handleOuterTouchStart}
+        onTouchMove={handleOuterTouchMove}
       >
         {/* Background image */}
         <div className="absolute inset-0">

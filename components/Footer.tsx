@@ -46,8 +46,8 @@ export default function Footer() {
             <QuickLink href="/about" label="About Namita" accentColor={footerText} bgColor={footerBg} />
             <QuickLink href="/approach" label="Approach" accentColor={footerText} bgColor={footerBg} />
             <QuickLink href="/therapies" label="Therapies" accentColor={footerText} bgColor={footerBg} />
-            <QuickLink href="/immersions" label="Immersions" accentColor={footerText} bgColor={footerBg} />
-            <QuickLink href="/trainings" label="Trainings" accentColor={footerText} bgColor={footerBg} />
+            <QuickLink href="/immersions?scrollTo=immersions" label="Immersions" accentColor={footerText} bgColor={footerBg} />
+            <QuickLink href="/immersions?scrollTo=trainings" label="Trainings" accentColor={footerText} bgColor={footerBg} />
             <QuickLink href="/contact#faq" label="FAQ" accentColor={footerText} bgColor={footerBg} />
           </div>
         </div>

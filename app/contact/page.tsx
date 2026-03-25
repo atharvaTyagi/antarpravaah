@@ -37,6 +37,7 @@ export default function ContactPage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const sectionsRef = useRef<HTMLDivElement[]>([]);
   const faqScrollRef = useRef<HTMLDivElement>(null);
+  const contactInfoScrollRef = useRef<HTMLDivElement>(null);
 
   const setTheme = useThemeStore((state) => state.setTheme);
 
@@ -322,96 +323,90 @@ export default function ContactPage() {
             className={`relative flex flex-col p-4 sm:p-6 lg:p-8 bg-[#f6edd0] overflow-hidden ${sectionClass}`}
           >
             <div className="flex-1 min-h-0 w-full max-w-[1347px] mx-auto flex flex-col">
-              <div className="flex-1 min-h-0 rounded-[20px] sm:rounded-[24px] overflow-hidden flex flex-col lg:flex-row bg-[#93a378] lg:gap-10">
-                {/* Scrollable content area - ensures card fits viewport on mobile */}
-                <div className="flex-1 min-h-0 overflow-y-auto flex flex-col lg:flex-row lg:overflow-visible lg:gap-10 p-5 sm:p-6 lg:p-10 contact-card-scroll">
-                  {/* Contact Information */}
-                  <div className="flex-1 flex flex-col gap-3 sm:gap-4 lg:p-5 shrink-0 lg:shrink">
-                  <div className="mb-1">
-                    <p
-                      className="text-[18px] sm:text-[20px] lg:text-[24px] leading-normal text-[#474e3a]"
-                      style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
-                    >
-                      Get In Touch
-                    </p>
+              <div
+                className="flex-1 min-h-0 rounded-[20px] sm:rounded-[24px] overflow-hidden flex flex-col lg:flex-row bg-[#93a378] lg:gap-10"
+                onWheel={(e) => {
+                  const el = contactInfoScrollRef.current;
+                  if (!el) return;
+                  const atTop = el.scrollTop <= 0;
+                  const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1;
+                  if ((e.deltaY > 0 && !atBottom) || (e.deltaY < 0 && !atTop)) {
+                    e.stopPropagation();
+                    el.scrollTop += e.deltaY;
+                  }
+                }}
+              >
+                {/* Mobile: single scrollable column */}
+                <div className="flex-1 min-h-0 overflow-y-auto flex flex-col lg:hidden p-5 sm:p-6 contact-card-scroll">
+                  <div className="flex flex-col gap-3 sm:gap-4">
+                    <div className="mb-1">
+                      <p className="text-[18px] sm:text-[20px] leading-normal text-[#474e3a]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>Get In Touch</p>
+                    </div>
+                    <h2 className="text-[28px] sm:text-[32px] leading-normal text-[#474e3a] mb-1 sm:mb-2" style={{ fontFamily: 'var(--font-saphira), serif' }}>Antar Pravaah</h2>
+                    <div className="text-[#474e3a]" style={{ fontFamily: 'var(--font-graphik), sans-serif' }}>
+                      <p className="text-[14px] sm:text-[15px] leading-[20px] sm:leading-[22px] mb-0" style={{ fontWeight: 500 }}>Address</p>
+                      <p className="text-[14px] sm:text-[15px] leading-[20px] sm:leading-[22px] mb-0" style={{ fontWeight: 400 }}>Chittaranjan Park,</p>
+                      <p className="text-[14px] sm:text-[15px] leading-[20px] sm:leading-[22px]" style={{ fontWeight: 400 }}>New Delhi, India</p>
+                    </div>
+                    <div className="text-[#474e3a]" style={{ fontFamily: 'var(--font-graphik), sans-serif' }}>
+                      <p className="text-[14px] sm:text-[15px] leading-[20px] sm:leading-[22px] mb-0" style={{ fontWeight: 500 }}>Contact Number</p>
+                      <p className="text-[14px] sm:text-[15px] leading-[20px] sm:leading-[22px]" style={{ fontWeight: 400 }}>+91 98107 10036</p>
+                    </div>
+                    <div className="text-[#474e3a]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                      <p className="text-[14px] sm:text-[15px] leading-[20px] sm:leading-[22px] mb-0">Monday - Friday</p>
+                      <p className="text-[14px] sm:text-[15px] leading-[20px] sm:leading-[22px]">10:00 AM - 7:00 PM</p>
+                    </div>
+                    <div className="text-[#474e3a]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                      <p className="text-[14px] sm:text-[15px] leading-[20px] sm:leading-[22px] mb-0">Saturday</p>
+                      <p className="text-[14px] sm:text-[15px] leading-[20px] sm:leading-[22px]">10:00 AM - 5:00 PM</p>
+                    </div>
                   </div>
-
-                  <h2
-                    className="text-[28px] sm:text-[32px] lg:text-[36px] leading-normal text-[#474e3a] mb-1 sm:mb-2"
-                    style={{ fontFamily: 'var(--font-saphira), serif' }}
-                  >
-                    Antar Pravaah
-                  </h2>
-
-                  {/* Address */}
-                  <div
-                    className="text-[#474e3a]"
-                    style={{ fontFamily: 'var(--font-graphik), sans-serif' }}
-                  >
-                    <p className="text-[14px] sm:text-[15px] lg:text-[16px] leading-[20px] sm:leading-[22px] lg:leading-[24px] mb-0" style={{ fontWeight: 500 }}>Address</p>
-                    <p className="text-[14px] sm:text-[15px] lg:text-[16px] leading-[20px] sm:leading-[22px] lg:leading-[24px] mb-0" style={{ fontWeight: 400 }}>Chittaranjan Park,</p>
-                    <p className="text-[14px] sm:text-[15px] lg:text-[16px] leading-[20px] sm:leading-[22px] lg:leading-[24px]" style={{ fontWeight: 400 }}>New Delhi, India</p>
+                  <div className="h-[180px] sm:h-[240px] mt-6 shrink-0 rounded-[12px] sm:rounded-[16px] overflow-hidden">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14022.234567890123!2d77.2500!3d28.5355!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ce3e564c2e5e5%3A0x1234567890abcdef!2sChittaranjan%20Park%2C%20New%20Delhi%2C%20Delhi!5e0!3m2!1sen!2sin!4v1234567890123!5m2!1sen!2sin" width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade" title="Antar Pravaah Location - Chittaranjan Park, New Delhi" />
                   </div>
-
-                  {/* Phone */}
-                  <div
-                    className="text-[#474e3a]"
-                    style={{ fontFamily: 'var(--font-graphik), sans-serif' }}
-                  >
-                    <p className="text-[14px] sm:text-[15px] lg:text-[16px] leading-[20px] sm:leading-[22px] lg:leading-[24px] mb-0" style={{ fontWeight: 500 }}>Contact Number</p>
-                    <p className="text-[14px] sm:text-[15px] lg:text-[16px] leading-[20px] sm:leading-[22px] lg:leading-[24px]" style={{ fontWeight: 400 }}>+91 98107 10036</p>
-                  </div>
-
-                  {/* Email */}
-                  <div
-                    className="text-[#474e3a]"
-                    style={{ fontFamily: 'var(--font-graphik), sans-serif' }}
-                  >
-                    <p className="text-[14px] sm:text-[15px] lg:text-[16px] leading-[20px] sm:leading-[22px] lg:leading-[24px] mb-0" style={{ fontWeight: 500 }}>Email</p>
-                    <p className="text-[14px] sm:text-[15px] lg:text-[16px] leading-[20px] sm:leading-[22px] lg:leading-[24px]" style={{ fontWeight: 400 }}>hello@antarpravaah.com</p>
-                  </div>
-
-                  {/* Hours - Monday to Friday */}
-                  <div
-                    className="text-[#474e3a]"
-                    style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
-                  >
-                    <p className="text-[14px] sm:text-[15px] lg:text-[16px] leading-[20px] sm:leading-[22px] lg:leading-[24px] mb-0">Monday - Friday</p>
-                    <p className="text-[14px] sm:text-[15px] lg:text-[16px] leading-[20px] sm:leading-[22px] lg:leading-[24px]">10:00 AM - 7:00 PM</p>
-                  </div>
-
-                  {/* Hours - Saturday */}
-                  <div
-                    className="text-[#474e3a]"
-                    style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
-                  >
-                    <p className="text-[14px] sm:text-[15px] lg:text-[16px] leading-[20px] sm:leading-[22px] lg:leading-[24px] mb-0">Saturday</p>
-                    <p className="text-[14px] sm:text-[15px] lg:text-[16px] leading-[20px] sm:leading-[22px] lg:leading-[24px]">10:00 AM - 5:00 PM</p>
-                  </div>
-
-                  {/* CTA Button */}
-                  <div className="mt-4 sm:mt-6 lg:mt-auto pt-2 sm:pt-4 flex justify-center lg:justify-start">
-                    <Button
-                      text="Schedule a Free Consultation"
-                      size="medium"
-                      colors={cardButtonColors}
-                    />
+                  <div className="mt-4 sm:mt-6 pt-2 sm:pt-4 flex justify-center">
+                    <Button text="Schedule a Free Consultation" size="medium" colors={cardButtonColors} onClick={() => setIsModalOpen(true)} />
                   </div>
                 </div>
 
-                {/* Map */}
-                <div className="flex-1 mt-6 lg:mt-0 h-[180px] sm:h-[240px] lg:min-h-[500px] lg:h-auto shrink-0 rounded-[12px] sm:rounded-[16px] lg:rounded-[24px] overflow-hidden">
-                  <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14022.234567890123!2d77.2500!3d28.5355!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ce3e564c2e5e5%3A0x1234567890abcdef!2sChittaranjan%20Park%2C%20New%20Delhi%2C%20Delhi!5e0!3m2!1sen!2sin!4v1234567890123!5m2!1sen!2sin"
-                    width="100%"
-                    height="100%"
-                    style={{ border: 0 }}
-                    allowFullScreen
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    title="Antar Pravaah Location - Chittaranjan Park, New Delhi"
-                  />
-                </div>
+                {/* Desktop: two-column layout */}
+                <div className="hidden lg:flex flex-1 min-h-0 flex-row gap-10 p-10">
+                  {/* Left: scrollable info + sticky CTA */}
+                  <div className="flex flex-col w-[40%] shrink-0 min-h-0 p-5">
+                    {/* Scrollable info */}
+                    <div ref={contactInfoScrollRef} className="flex-1 min-h-0 overflow-y-auto contact-card-scroll flex flex-col gap-4">
+                      <div className="mb-1">
+                        <p className="text-[24px] leading-normal text-[#474e3a]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>Get In Touch</p>
+                      </div>
+                      <h2 className="text-[36px] leading-normal text-[#474e3a] mb-2" style={{ fontFamily: 'var(--font-saphira), serif' }}>Antar Pravaah</h2>
+                      <div className="text-[#474e3a]" style={{ fontFamily: 'var(--font-graphik), sans-serif' }}>
+                        <p className="text-[16px] leading-[24px] mb-0" style={{ fontWeight: 500 }}>Address</p>
+                        <p className="text-[16px] leading-[24px] mb-0" style={{ fontWeight: 400 }}>Chittaranjan Park,</p>
+                        <p className="text-[16px] leading-[24px]" style={{ fontWeight: 400 }}>New Delhi, India</p>
+                      </div>
+                      <div className="text-[#474e3a]" style={{ fontFamily: 'var(--font-graphik), sans-serif' }}>
+                        <p className="text-[16px] leading-[24px] mb-0" style={{ fontWeight: 500 }}>Contact Number</p>
+                        <p className="text-[16px] leading-[24px]" style={{ fontWeight: 400 }}>+91 98107 10036</p>
+                      </div>
+                      <div className="text-[#474e3a]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                        <p className="text-[16px] leading-[24px] mb-0">Monday - Friday</p>
+                        <p className="text-[16px] leading-[24px]">10:00 AM - 7:00 PM</p>
+                      </div>
+                      <div className="text-[#474e3a]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                        <p className="text-[16px] leading-[24px] mb-0">Saturday</p>
+                        <p className="text-[16px] leading-[24px]">10:00 AM - 5:00 PM</p>
+                      </div>
+                    </div>
+                    {/* Sticky CTA */}
+                    <div className="shrink-0 pt-4 flex justify-start">
+                      <Button text="Schedule a Free Consultation" size="medium" colors={cardButtonColors} onClick={() => setIsModalOpen(true)} />
+                    </div>
+                  </div>
+
+                  {/* Right: Map */}
+                  <div className="flex-1 min-h-0 rounded-[24px] overflow-hidden">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14022.234567890123!2d77.2500!3d28.5355!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ce3e564c2e5e5%3A0x1234567890abcdef!2sChittaranjan%20Park%2C%20New%20Delhi%2C%20Delhi!5e0!3m2!1sen!2sin!4v1234567890123!5m2!1sen!2sin" width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade" title="Antar Pravaah Location - Chittaranjan Park, New Delhi" />
+                  </div>
                 </div>
               </div>
             </div>
