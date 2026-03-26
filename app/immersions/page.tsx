@@ -238,7 +238,7 @@ function ImmersionsPageContent() {
   }, [setIsModalOpen]);
 
   // Scroll a carousel by one card width in either direction
-  const scrollCarousel = useCallback((ref: React.RefObject<HTMLDivElement>, direction: 'prev' | 'next') => {
+  const scrollCarousel = useCallback((ref: React.RefObject<HTMLDivElement | null>, direction: 'prev' | 'next') => {
     const el = ref.current;
     if (!el) return;
     const cardWidth = el.querySelector('.carousel-card')?.clientWidth ?? el.clientWidth * 0.6;
