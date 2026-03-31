@@ -685,12 +685,12 @@ export default function TherapiesPage() {
                   >
                     Therapies
                   </h1>
-                  <p
+                  <h2
                     className="text-[14px] sm:text-[15px] lg:text-[16px] leading-none text-[#645c42] tracking-normal"
                     style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
                   >
                     Possibilities for Change
-                  </p>
+                  </h2>
                   <div
                     className="text-[#645c42] text-[14px] sm:text-[15px] lg:text-[16px] leading-[24px] text-center px-2"
                     style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
@@ -764,12 +764,12 @@ export default function TherapiesPage() {
                     Not sure which therapy is right for you?
                   </h2>
 
-                  <p
-                    className="text-[16px] sm:text-[16px] lg:text-[24px] leading-normal text-[#645c42]"
-                    style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
+                  <h2
+                    className="text-[16px] leading-normal text-[#645c42]"
+                    style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
                   >
                     Find your path
-                  </p>
+                  </h2>
 
                   <p
                     className="text-[14px] sm:text-[15px] lg:text-[16px] leading-[24px] text-[#645c42] max-w-full sm:max-w-[550px] lg:max-w-[640px] px-4"

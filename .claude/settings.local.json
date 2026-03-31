@@ -54,7 +54,8 @@
       "Bash(git config:*)",
       "Bash(chmod +x:*)",
       "Bash(.git/hooks/pre-push:*)",
-      "Bash(git rebase:*)"
+      "Bash(git rebase:*)",
+      "Bash(ipconfig getifaddr:*)"
     ]
   }
 }
