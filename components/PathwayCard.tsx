@@ -132,16 +132,12 @@ interface PathwayCardProps {
   onExpandedChange?: (expanded: boolean) => void;
   /** Optional callback for CTA button click (overrides href) */
   onCtaClick?: () => void;
-  /** Desktop only: called when inner scroll reaches top or bottom edge */
-  onEdgeReached?: (edge: 'start' | 'end') => void;
 }
 
-export default function PathwayCard({ pathway, isMobile = false, onExpandedChange, onCtaClick, onEdgeReached }: PathwayCardProps) {
+export default function PathwayCard({ pathway, isMobile = false, onExpandedChange, onCtaClick }: PathwayCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const desktopScrollRef = useRef<HTMLDivElement>(null);
-  const lastEdgeTimeRef = useRef(0);
 
   // Handle expand/collapse
   const handleExpand = useCallback(() => {
@@ -196,91 +192,11 @@ export default function PathwayCard({ pathway, isMobile = false, onExpandedChang
     };
   }, [isMobile, isExpanded]);
 
-  // Desktop: intercept wheel events on the scroll container to detect edge
-  useEffect(() => {
-    if (isMobile || !onEdgeReached || !desktopScrollRef.current) return;
-
-    const container = desktopScrollRef.current;
-    const edgeCooldown = 600;
-    const minDelta = 6;
-
-    const handleWheel = (e: WheelEvent) => {
-      if (Math.abs(e.deltaY) < minDelta) return;
-
-      const { scrollTop, scrollHeight, clientHeight } = container;
-      const isAtTop = scrollTop <= 0;
-      const isAtBottom = scrollTop + clientHeight >= scrollHeight - 2;
-      const isScrollingDown = e.deltaY > 0;
-      const isScrollingUp = e.deltaY < 0;
-
-      if (isAtBottom && isScrollingDown) {
-        e.preventDefault();
-        e.stopPropagation();
-        const now = Date.now();
-        if (now - lastEdgeTimeRef.current < edgeCooldown) return;
-        lastEdgeTimeRef.current = now;
-        onEdgeReached('end');
-      } else if (isAtTop && isScrollingUp) {
-        e.preventDefault();
-        e.stopPropagation();
-        const now = Date.now();
-        if (now - lastEdgeTimeRef.current < edgeCooldown) return;
-        lastEdgeTimeRef.current = now;
-        onEdgeReached('start');
-      } else {
-        // Mid-scroll: keep ownership so the page doesn't change section
-        e.stopPropagation();
-      }
-    };
-
-    container.addEventListener('wheel', handleWheel, { passive: false });
-    return () => container.removeEventListener('wheel', handleWheel);
-  }, [isMobile, onEdgeReached]);
-
-  // Desktop: forward wheel events from the outer card (background/image area) to the inner scroll container
-  const handleOuterWheel = useCallback((e: React.WheelEvent) => {
-    const el = desktopScrollRef.current;
-    if (!el) return;
-    // Only handle events that originated outside the inner scroll container
-    if (el.contains(e.target as Node)) return;
-    const atTop = el.scrollTop <= 0;
-    const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1;
-    if ((e.deltaY > 0 && !atBottom) || (e.deltaY < 0 && !atTop)) {
-      e.stopPropagation();
-      el.scrollTop += e.deltaY;
-    }
-  }, []);
-
-  const outerTouchStartRef = useRef<{ y: number } | null>(null);
-
-  const handleOuterTouchStart = useCallback((e: React.TouchEvent) => {
-    const el = desktopScrollRef.current;
-    if (el && el.contains(e.target as Node)) return;
-    outerTouchStartRef.current = { y: e.touches[0].clientY };
-  }, []);
-
-  const handleOuterTouchMove = useCallback((e: React.TouchEvent) => {
-    const el = desktopScrollRef.current;
-    if (!el || !outerTouchStartRef.current) return;
-    if (el.contains(e.target as Node)) return;
-    const deltaY = outerTouchStartRef.current.y - e.touches[0].clientY;
-    outerTouchStartRef.current = { y: e.touches[0].clientY };
-    const atTop = el.scrollTop <= 0;
-    const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1;
-    if ((deltaY > 0 && !atBottom) || (deltaY < 0 && !atTop)) {
-      e.stopPropagation();
-      el.scrollTop += deltaY;
-    }
-  }, []);
-
   // Desktop/tablet layout - full content visible
   if (!isMobile) {
     return (
       <div
         className="relative overflow-hidden ios-radius-fix rounded-[12px] sm:rounded-[16px] lg:rounded-[24px] border-[4px] sm:border-[8px] lg:border-[12px] border-[#9ac1bf] w-full h-full"
-        onWheel={handleOuterWheel}
-        onTouchStart={handleOuterTouchStart}
-        onTouchMove={handleOuterTouchMove}
       >
         {/* Background image */}
         <div className="absolute inset-0">
@@ -294,15 +210,14 @@ export default function PathwayCard({ pathway, isMobile = false, onExpandedChang
 
         {/* Content Card - anchored bottom-left, fills height with flex col */}
         <div
-          className="absolute bottom-0 left-0 flex flex-col rounded-[8px] sm:rounded-[12px] lg:rounded-[20px] bg-[rgba(53,68,67,0.8)] backdrop-blur-[4px] m-2 sm:m-4 lg:m-6 w-full sm:w-[70%] lg:w-[50%]"
+          className="absolute bottom-0 left-0 flex flex-col rounded-[8px] sm:rounded-[12px] lg:rounded-[20px] bg-[rgba(53,68,67,0.8)] backdrop-blur-[4px] m-2 sm:m-4 lg:m-6 w-full sm:w-[70%] lg:w-[75%]"
           style={{
             maxHeight: 'calc(100% - 3rem)',
           }}
         >
-          {/* Scrollable content area */}
+          {/* Content area */}
           <div
-            ref={desktopScrollRef}
-            className="flex-1 overflow-y-auto min-h-0 no-scrollbar p-3 sm:p-4 lg:p-5"
+            className="flex-1 min-h-0 p-3 sm:p-4 lg:p-5"
           >
             {/* Title */}
             <h3

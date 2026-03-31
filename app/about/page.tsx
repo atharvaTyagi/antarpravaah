@@ -110,7 +110,7 @@ export default function AboutPage() {
         setCurrentSection(index);
 
         const section = SECTIONS[index];
-        
+
         if (section.type === 'blob-scroll') {
           if (direction === 'down') {
             setBlobResetToStart(true);
@@ -170,7 +170,7 @@ export default function AboutPage() {
   // Handle paragraph change in blob scroll (desktop only)
   const handleParagraphChange = useCallback((paragraphIndex: number) => {
     if (isMobile) return; // Only sync on desktop
-    
+
     const images = imageRefs.current.filter(Boolean) as HTMLDivElement[];
     if (images.length === 0) return;
 
@@ -181,7 +181,7 @@ export default function AboutPage() {
     // Paragraph 3 -> Image 3
     // Paragraph 4 -> Image 4
     // We have 6 images total, so paragraph 4 can reveal both image 4 and 5
-    
+
     if (paragraphIndex === 0) {
       // First paragraph - show first image
       gsap.to(images[0], { autoAlpha: 1, duration: 0.5, ease: 'power2.out' });
@@ -205,7 +205,7 @@ export default function AboutPage() {
     if (isAnimating) return;
 
     const section = SECTIONS[currentSection];
-    
+
     if (section.type === 'blob-scroll' && isBlobScrollActive) return;
     if (section.type === 'inspiration-scroll' && isInspirationScrollActive) return;
 
@@ -244,7 +244,7 @@ export default function AboutPage() {
   // Initialize images on desktop - hide all except first
   useEffect(() => {
     if (isMobile) return; // Only on desktop
-    
+
     const images = imageRefs.current.filter(Boolean) as HTMLDivElement[];
     if (images.length === 0) return;
 
@@ -341,7 +341,7 @@ export default function AboutPage() {
     const handleWheel = (e: WheelEvent) => {
       const section = SECTIONS[currentSection];
       if ((section.type === 'blob-scroll' && isBlobScrollActive) ||
-          (section.type === 'inspiration-scroll' && isInspirationScrollActive)) {
+        (section.type === 'inspiration-scroll' && isInspirationScrollActive)) {
         return;
       }
       e.preventDefault();
@@ -355,7 +355,7 @@ export default function AboutPage() {
     const handleTouchMove = (e: TouchEvent) => {
       const section = SECTIONS[currentSection];
       if ((section.type === 'blob-scroll' && isBlobScrollActive) ||
-          (section.type === 'inspiration-scroll' && isInspirationScrollActive)) {
+        (section.type === 'inspiration-scroll' && isInspirationScrollActive)) {
         return;
       }
       e.preventDefault();
@@ -437,7 +437,7 @@ export default function AboutPage() {
 
       <main className="main-container overflow-hidden bg-[#f6edd0] z-[30]">
         <div ref={containerRef} className="will-change-transform">
-          
+
           {/* ===== MOBILE LAYOUT ===== */}
           {isMobile ? (
             <>
@@ -643,12 +643,13 @@ export default function AboutPage() {
                     >
                       About Namita
                     </h1>
-                    <p
-                      className="text-center text-[20px] lg:text-[24px] leading-[normal] text-[#474e3a] px-4 max-w-[980px]"
-                      style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
-                    >
-                      Founder of Antar Pravaah | Healer &amp; Facilitator | Host at Aalayam, Himachal Pradesh
-                    </p>
+
+                    <h2
+                    className="text-[16px] leading-normal text-[#474e3a]"
+                    style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
+                  >
+                    Founder of Antar Pravaah | Healer &amp; Facilitator | Host at Aalayam, Himachal Pradesh
+                  </h2>
                   </div>
                 </div>
               </div>
@@ -746,7 +747,7 @@ export default function AboutPage() {
                     >
                       My inspiration
                     </h2>
-                    <div 
+                    <div
                       className="text-[16px] lg:text-[18px] leading-[24px] sm:leading-[28px] lg:leading-[32px] space-y-4 sm:space-y-5 lg:space-y-6"
                       style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
                     >

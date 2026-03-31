@@ -306,14 +306,16 @@ export default function ContactPage() {
               >
                 We&apos;re here to support your journey
               </h1>
-              <p
-                className="text-[14px] sm:text-[15px] lg:text-[16px] leading-normal text-[#474e3a"
-                style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
+
+              <h2
+                className="text-[16px] leading-normal text-[#474e3a]"
+                style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
               >
                 Whether you have questions about our approach, need guidance choosing the right therapy,
                 or want to learn more about upcoming immersions and trainings, we&apos;re here to help. Your
                 healing journey begins with a conversation.
-              </p>
+              </h2>
+
             </div>
           </div>
 
@@ -426,13 +428,19 @@ export default function ContactPage() {
                 >
                   Frequently Asked Questions
                 </h2>
-                <div
-                  className="text-[14px] sm:text-[15px] lg:text-[16px] leading-[24px] text-[#474e3a]"
-                  style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
+
+                <h2
+                  className="text-[16px] text-[#474e3a]"
+                  style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
                 >
-                  <p className="mb-2">Here are answers to the questions we hear most often.</p>
-                  <p>If you don&apos;t find what you&apos;re looking for, please reach out—we&apos;re happy to help.</p>
-                </div>
+                  Here are answers to the questions we hear most often.
+                </h2>
+                <h2
+                  className="text-[16px] text-[#474e3a]"
+                  style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
+                >
+                  If you don&apos;t find what you&apos;re looking for, please reach out—we&apos;re happy to help.
+                </h2>
               </div>
             </div>
 
@@ -449,7 +457,7 @@ export default function ContactPage() {
                       <h3
                         className="text-[20px] sm:text-[22px] lg:text-[24px] leading-normal text-[#96a37c]"
                         style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}
-                      > 
+                      >
                         {section.title}
                       </h3>
                     </div>
