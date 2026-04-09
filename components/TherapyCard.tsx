@@ -345,7 +345,7 @@ export default function TherapyCard({ therapy, isVisible = false, isMobile = fal
           </div>
 
           {/* Content centered */}
-          <div className="flex flex-col gap-3 sm:gap-4 lg:gap-5 items-center text-center max-w-full sm:max-w-[500px] lg:max-w-[600px] px-2 w-full">
+          <div className="flex flex-col gap-3 sm:gap-4 lg:gap-5 items-center text-center max-w-full sm:max-w-[500px] lg:max-w-[900px] px-2 w-full">
             <h3
               ref={titleRef}
               className="text-[clamp(1.75rem,4vw,3rem)] leading-[1.0] text-[#635d45]"
