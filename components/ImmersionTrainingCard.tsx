@@ -585,16 +585,28 @@ export function TrainingCard({ data, isMobile = false, onExpandedChange, onBooki
               </div>
               <div className="flex flex-col gap-1.5">
                 <p className="text-[13px] sm:text-[14px] lg:text-[15px]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>What You&apos;ll Learn</p>
-                <ul
-                  className={`ml-4 list-disc text-[13px] sm:text-[14px] lg:text-[15px] ${
-                    data.whatYoullLearn.length > 4 ? 'columns-2 gap-4' : ''
-                  }`}
-                  style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
-                >
-                  {data.whatYoullLearn.map((item, idx) => (
-                    <li key={idx} className={data.whatYoullLearn.length > 4 ? 'break-inside-avoid' : ''}>{item}</li>
-                  ))}
-                </ul>
+                {(() => {
+                  const useTwoColumns = data.whatYoullLearn.length > 4;
+                  const midpoint = Math.ceil(data.whatYoullLearn.length / 2);
+                  const columns = useTwoColumns
+                    ? [data.whatYoullLearn.slice(0, midpoint), data.whatYoullLearn.slice(midpoint)]
+                    : [data.whatYoullLearn];
+                  return (
+                    <div className={useTwoColumns ? 'flex gap-4' : ''}>
+                      {columns.map((column, colIdx) => (
+                        <ul
+                          key={colIdx}
+                          className="ml-4 list-disc text-[13px] sm:text-[14px] lg:text-[15px]"
+                          style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
+                        >
+                          {column.map((item, idx) => (
+                            <li key={idx}>{item}</li>
+                          ))}
+                        </ul>
+                      ))}
+                    </div>
+                  );
+                })()}
               </div>
             </div>
           </div>
