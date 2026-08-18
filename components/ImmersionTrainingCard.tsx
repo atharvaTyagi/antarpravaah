@@ -585,9 +585,14 @@ export function TrainingCard({ data, isMobile = false, onExpandedChange, onBooki
               </div>
               <div className="flex flex-col gap-1.5">
                 <p className="text-[13px] sm:text-[14px] lg:text-[15px]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>What You&apos;ll Learn</p>
-                <ul className="ml-4 list-disc text-[13px] sm:text-[14px] lg:text-[15px]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}>
+                <ul
+                  className={`ml-4 list-disc text-[13px] sm:text-[14px] lg:text-[15px] ${
+                    data.whatYoullLearn.length > 4 ? 'columns-2 gap-4' : ''
+                  }`}
+                  style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
+                >
                   {data.whatYoullLearn.map((item, idx) => (
-                    <li key={idx}>{item}</li>
+                    <li key={idx} className={data.whatYoullLearn.length > 4 ? 'break-inside-avoid' : ''}>{item}</li>
                   ))}
                 </ul>
               </div>
