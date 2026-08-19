@@ -434,9 +434,6 @@ function ImmersionsPageContent() {
     minHeight: `calc(100vh - var(--header-height, 90px))`,
   };
 
-  // Desktop card width - 60% of viewport for first card visibility
-  const desktopCardWidth = 'calc(60vw - 64px)';
-
   return (
     <>
       {/* CSS Variables for header height */}
@@ -679,7 +676,8 @@ function ImmersionsPageContent() {
                     <div
                       key={immersion._id || immersion.id}
                       className="carousel-card shrink-0 snap-center h-full"
-                      style={{ width: isMobile ? 'calc(100vw - 32px)' : desktopCardWidth }}
+                      // Desktop cards set their own width (capped at half the viewport), so the slot hugs the card
+                      style={{ width: isMobile ? 'calc(100vw - 32px)' : 'max-content' }}
                     >
                       <ImmersionCard
                         data={immersion}
@@ -872,7 +870,8 @@ function ImmersionsPageContent() {
                     <div
                       key={training._id || training.id}
                       className="carousel-card shrink-0 snap-center h-full"
-                      style={{ width: isMobile ? 'calc(100vw - 32px)' : desktopCardWidth }}
+                      // Desktop cards set their own width (capped at half the viewport), so the slot hugs the card
+                      style={{ width: isMobile ? 'calc(100vw - 32px)' : 'max-content' }}
                     >
                       <TrainingCard
                         data={training}
