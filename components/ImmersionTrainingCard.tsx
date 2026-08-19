@@ -1,7 +1,174 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useLayoutEffect, useCallback } from 'react';
 import Image from 'next/image';
+
+// useLayoutEffect warns during SSR; the measurement it does is browser-only anyway
+const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
+
+/** Narrowest a desktop card is allowed to get — below this, lines get too short to read */
+const MIN_CARD_WIDTH = 420;
+/** Widest a desktop card is allowed to get, as a fraction of the viewport. The cap is
+ *  what keeps long sentences wrapping instead of running the card off the screen. */
+const MAX_CARD_VIEWPORT_FRACTION = 0.5;
+
+/**
+ * Keeps a desktop card at a fixed height and makes its content fit inside it.
+ *
+ * Card height is driven by the viewport (one carousel per pinned section) while the copy
+ * comes from the CMS and has no length bound, so on shorter screens the tail of a long
+ * record used to be clipped with no way to reach it — the page-level wheel and touch
+ * handlers preventDefault every gesture, so an inner scrollbar is unreachable.
+ *
+ * Two levers, in order:
+ *  1. Width — take the card to the widest it is allowed to be (half the viewport, and
+ *     never past the carousel strip) so text rewraps into as few lines as possible.
+ *     This is the preferred lever because it costs nothing visually.
+ *  2. Scale — if the widest allowed card still overflows, scale the content down the
+ *     rest of the way.
+ *
+ * Lever 2 is not a rare fallback: much of the height is width-proof. `duration` and
+ * `prerequisites` render with `whitespace-pre-line`, so their hard newlines never rewrap
+ * however wide the card gets. On the current CMS records the meta box is a flat 286px at
+ * every width from 700px to 1450px, and total content bottoms out around 466px against a
+ * ~439px body — so width alone cannot make them fit at laptop heights.
+ *
+ * `signature` must change whenever the rendered copy changes so a different record
+ * swapping into the same card triggers a re-measure.
+ */
+function useFitToBox(
+  rootRef: React.RefObject<HTMLDivElement | null>,
+  containerRef: React.RefObject<HTMLDivElement | null>,
+  contentRef: React.RefObject<HTMLDivElement | null>,
+  signature: string,
+  enabled: boolean,
+) {
+  useIsomorphicLayoutEffect(() => {
+    const root = rootRef.current;
+    const container = containerRef.current;
+    const content = contentRef.current;
+    if (!root || !container || !content) return;
+
+    if (!enabled) {
+      root.style.width = '';
+      content.style.width = '';
+      content.style.transform = '';
+      return;
+    }
+
+    let frame = 0;
+
+    const apply = (scale: number) => {
+      // Widen by the inverse of the scale so the scaled result still spans the full
+      // card width instead of leaving a gutter down the right-hand side
+      content.style.width = `${100 / scale}%`;
+      content.style.transform = `scale(${scale})`;
+    };
+
+    const reset = () => {
+      content.style.width = '';
+      content.style.transform = '';
+    };
+
+    /**
+     * Card width: half the viewport, and never wider than the strip it sits in.
+     *
+     * Width is taken all the way to the cap rather than trimmed to the narrowest width
+     * that happens to fit. Trimming looked appealing but produced cramped cards — the
+     * immersion layout puts title and meta in a left column that has no slack, so a card
+     * narrow enough to satisfy the right column wrapped its title over four lines. The
+     * cap is what keeps long sentences wrapping instead of running off the screen.
+     */
+    const fitWidth = () => {
+      const strip = root.parentElement?.parentElement;
+      const cap = Math.min(
+        window.innerWidth * MAX_CARD_VIEWPORT_FRACTION,
+        strip?.clientWidth || Number.POSITIVE_INFINITY,
+      );
+      return Math.max(MIN_CARD_WIDTH, Math.floor(cap));
+    };
+
+    const fit = () => {
+      // Always measure unscaled so the reading is independent of the previous pass
+      reset();
+
+      // 1px of slack absorbs sub-pixel rounding on the scaled height
+      const available = container.clientHeight - 1;
+      if (available <= 0) return;
+
+      root.style.width = `${fitWidth()}px`;
+
+      const natural = content.scrollHeight;
+      if (!natural || natural <= available) return;
+
+      let scale = available / natural;
+      let bestFitting = 0;
+
+      // Widening the content lets text reflow into fewer lines, so the first estimate
+      // overshoots and the corrected height has to be re-measured. A handful of passes
+      // converge on the largest scale that still fits.
+      for (let pass = 0; pass < 5; pass += 1) {
+        apply(scale);
+
+        const visualHeight = content.scrollHeight * scale;
+        if (!visualHeight) break;
+
+        if (visualHeight > available) {
+          scale *= available / visualHeight;
+          continue;
+        }
+
+        bestFitting = scale;
+
+        // Reclaim the slack the reflow opened up
+        const grown = scale * (available / visualHeight);
+        if (grown >= 1) {
+          bestFitting = 1;
+          break;
+        }
+        if (grown - scale < 0.005) break;
+        scale = grown;
+      }
+
+      if (bestFitting >= 1) reset();
+      else if (bestFitting > 0) apply(bestFitting);
+    };
+
+    const schedule = () => {
+      // Fit synchronously first: rAF never fires while the tab is backgrounded, and a
+      // card loaded in a background tab still has to be correct when it comes forward
+      fit();
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(fit);
+    };
+
+    schedule();
+
+    // Only height changes trigger a re-fit. Width changes on the container are our own
+    // doing — reacting to them would feed the width we just wrote back into the search.
+    let lastHeight = -1;
+    const observer = new ResizeObserver((entries) => {
+      const height = entries[0]?.contentRect.height ?? -1;
+      if (Math.abs(height - lastHeight) < 0.5) return;
+      lastHeight = height;
+      schedule();
+    });
+    observer.observe(container);
+
+    // Viewport width feeds the cap, so track it separately from the container
+    window.addEventListener('resize', schedule);
+    // Webfonts land after first paint and reflow every line box
+    document.fonts?.ready.then(schedule).catch(() => {});
+    document.addEventListener('visibilitychange', schedule);
+
+    return () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+      window.removeEventListener('resize', schedule);
+      document.removeEventListener('visibilitychange', schedule);
+    };
+  }, [rootRef, containerRef, contentRef, signature, enabled]);
+}
 
 // Arrow icons matching the Button component style
 function ArrowLeft({ className }: { className?: string }) {
@@ -183,6 +350,13 @@ export function ImmersionCard({ data, isMobile = false, onExpandedChange, onBook
   const [isExpanded, setIsExpanded] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
+  // Desktop card is fixed height and never scrolls — fit the content to it instead
+  const rootRef = useRef<HTMLDivElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const contentSignature = [data.about, data.whatToExpect.join(' ')].join('');
+  useFitToBox(rootRef, bodyRef, contentRef, contentSignature, !isMobile);
+
   const handleExpand = useCallback(() => {
     setIsExpanded(true);
     onExpandedChange?.(true);
@@ -234,7 +408,12 @@ export function ImmersionCard({ data, isMobile = false, onExpandedChange, onBook
   // Desktop / tablet: two columns — left: title, pill, meta, image; right: About, What To Expect, CTA
   if (!isMobile) {
     return (
-      <div className="flex h-full max-h-full min-h-0 w-full min-w-0 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d58761] p-3 sm:p-4 gap-3 md:gap-4 lg:gap-5">
+      <div
+        ref={rootRef}
+        // Width is the first fitting lever, measured on mount; this is the pre-measure default
+        style={{ width: `calc(${MAX_CARD_VIEWPORT_FRACTION * 100}vw - 64px)` }}
+        className="flex h-full max-h-full min-h-0 min-w-0 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d58761] p-3 sm:p-4 gap-3 md:gap-4 lg:gap-5"
+      >
         {/* Left column: title, pill, meta, image */}
         <div className="flex min-h-0 min-w-0 shrink-0 flex-col gap-3 md:w-[46%] lg:w-[44%]">
           {/* Info box */}
@@ -307,30 +486,32 @@ export function ImmersionCard({ data, isMobile = false, onExpandedChange, onBook
         </div>
 
         {/* Right column: About, What To Expect, CTA */}
-        <div className="flex min-w-0 flex-1 flex-col justify-between gap-3 text-[#6a3f33]" style={{ lineHeight: '20px' }}>
-          <div className="flex flex-col gap-3">
-            <div className="flex flex-col gap-1.5">
-              <p className="text-[13px] sm:text-[14px] lg:text-[15px]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
-                About
-              </p>
-              <p className="text-[13px] sm:text-[14px] lg:text-[15px]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}>
-                {data.about}
-              </p>
-            </div>
+        <div className="flex min-w-0 flex-1 flex-col gap-3 text-[#6a3f33]" style={{ lineHeight: '20px' }}>
+          <div ref={bodyRef} className="min-h-0 flex-1 overflow-hidden">
+            <div ref={contentRef} className="flex origin-top-left flex-col gap-3">
+              <div className="flex flex-col gap-1.5">
+                <p className="text-[13px] sm:text-[14px] lg:text-[15px]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                  About
+                </p>
+                <p className="text-[13px] sm:text-[14px] lg:text-[15px]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}>
+                  {data.about}
+                </p>
+              </div>
 
-            <div className="flex flex-col gap-1.5">
-              <p className="text-[13px] sm:text-[14px] lg:text-[15px]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
-                What To Expect
-              </p>
-              <ul className="ml-4 list-disc text-[13px] sm:text-[14px] lg:text-[15px]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}>
-                {data.whatToExpect.map((item, idx) => (
-                  <li key={idx}>{item}</li>
-                ))}
-              </ul>
+              <div className="flex flex-col gap-1.5">
+                <p className="text-[13px] sm:text-[14px] lg:text-[15px]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>
+                  What To Expect
+                </p>
+                <ul className="ml-4 list-disc text-[13px] sm:text-[14px] lg:text-[15px]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}>
+                  {data.whatToExpect.map((item, idx) => (
+                    <li key={idx}>{item}</li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
 
-          <div className="flex justify-end">
+          <div className="flex shrink-0 justify-end">
             <CtaButton text={data.ctaText} onClick={onBookingClick} singleLine />
           </div>
         </div>
@@ -494,6 +675,21 @@ export function TrainingCard({ data, isMobile = false, onExpandedChange, onBooki
   const [isExpanded, setIsExpanded] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
+  // Desktop card is fixed height and never scrolls — fit the content to it instead
+  const rootRef = useRef<HTMLDivElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const contentSignature = [
+    data.title,
+    data.duration,
+    data.prerequisites,
+    data.format,
+    data.language,
+    data.overview,
+    data.whatYoullLearn.join(' '),
+  ].join('|');
+  useFitToBox(rootRef, bodyRef, contentRef, contentSignature, !isMobile);
+
   const handleExpand = useCallback(() => {
     setIsExpanded(true);
     onExpandedChange?.(true);
@@ -545,9 +741,14 @@ export function TrainingCard({ data, isMobile = false, onExpandedChange, onBooki
   // Desktop / tablet — match immersion card: scrollable body, pinned CTA, full width of carousel slot
   if (!isMobile) {
     return (
-      <div className="flex h-full max-h-full min-h-0 w-full min-w-0 flex-col rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d58761] p-4 sm:p-5 lg:p-6">
-        <div className="no-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain">
-          <div className="flex flex-col gap-4">
+      <div
+        ref={rootRef}
+        // Width is the first fitting lever, measured on mount; this is the pre-measure default
+        style={{ width: `calc(${MAX_CARD_VIEWPORT_FRACTION * 100}vw - 64px)` }}
+        className="flex h-full max-h-full min-h-0 min-w-0 flex-col rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d58761] p-4 sm:p-5 lg:p-6"
+      >
+        <div ref={bodyRef} className="min-h-0 flex-1 overflow-hidden">
+          <div ref={contentRef} className="flex origin-top-left flex-col gap-4">
             <div className="flex flex-col gap-4 rounded-lg border border-[#6a3f33] p-4">
               <h4
                 className="text-[24px] sm:text-[28px] lg:text-[32px] leading-tight text-[#6a3f33]"
@@ -585,16 +786,28 @@ export function TrainingCard({ data, isMobile = false, onExpandedChange, onBooki
               </div>
               <div className="flex flex-col gap-1.5">
                 <p className="text-[13px] sm:text-[14px] lg:text-[15px]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>What You&apos;ll Learn</p>
-                <ul
-                  className={`ml-4 list-disc text-[13px] sm:text-[14px] lg:text-[15px] ${
-                    data.whatYoullLearn.length > 4 ? 'columns-2 gap-4' : ''
-                  }`}
-                  style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
-                >
-                  {data.whatYoullLearn.map((item, idx) => (
-                    <li key={idx} className={data.whatYoullLearn.length > 4 ? 'break-inside-avoid' : ''}>{item}</li>
-                  ))}
-                </ul>
+                {(() => {
+                  const useTwoColumns = data.whatYoullLearn.length > 4;
+                  const midpoint = Math.ceil(data.whatYoullLearn.length / 2);
+                  const columns = useTwoColumns
+                    ? [data.whatYoullLearn.slice(0, midpoint), data.whatYoullLearn.slice(midpoint)]
+                    : [data.whatYoullLearn];
+                  return (
+                    <div className={useTwoColumns ? 'flex gap-4' : ''}>
+                      {columns.map((column, colIdx) => (
+                        <ul
+                          key={colIdx}
+                          className="ml-4 list-disc text-[13px] sm:text-[14px] lg:text-[15px]"
+                          style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}
+                        >
+                          {column.map((item, idx) => (
+                            <li key={idx}>{item}</li>
+                          ))}
+                        </ul>
+                      ))}
+                    </div>
+                  );
+                })()}
               </div>
             </div>
           </div>
