@@ -546,7 +546,7 @@ export function TrainingCard({ data, isMobile = false, onExpandedChange, onBooki
   if (!isMobile) {
     return (
       <div className="flex h-full max-h-full min-h-0 w-full min-w-0 flex-col rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] bg-[#d58761] p-4 sm:p-5 lg:p-6">
-        <div className="flex min-h-0 flex-1 flex-col gap-4">
+        <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden">
           <div className="flex shrink-0 flex-col gap-4 rounded-lg border border-[#6a3f33] p-4">
             <h4
               className="text-[24px] sm:text-[28px] lg:text-[32px] leading-tight text-[#6a3f33]"
@@ -575,25 +575,26 @@ export function TrainingCard({ data, isMobile = false, onExpandedChange, onBooki
             </div>
           </div>
 
-          {/* Overview + What You'll Learn take whatever height is left and scroll on their
-              own; the meta box above and the CTA below stay put */}
-          <div
-            className="no-scrollbar flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto overscroll-contain text-[#6a3f33]"
-            style={{ lineHeight: '20px' }}
-          >
+          <div className="flex min-h-0 flex-1 flex-col gap-3 text-[#6a3f33]" style={{ lineHeight: '20px' }}>
+            {/* Overview sits at its natural height, like the meta box above */}
             <div className="flex shrink-0 flex-col gap-1.5">
               <p className="text-[13px] sm:text-[14px] lg:text-[15px]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>Overview</p>
               <p className="text-[13px] sm:text-[14px] lg:text-[15px]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}>
                 {data.overview}
               </p>
             </div>
-            <div className="flex shrink-0 flex-col gap-1.5">
-              <p className="text-[13px] sm:text-[14px] lg:text-[15px]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>What You&apos;ll Learn</p>
-              <ul className="ml-4 list-disc text-[13px] sm:text-[14px] lg:text-[15px]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}>
-                {data.whatYoullLearn.map((item, idx) => (
-                  <li key={idx}>{item}</li>
-                ))}
-              </ul>
+            {/* Only this list scrolls; its label stays pinned. No min-height here on purpose:
+                forcing one would push content past the card, and that overflow is what lets
+                the carousel strip drag-scroll the whole card. */}
+            <div className="flex min-h-0 flex-1 flex-col gap-1.5">
+              <p className="shrink-0 text-[13px] sm:text-[14px] lg:text-[15px]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>What You&apos;ll Learn</p>
+              <div className="no-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain">
+                <ul className="ml-4 list-disc text-[13px] sm:text-[14px] lg:text-[15px]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}>
+                  {data.whatYoullLearn.map((item, idx) => (
+                    <li key={idx}>{item}</li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
         </div>
