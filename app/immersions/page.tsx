@@ -120,6 +120,33 @@ const trainingsData: TrainingData[] = [
   },
 ];
 
+/**
+ * Walk up from an event target looking for a scroll container that can still move in the
+ * requested direction. Cards hold CMS copy of unbounded length in `overflow-y-auto`
+ * bodies; this page's wheel/touch handlers preventDefault everything to drive section
+ * changes, so without this check that inner scroll can never be reached.
+ * `deltaY` follows the wheel convention: positive scrolls down.
+ */
+function findScrollableAncestor(target: EventTarget | null, deltaY: number): HTMLElement | null {
+  if (deltaY === 0) return null;
+
+  let el: Element | null = target instanceof Element ? target : null;
+
+  while (el && el !== document.body) {
+    if (el instanceof HTMLElement && el.scrollHeight > el.clientHeight) {
+      const { overflowY } = window.getComputedStyle(el);
+      if (overflowY === 'auto' || overflowY === 'scroll') {
+        const canScrollUp = el.scrollTop > 0;
+        const canScrollDown = el.scrollTop + el.clientHeight < el.scrollHeight - 1;
+        if (deltaY < 0 ? canScrollUp : canScrollDown) return el;
+      }
+    }
+    el = el.parentElement;
+  }
+
+  return null;
+}
+
 // Section configuration with theme mapping
 const SECTIONS: { id: string; type: 'static' | 'carousel' | 'footer'; themeId: SectionId }[] = [
   { id: 'intro', type: 'static', themeId: 'immersions' },
@@ -194,6 +221,11 @@ function ImmersionsPageContent() {
 
   const lastScrollTimeRef = useRef<number>(0);
   const sectionScrollCooldown = 800; // ms cooldown for section changes
+
+  /** Last time a card's own scroll container consumed a gesture — stops trackpad momentum
+   *  from flipping the section the instant a card's text reaches its end */
+  const lastInnerScrollRef = useRef<number>(0);
+  const innerScrollSettleDelay = 300; // ms
 
   /** Touch: once a horizontal drag is detected on a carousel strip, allow native overflow-x scroll */
   const touchCarouselAxisRef = useRef<'h' | 'v' | null>(null);
@@ -323,6 +355,7 @@ function ImmersionsPageContent() {
     if (deltaY === 0) return;
 
     const now = Date.now();
+    if (now - lastInnerScrollRef.current < innerScrollSettleDelay) return;
     if (now - lastScrollTimeRef.current < sectionScrollCooldown) return;
     lastScrollTimeRef.current = now;
 
@@ -343,12 +376,12 @@ function ImmersionsPageContent() {
 
     const handleWheel = (e: WheelEvent) => {
       if (isCardExpanded) return;
-      e.preventDefault();
 
       const idx = currentSectionRef.current;
       const section = SECTIONS[idx];
       // Route horizontal trackpad swipes to the carousel strip
       if (section?.type === 'carousel' && Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+        e.preventDefault();
         const el =
           section.id === 'immersions-carousel'
             ? immersionsCarouselScrollRef.current
@@ -357,6 +390,14 @@ function ImmersionsPageContent() {
         return;
       }
 
+      // A card's text block owns the gesture until it reaches its end — leave the event
+      // alone so the browser scrolls it natively
+      if (findScrollableAncestor(e.target, e.deltaY)) {
+        lastInnerScrollRef.current = Date.now();
+        return;
+      }
+
+      e.preventDefault();
       handleScroll(e.deltaY);
     };
 
@@ -401,10 +442,17 @@ function ImmersionsPageContent() {
         }
       }
 
-      e.preventDefault();
       const currentY = touch.clientY;
       const deltaY = lastTouchY - currentY;
       lastTouchY = currentY;
+
+      // Same rule as the wheel path: a card's text block scrolls itself first
+      if (findScrollableAncestor(e.target, deltaY)) {
+        lastInnerScrollRef.current = Date.now();
+        return;
+      }
+
+      e.preventDefault();
       handleScroll(deltaY * 2);
     };
 
@@ -433,6 +481,9 @@ function ImmersionsPageContent() {
     height: `calc(100vh - var(--header-height, 90px))`,
     minHeight: `calc(100vh - var(--header-height, 90px))`,
   };
+
+  // Desktop card width - 60% of viewport for first card visibility
+  const desktopCardWidth = 'calc(60vw - 64px)';
 
   return (
     <>
@@ -676,8 +727,7 @@ function ImmersionsPageContent() {
                     <div
                       key={immersion._id || immersion.id}
                       className="carousel-card shrink-0 snap-center h-full"
-                      // Desktop cards set their own width (capped at half the viewport), so the slot hugs the card
-                      style={{ width: isMobile ? 'calc(100vw - 32px)' : 'max-content' }}
+                      style={{ width: isMobile ? 'calc(100vw - 32px)' : desktopCardWidth }}
                     >
                       <ImmersionCard
                         data={immersion}
@@ -870,8 +920,7 @@ function ImmersionsPageContent() {
                     <div
                       key={training._id || training.id}
                       className="carousel-card shrink-0 snap-center h-full"
-                      // Desktop cards set their own width (capped at half the viewport), so the slot hugs the card
-                      style={{ width: isMobile ? 'calc(100vw - 32px)' : 'max-content' }}
+                      style={{ width: isMobile ? 'calc(100vw - 32px)' : desktopCardWidth }}
                     >
                       <TrainingCard
                         data={training}
