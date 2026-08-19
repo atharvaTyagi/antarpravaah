@@ -575,26 +575,27 @@ export function TrainingCard({ data, isMobile = false, onExpandedChange, onBooki
             </div>
           </div>
 
-          <div className="flex min-h-0 flex-1 flex-col gap-3 text-[#6a3f33]" style={{ lineHeight: '20px' }}>
-            {/* Overview sits at its natural height, like the meta box above */}
+          {/* Overview and What You'll Learn share one scroll region and take whatever height
+              is left. Scrolling them together is what makes the window usable — keeping
+              Overview fixed left as little as 13px for the list on a 801px viewport, because
+              the meta box above is already ~286px of a ~545px card. */}
+          <div
+            className="no-scrollbar flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto overscroll-contain text-[#6a3f33]"
+            style={{ lineHeight: '20px' }}
+          >
             <div className="flex shrink-0 flex-col gap-1.5">
               <p className="text-[13px] sm:text-[14px] lg:text-[15px]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>Overview</p>
               <p className="text-[13px] sm:text-[14px] lg:text-[15px]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}>
                 {data.overview}
               </p>
             </div>
-            {/* Only this list scrolls; its label stays pinned. No min-height here on purpose:
-                forcing one would push content past the card, and that overflow is what lets
-                the carousel strip drag-scroll the whole card. */}
-            <div className="flex min-h-0 flex-1 flex-col gap-1.5">
-              <p className="shrink-0 text-[13px] sm:text-[14px] lg:text-[15px]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>What You&apos;ll Learn</p>
-              <div className="no-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain">
-                <ul className="ml-4 list-disc text-[13px] sm:text-[14px] lg:text-[15px]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}>
-                  {data.whatYoullLearn.map((item, idx) => (
-                    <li key={idx}>{item}</li>
-                  ))}
-                </ul>
-              </div>
+            <div className="flex shrink-0 flex-col gap-1.5">
+              <p className="text-[13px] sm:text-[14px] lg:text-[15px]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 500 }}>What You&apos;ll Learn</p>
+              <ul className="ml-4 list-disc text-[13px] sm:text-[14px] lg:text-[15px]" style={{ fontFamily: 'var(--font-graphik), sans-serif', fontWeight: 400 }}>
+                {data.whatYoullLearn.map((item, idx) => (
+                  <li key={idx}>{item}</li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>
